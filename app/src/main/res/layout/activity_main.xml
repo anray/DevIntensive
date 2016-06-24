@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 
-<ScrollView
+<android.support.v4.widget.NestedScrollView
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
@@ -292,7 +292,9 @@
 
                 <LinearLayout
                     style="@style/subitem_LinLay"
-                    android:layout_height="@dimen/size_xxtrabig_136">
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/spacing_normal_16"
+                    >
 
                     <android.support.design.widget.TextInputLayout
                         android:layout_width="match_parent"
@@ -305,7 +307,7 @@
                             style="@style/infoField_et"
                             android:hint="@string/about_myself"
                             android:inputType="text|textMultiLine"
-                            android:maxLines="4"
+                            android:minLines="1"
                             android:text="Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum."
 
                             />
@@ -322,5 +324,5 @@
 
 </LinearLayout>
 
-    </ScrollView>
+    </android.support.v4.widget.NestedScrollView>
 
