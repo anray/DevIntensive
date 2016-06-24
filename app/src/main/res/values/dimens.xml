@@ -32,6 +32,7 @@
     <dimen name="font_large_16">16sp</dimen>
     <dimen name="font_large_18">18sp</dimen>
     <dimen name="font_huge_20">20sp</dimen>
+    <dimen name="font_huge_24">24sp</dimen>
 
 
 </resources>

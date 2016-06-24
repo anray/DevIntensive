@@ -30,13 +30,13 @@
     <style name="header_tv">
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">wrap_content</item>
-        <item name="android:textSize">@dimen/font_huge_20</item>
+        <item name="android:textSize">@dimen/font_huge_24</item>
         <item name="android:textColor">@color/white</item>
         <item name="android:fontFamily">sans-serif-condensed</item> <!-- works sine API 16 -->
     </style>
 
     <style name="header_tv.sub">
-        <item name="android:textSize">@dimen/font_medium_14</item>
+        <item name="android:textSize">@dimen/font_large_16</item>
     </style>
 
     <style name="icon">
@@ -95,7 +95,7 @@
         <item name="android:backgroundTint">@color/grey_backg</item> <!-- works sine API 21 -->
         <!-- <item name="android:background">@null</item> also works but collapses hint and text -->
 
-        <item name="android:textSize">@dimen/font_large_18</item>
+        <!--<item name="android:textSize">@dimen/font_large_18</item> -->
         <item name="android:fontFamily">sans-serif-condensed</item> <!-- works sine API 16 -->
     </style>
 
