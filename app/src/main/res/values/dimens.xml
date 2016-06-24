@@ -23,6 +23,7 @@
     <dimen name="size_medium_56">56dp</dimen>
     <dimen name="size_big_72">72dp</dimen>
     <dimen name="size_xtrabig_112">112dp</dimen>
+    <dimen name="size_xxtrabig_136">136dp</dimen>
     <dimen name="line_size_1">1dp</dimen>
     
     <!-- Fonts -->
