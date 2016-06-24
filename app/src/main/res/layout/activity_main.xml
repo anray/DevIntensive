@@ -1,16 +1,313 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:paddingBottom="@dimen/activity_vertical_margin"
-    android:paddingLeft="@dimen/activity_horizontal_margin"
-    android:paddingRight="@dimen/activity_horizontal_margin"
-    android:paddingTop="@dimen/activity_vertical_margin"
-    tools:context=".ui.activities.MainActivity">
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Hello DevIntensive!" />
-</RelativeLayout>
+<ScrollView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              xmlns:tools="http://schemas.android.com/tools"
+              android:layout_width="match_parent"
+              android:layout_height="match_parent"
+              android:orientation="vertical"
+              tools:context=".ui.activities.MainActivity">
+
+    <LinearLayout style="@style/header_LL">
+
+        <LinearLayout
+            style="@style/subheader_LL"
+            android:layout_weight="0.25"
+            >
+
+
+            <TextView
+                style="@style/header_tv"
+                android:id="@+id/rating_tv"
+                android:text="5"
+                />
+
+            <TextView
+                style="@style/header_tv.sub"
+                android:text="Рейтинг"
+                />
+
+        </LinearLayout>
+
+        <View style="@style/vertical_line_tv"/>
+
+        <LinearLayout
+            style="@style/subheader_LL"
+            android:layout_weight="0.5"
+            >
+
+
+            <TextView
+                style="@style/header_tv"
+                android:id="@+id/numOfCodeStrings_tv"
+                android:text="5"
+                />
+
+            <TextView
+                style="@style/header_tv.sub"
+                android:text="Написано строк кода"
+                />
+
+        </LinearLayout>
+
+        <View style="@style/vertical_line_tv"/>
+
+        <LinearLayout
+            style="@style/subheader_LL"
+            android:layout_weight="0.25"
+            >
+
+
+            <TextView
+                style="@style/header_tv"
+                android:id="@+id/projects_tv"
+                android:text="5"
+                />
+
+            <TextView
+                style="@style/header_tv.sub"
+                android:text="Проектов"
+                />
+
+        </LinearLayout>
+
+    </LinearLayout>
+
+
+
+    <LinearLayout style="@style/item_LinLay">
+
+        <ImageView
+            style="@style/icon.left"
+            android:src="@drawable/ic_call_black_24dp"
+            />
+
+        <LinearLayout style="@style/subitem_LinLay">
+
+            <android.support.design.widget.TextInputLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                >
+
+                <EditText
+                    style="@style/infoField_et"
+                    android:id="@+id/phone_et"
+                    android:hint="@string/phone"
+                    android:inputType="phone"
+                    android:text="+7(917)971-11-11"
+                    />
+
+            </android.support.design.widget.TextInputLayout>
+
+        </LinearLayout>
+
+        <ImageView
+            style="@style/icon.right"
+            android:src="@drawable/ic_perm_phone_msg_black_24dp"
+            />
+    </LinearLayout>
+
+    <View style="@style/line"/>
+
+
+    <LinearLayout style="@style/item_LinLay">
+
+        <ImageView
+            style="@style/icon.left"
+            android:src="@drawable/ic_email_black_24dp"
+            />
+
+        <LinearLayout style="@style/subitem_LinLay">
+
+            <android.support.design.widget.TextInputLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                >
+
+                <EditText
+                    style="@style/infoField_et"
+                    android:id="@+id/email_et"
+                    android:hint="@string/email"
+                    android:inputType="textEmailAddress"
+                    android:text="makeweb@yandex.ru"
+                    />
+
+            </android.support.design.widget.TextInputLayout>
+
+        </LinearLayout>
+
+        <ImageView
+            style="@style/icon.right"
+            android:src="@drawable/ic_send_black_24dp"
+            />
+    </LinearLayout>
+
+    <View style="@style/line"/>
+
+    <LinearLayout style="@style/item_LinLay">
+
+        <ImageView
+            style="@style/icon.left"
+            android:src="@drawable/vk_circle"
+            />
+
+        <LinearLayout style="@style/subitem_LinLay">
+
+            <android.support.design.widget.TextInputLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                >
+
+                <EditText
+                    style="@style/infoField_et"
+                    android:id="@+id/VK_profile_et"
+                    android:hint="@string/VK_profile"
+                    android:inputType="textUri"
+                    android:text="vk.com/anray"
+                    />
+
+            </android.support.design.widget.TextInputLayout>
+
+        </LinearLayout>
+
+        <ImageView
+            style="@style/icon.right"
+            android:src="@drawable/eye"
+            />
+    </LinearLayout>
+
+    <View style="@style/line"/>
+
+    <LinearLayout style="@style/item_LinLay">
+
+        <ImageView
+            style="@style/icon.left"
+            android:src="@drawable/github_circle"
+            />
+
+        <LinearLayout style="@style/subitem_LinLay">
+
+            <android.support.design.widget.TextInputLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                >
+
+                <EditText
+                    style="@style/infoField_et"
+                    android:id="@+id/repository1_et"
+                    android:hint="@string/repository"
+                    android:inputType="textUri"
+                    android:text="github.com/anray/DevIntensive"
+                    />
+
+            </android.support.design.widget.TextInputLayout>
+
+        </LinearLayout>
+
+        <ImageView
+            style="@style/icon.right"
+            android:src="@drawable/eye"
+            />
+    </LinearLayout>
+
+
+    <LinearLayout style="@style/item_LinLay.inline">
+
+        <LinearLayout
+            style="@style/subitem_LinLay.inline">
+
+
+            <android.support.design.widget.TextInputLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                >
+
+                <EditText
+                    style="@style/infoField_et"
+                    android:id="@+id/repository2_et"
+                    android:hint="@string/repository"
+                    android:inputType="textUri"
+                    android:text="github.com/anray/DevIntensive"
+                    />
+
+            </android.support.design.widget.TextInputLayout>
+
+        </LinearLayout>
+
+        <ImageView
+            style="@style/icon.right"
+            android:src="@drawable/eye"
+            />
+    </LinearLayout>
+
+
+    <LinearLayout style="@style/item_LinLay.inline">
+
+        <LinearLayout
+            style="@style/subitem_LinLay.inline">
+
+
+            <android.support.design.widget.TextInputLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                >
+
+                <EditText
+                    style="@style/infoField_et"
+                    android:id="@+id/repository3_et"
+                    android:hint="@string/repository"
+                    android:inputType="textUri"
+                    android:text="github.com/anray/DevIntensive"
+                    />
+
+            </android.support.design.widget.TextInputLayout>
+
+        </LinearLayout>
+
+        <ImageView
+            style="@style/icon.right"
+            android:src="@drawable/eye"
+            />
+    </LinearLayout>
+
+    <View style="@style/line"/>
+
+    <LinearLayout style="@style/item_LinLay">
+
+        <ImageView
+            style="@style/icon.left"
+            android:src="@drawable/account_circle"
+            />
+
+        <LinearLayout style="@style/subitem_LinLay">
+
+            <android.support.design.widget.TextInputLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                >
+
+                <EditText
+                    style="@style/infoField_et"
+                    android:id="@+id/aboutMyself_et"
+                    android:hint="@string/about_myself"
+                    android:inputType="text"
+                    android:lines="4"
+                    android:text="Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum."
+
+                    />
+
+            </android.support.design.widget.TextInputLayout>
+
+        </LinearLayout>
+
+
+    </LinearLayout>
+
+    <View style="@style/line"/>
+
+</LinearLayout>
+    </ScrollView>
