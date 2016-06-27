@@ -1,3 +1,16 @@
 <resources>
-    <string name="app_name">DevIntensive</string>
+    <string name="app_name">Андрей Цвирко</string>
+    <string name="green_button">Green button</string>
+    <string name="red_button">Red button</string>
+
+
+    <!-- Content titles -->
+    <string name="rating">Рейтинг</string>
+    <string name="num_of_code_strings">Написано строк кода</string>
+    <string name="projects">Проектов</string>
+    <string name="phone">Мобильный</string>
+    <string name="email">E-mail</string>
+    <string name="VK_profile">Профиль в VK</string>
+    <string name="repository">Репозиторий</string>
+    <string name="about_myself">О себе</string>
 </resources>

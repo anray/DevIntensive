@@ -4,9 +4,12 @@
     <dimen name="activity_vertical_margin">16dp</dimen>
 
     <!-- Spacing -->
+    <dimen name="spacing_negative_8">-8dp</dimen>
     <dimen name="spacing_small_8">8dp</dimen>
     <dimen name="spacing_normal_16">16dp</dimen>
     <dimen name="spacing_medial_24">24dp</dimen>
+    <dimen name="spacing_medial_28">28dp</dimen>
+    <dimen name="spacing_medial_32">32dp</dimen>
     <dimen name="spacing_medium_48">48dp</dimen>
     <dimen name="spacing_large_56">56dp</dimen>
     <dimen name="spacing_larger_72">72dp</dimen>
@@ -14,15 +17,22 @@
     <dimen name="spacing_bigger_88">88dp</dimen>
 
     <!-- Sizes -->
+    <dimen name="size_zero_0">0dp</dimen>
     <dimen name="size_small_24">24dp</dimen>
     <dimen name="size_normal_48">48dp</dimen>
     <dimen name="size_medium_56">56dp</dimen>
     <dimen name="size_big_72">72dp</dimen>
+    <dimen name="size_xtrabig_112">112dp</dimen>
+    <dimen name="size_xxtrabig_136">136dp</dimen>
+    <dimen name="line_size_1">1dp</dimen>
     
     <!-- Fonts -->
     <dimen name="font_small_12">12sp</dimen>
     <dimen name="font_medium_14">14sp</dimen>
     <dimen name="font_large_16">16sp</dimen>
+    <dimen name="font_large_18">18sp</dimen>
     <dimen name="font_huge_20">20sp</dimen>
+    <dimen name="font_huge_24">24sp</dimen>
+
 
 </resources>
