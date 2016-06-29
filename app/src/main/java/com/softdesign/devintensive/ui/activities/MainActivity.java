@@ -1,7 +1,8 @@
 package com.softdesign.devintensive.ui.activities;
 
+import android.graphics.Bitmap;
+import android.graphics.drawable.BitmapDrawable;
 import android.os.Handler;
-import android.provider.ContactsContract;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
@@ -20,6 +21,7 @@ import android.widget.ImageView;
 import com.softdesign.devintensive.R;
 import com.softdesign.devintensive.data.managers.DataManager;
 import com.softdesign.devintensive.utils.ConstantManager;
+import com.softdesign.devintensive.utils.RoundedAvatarDrawable;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -36,6 +38,8 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
     private DrawerLayout mNavigationDrawer;
     private FloatingActionButton mFab;
     private EditText mUserPhone, mUserMail, mUserVk, mUserGit1, mUserGit2, mUserGit3, mUserBio;
+
+    private NavigationView navigationView;
 
     private List<EditText> mUserInfoViews;
 
@@ -77,8 +81,6 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
         setupDrawer();
 
 
-
-
         if (savedInstanceState == null) {
 
             //активити ни разу не запускалось
@@ -93,8 +95,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
 
             mCurrentEditMode = savedInstanceState.getInt(ConstantManager.EDIT_MODE_KEY, 0);
             changeEditMode(mCurrentEditMode);
-                    }
-
+        }
 
 
         //List<String> test = mDataManager.getPreferencesManager().loadUserProfileData();
@@ -209,11 +210,20 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
 
     private void setupDrawer() {
         NavigationView navigationView = (NavigationView) findViewById(R.id.navigation_view);
+
+        //start - set rounded corners for the avatar
+        ImageView navImgView = (ImageView) navigationView.getHeaderView(0).findViewById(R.id
+                .avatar);
+        Bitmap mbitmap = (Bitmap) ((BitmapDrawable) getResources().getDrawable(R.drawable.avatar)
+        ).getBitmap();
+        navImgView.setImageBitmap(RoundedAvatarDrawable.getCircularBitmap(mbitmap));
+        //end - set rounded corners for the avatar
+
         navigationView.setNavigationItemSelectedListener(new NavigationView
                 .OnNavigationItemSelectedListener() {
             @Override
             public boolean onNavigationItemSelected(MenuItem item) {
-                showSnackbar(item.getTitle().toString());
+                //showSnackbar(item.getTitle().toString());
                 item.setChecked(true);
                 mNavigationDrawer.closeDrawer(GravityCompat.START);
 
@@ -264,5 +274,6 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
         }
         mDataManager.getPreferencesManager().saveUserProfileData(userData);
     }
+
 
 }

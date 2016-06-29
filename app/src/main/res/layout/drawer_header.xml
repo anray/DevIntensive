@@ -2,11 +2,11 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
                 android:layout_width="match_parent"
                 android:layout_height="@dimen/size_header"
-                android:paddingTop="@dimen/spacing_medial_24"
-                android:paddingRight="@dimen/spacing_normal_16"
-                android:paddingLeft="@dimen/spacing_normal_16"
-                android:paddingBottom="@dimen/spacing_small_8"
                 android:background="@drawable/header_bg"
+                android:paddingBottom="@dimen/spacing_small_8"
+                android:paddingLeft="@dimen/spacing_normal_16"
+                android:paddingRight="@dimen/spacing_normal_16"
+                android:paddingTop="@dimen/spacing_medial_24"
     >
 
     <ImageView
@@ -15,7 +15,7 @@
         android:layout_height="@dimen/size_icon_60"
         android:layout_marginTop="@dimen/spacing_normal_16"
 
-        android:background="@drawable/avatar"
+        android:src="@drawable/avatar"
 
         />
 
@@ -24,8 +24,8 @@
         android:layout_height="@dimen/size_medium_56"
         android:layout_alignParentBottom="true"
 
-        android:orientation="vertical"
         android:gravity="center_vertical"
+        android:orientation="vertical"
 
         >
 
@@ -33,20 +33,20 @@
             android:id="@+id/user_name_txt"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:fontFamily="sans-serif-medium"
             android:text="@string/app_name"
             android:textColor="@android:color/white"
             android:textSize="@dimen/font_medium_14"
-            android:fontFamily="sans-serif-medium"
             />
 
         <TextView
             android:id="@+id/user_email_txt"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:fontFamily="sans-serif"
             android:text="email@email.ru"
             android:textColor="@android:color/white"
             android:textSize="@dimen/font_medium_14"
-            android:fontFamily="sans-serif"
             />
 
     </LinearLayout>

@@ -11,7 +11,7 @@
         <item
             android:id="@+id/team_menu"
             android:icon="@drawable/ic_people_black_24dp"
-            android:title="@string/team"/>
+            android:title="@string/contacts"/>
 
     </group>
 
