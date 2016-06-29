@@ -15,7 +15,7 @@
         android:layout_height="@dimen/size_icon_60"
         android:layout_marginTop="@dimen/spacing_normal_16"
 
-        android:background="@color/color_accent"
+        android:background="@drawable/avatar"
 
         />
 
@@ -23,7 +23,7 @@
         android:layout_width="match_parent"
         android:layout_height="@dimen/size_medium_56"
         android:layout_alignParentBottom="true"
-        android:background="@color/color_primary_dark"
+
         android:orientation="vertical"
         android:gravity="center_vertical"
 
