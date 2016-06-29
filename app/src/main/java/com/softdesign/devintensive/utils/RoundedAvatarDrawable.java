@@ -8,7 +8,6 @@ import android.graphics.Paint;
 import android.graphics.Rect;
 
 
-
 /**
  * Created by anray on 29.06.2016.
  */
