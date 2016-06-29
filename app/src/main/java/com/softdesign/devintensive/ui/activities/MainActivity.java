@@ -80,12 +80,14 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
 
         setupToolbar();
         setupDrawer();
+        loadUserInfoValue();
 
+        //List<String> test = mDataManager.getPreferencesManager().loadUserProfileData();
 
         if (savedInstanceState == null) {
 
             //активити ни разу не запускалось
-            saveUserInfoValue();
+            //saveUserInfoValue();
             //showSnackbar("активити ни разу не запускалось");
             //showToast("активити ни разу не запускалось");
 
@@ -99,7 +101,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
         }
 
 
-        //List<String> test = mDataManager.getPreferencesManager().loadUserProfileData();
+
 
     }
 
@@ -129,7 +131,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
     protected void onResume() {
         super.onResume();
         Log.d(TAG, "onResume");
-        loadUserInfoValue();
+        //loadUserInfoValue();
     }
 
     @Override
