@@ -13,4 +13,6 @@
     <string name="VK_profile">Профиль в VK</string>
     <string name="repository">Репозиторий</string>
     <string name="about_myself">О себе</string>
+    <string name="my_profile">Профиль</string>
+    <string name="contacts">Контакты</string>
 </resources>

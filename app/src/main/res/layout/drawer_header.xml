@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/size_header"
+                android:background="@drawable/header_bg"
+                android:paddingBottom="@dimen/spacing_small_8"
+                android:paddingLeft="@dimen/spacing_normal_16"
+                android:paddingRight="@dimen/spacing_normal_16"
+                android:paddingTop="@dimen/spacing_medial_24"
+    >
+
+    <ImageView
+        android:id="@+id/avatar"
+        android:layout_width="@dimen/size_icon_60"
+        android:layout_height="@dimen/size_icon_60"
+        android:layout_marginTop="@dimen/spacing_normal_16"
+
+        android:src="@drawable/avatar"
+
+        />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/size_medium_56"
+        android:layout_alignParentBottom="true"
+
+        android:gravity="center_vertical"
+        android:orientation="vertical"
+
+        >
+
+        <TextView
+            android:id="@+id/user_name_txt"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:fontFamily="sans-serif-medium"
+            android:text="@string/app_name"
+            android:textColor="@android:color/white"
+            android:textSize="@dimen/font_medium_14"
+            />
+
+        <TextView
+            android:id="@+id/user_email_txt"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+
+            android:fontFamily="sans-serif"
+            android:text="email@email.ru"
+            android:textColor="@android:color/white"
+            android:textSize="@dimen/font_medium_14"
+            />
+
+    </LinearLayout>
+
+</RelativeLayout>
