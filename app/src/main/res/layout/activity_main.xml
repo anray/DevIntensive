@@ -68,7 +68,7 @@
             style="@style/header_LL"
             android:layout_gravity="top"
             android:gravity="center_vertical"
-            android:minHeight="@dimen/size_medium_56"
+
             app:layout_anchor="@id/appbar_layout"
             app:layout_behavior=".ui.view.behaviours.TopMenuBehavior"
 

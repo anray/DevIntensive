@@ -24,12 +24,15 @@
     </style>
 
     <style name="header_LL">
-         <item name="android:layout_height">wrap_content</item>
+         <item name="android:layout_height">@dimen/size_xtrabig_112</item>
         <item name="android:layout_width">match_parent</item>
+        <item name="android:minHeight">@dimen/size_medium_56</item>
         <item name="android:orientation">horizontal</item>
         <item name="android:gravity">center_vertical</item>
-        <!--<item name="android:paddingTop">@dimen/spacing_medial_28</item>
-        <item name="android:paddingBottom">@dimen/spacing_medial_28</item>-->
+        <!--
+        <item name="android:paddingTop">@dimen/spacing_medial_28</item>
+        <item name="android:paddingBottom">@dimen/spacing_medial_28</item>
+        -->
         <item name="android:background">@color/header_grey</item>
     </style>
 
