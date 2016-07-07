@@ -6,9 +6,12 @@ import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.v4.widget.NestedScrollView;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.util.TypedValue;
 import android.view.View;
 import android.widget.LinearLayout;
+
+import com.softdesign.devintensive.utils.ConstantManager;
 
 
 /**
@@ -49,6 +52,9 @@ public class TopMenuBehavior extends CoordinatorLayout.Behavior<LinearLayout> {
 
         //Logic needed because app bar flows under status bar in API < 21
         int currentapiVersion = android.os.Build.VERSION.SDK_INT;
+
+        //if (dependency.getY() != appbarHeight) else if((appbarHeight-dependency.getY())<20) { //костыль для более плавное анимации раскрытия аппбара
+
         if (currentapiVersion >= android.os.Build.VERSION_CODES.LOLLIPOP) {
             //for API>=21, where status bar size is considered while appbar is collapsed
             if (dependency.getY() < appbarHeight / 2) {
@@ -60,13 +66,21 @@ public class TopMenuBehavior extends CoordinatorLayout.Behavior<LinearLayout> {
             //for API<21, where status bar size is NEVER considered
             lp.height = (int) (ratingMenuMinimumHeight + resizeRatio * (dependency.getY() - toolbarHeight));
         }
-/*
-        Log.d(ConstantManager.TAG_PREFIX, "resizeRatio: " + resizeRatio);
-        Log.d(ConstantManager.TAG_PREFIX, "ratingMenuMinimumHeight: " + ratingMenuMinimumHeight);
-        Log.d(ConstantManager.TAG_PREFIX, "Plashka height: " + lp.height);
-        Log.d(ConstantManager.TAG_PREFIX, "dependency.getY(): " + dependency.getY());
-        Log.d(ConstantManager.TAG_PREFIX, "toolbarHeight: " + toolbarHeight);
-*/
+
+
+        if (ConstantManager.DEBUG)
+
+        {
+            Log.d(ConstantManager.TAG_PREFIX, "resizeRatio: " + resizeRatio);
+            Log.d(ConstantManager.TAG_PREFIX, "ratingMenuMinimumHeight: " + ratingMenuMinimumHeight);
+            Log.d(ConstantManager.TAG_PREFIX, "Plashka height: " + lp.height);
+            Log.d(ConstantManager.TAG_PREFIX, "dependency.getY(): " + dependency.getY());
+            Log.d(ConstantManager.TAG_PREFIX, "child.getY(): " + child.getY());
+            Log.d(ConstantManager.TAG_PREFIX, "appbarHeight: " + appbarHeight);
+            Log.d(ConstantManager.TAG_PREFIX, "toolbarHeight: " + toolbarHeight);
+            Log.d(ConstantManager.TAG_PREFIX, "density: " + mContext.getResources().getDisplayMetrics().density);
+            Log.d(ConstantManager.TAG_PREFIX, "dependency.getTranslationY(): " + dependency.getTranslationY());
+        }
 
 
         //set sizes for Views
@@ -75,18 +89,17 @@ public class TopMenuBehavior extends CoordinatorLayout.Behavior<LinearLayout> {
         dependency.setPadding(dependency.getPaddingLeft(), lp.height, dependency.getPaddingRight(), dependency.getPaddingBottom());
 
 
-
         return true;
 
     }
 
-public float getStatusBarHeight(){
-    float result = 0;
-    int resourceId = mContext.getResources().getIdentifier("status_bar_height", "dimen", "android");
-    if (resourceId > 0) {
-        result = mContext.getResources().getDimensionPixelSize(resourceId);
+    public float getStatusBarHeight() {
+        float result = 0;
+        int resourceId = mContext.getResources().getIdentifier("status_bar_height", "dimen", "android");
+        if (resourceId > 0) {
+            result = mContext.getResources().getDimensionPixelSize(resourceId);
+        }
+        return result;
     }
-    return result;
-}
 
 }

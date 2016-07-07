@@ -15,4 +15,10 @@
     <string name="about_myself">О себе</string>
     <string name="my_profile">Профиль</string>
     <string name="contacts">Контакты</string>
+    <string name="user_profile.placeholder.image">Изменить фотографию профиля</string>
+    <string name="user_profile_dialog.gallery">Загрузить из галереи</string>
+    <string name="user_profile_dialog.camera">Сделать снимок</string>
+    <string name="user_profile_dialog.cancel">Отменить</string>
+    <string name="user_profile_dialog.title">Изменить фотографию профиля</string>
+    <string name="user_profile.choose.message">выберите фото</string>
 </resources>

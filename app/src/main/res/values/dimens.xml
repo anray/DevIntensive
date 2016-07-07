@@ -38,7 +38,7 @@
     <dimen name="font_large_18">18sp</dimen>
     <dimen name="font_huge_20">20sp</dimen>
     <dimen name="font_huge_24">24sp</dimen>
-
+    <dimen name="placeholder_photo_size_90">90dp</dimen>
 
 
 </resources>
