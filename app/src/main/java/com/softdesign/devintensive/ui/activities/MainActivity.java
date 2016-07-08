@@ -2,6 +2,7 @@ package com.softdesign.devintensive.ui.activities;
 
 import android.Manifest;
 import android.app.Dialog;
+import android.content.ContentValues;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -20,9 +21,9 @@ import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
 import android.support.design.widget.Snackbar;
+import android.support.design.widget.TextInputLayout;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
-import android.support.v4.content.PermissionChecker;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBar;
@@ -34,11 +35,11 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 
 import com.softdesign.devintensive.R;
 import com.softdesign.devintensive.data.managers.DataManager;
-import com.softdesign.devintensive.data.managers.PreferencesManager;
 import com.softdesign.devintensive.utils.ConstantManager;
 import com.softdesign.devintensive.utils.RoundedAvatarDrawable;
 import com.squareup.picasso.Picasso;
@@ -56,7 +57,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
     private int mCurrentEditMode = 0;
 
     private DataManager mDataManager;
-    private ImageView mCall;
+    private ImageView mProfileTel;
     private CoordinatorLayout mCoordinatorLayout;
     private Toolbar mToolbar;
     private DrawerLayout mNavigationDrawer;
@@ -66,6 +67,13 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
     private CollapsingToolbarLayout mCollapsingToolbar;
     private AppBarLayout mAppBarLayout;
     private ImageView mProfileImage;
+    private ImageView mProfileEmail;
+    private ImageView mProfileVk;
+    private ImageView mProfileGithub1;
+    private ImageView mProfileGithub2;
+    private ImageView mProfileGithub3;
+
+
 
     private AppBarLayout.LayoutParams mAppBarParams = null;
     private File mPhotoFile = null;
@@ -84,11 +92,15 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
 
         mDataManager = DataManager.getInstance();
 
-        mCall = (ImageView) findViewById(R.id.call);
+
         mCoordinatorLayout = (CoordinatorLayout) findViewById(R.id.main_coordinator_container);
         mToolbar = (Toolbar) findViewById(R.id.toolbar);
         mNavigationDrawer = (DrawerLayout) findViewById(R.id.navigation_drawer);
         mProfileImage = (ImageView) findViewById(R.id.user_photo_iv);
+        mCollapsingToolbar = (CollapsingToolbarLayout) findViewById(R.id.collapsing_toolbar);
+        mAppBarLayout = (AppBarLayout) findViewById(R.id.appbar_layout);
+
+
         mFab = (FloatingActionButton) findViewById(R.id.fab);
         mFab.setOnClickListener(this);
 
@@ -96,8 +108,26 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
         mProfilePlaceholder = (RelativeLayout) findViewById(R.id.profile_placeholder);
         mProfilePlaceholder.setOnClickListener(this);
 
-        mCollapsingToolbar = (CollapsingToolbarLayout) findViewById(R.id.collapsing_toolbar);
-        mAppBarLayout = (AppBarLayout) findViewById(R.id.appbar_layout);
+        /**
+         * Инициализация кнопок справа от полей
+         */
+        mProfileTel = (ImageView) findViewById(R.id.call);
+        mProfileTel.setOnClickListener(this);
+
+        mProfileEmail = (ImageView) findViewById(R.id.send_email_iv);
+        mProfileEmail.setOnClickListener(this);
+
+        mProfileVk = (ImageView) findViewById(R.id.open_VK_profile_iv);
+        mProfileVk.setOnClickListener(this);
+
+        mProfileGithub1 = (ImageView) findViewById(R.id.open_repository1_iv);
+        mProfileGithub1.setOnClickListener(this);
+
+        mProfileGithub2 = (ImageView) findViewById(R.id.open_repository2_iv);
+        mProfileGithub2.setOnClickListener(this);
+
+        mProfileGithub3 = (ImageView) findViewById(R.id.open_repository3_iv);
+        mProfileGithub3.setOnClickListener(this);
 
 
         mUserPhone = (EditText) findViewById(R.id.phone_et);
@@ -124,6 +154,9 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
 
         Picasso.with(this)
                 .load(mDataManager.getPreferencesManager().loadUserPhoto())
+                .resize(768,512)
+                .centerCrop()
+                .placeholder(R.drawable.user_bg)
                 .into(mProfileImage);
 
 
@@ -222,6 +255,25 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
             case R.id.profile_placeholder:
                 showDialog(ConstantManager.LOAD_PROFILE_PHOTO);
                 break;
+            case R.id.call:
+                dial();
+                break;
+            case R.id.send_email_iv:
+                sendEmail();
+                break;
+            case R.id.open_VK_profile_iv:
+                viewInBrowser(v);
+                break;
+            case R.id.open_repository1_iv:
+                viewInBrowser(v);
+                break;
+            case R.id.open_repository2_iv:
+                viewInBrowser(v);
+                break;
+            case R.id.open_repository3_iv:
+                viewInBrowser(v);
+                break;
+
 
         }
     }
@@ -301,16 +353,20 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
 
                     insertProfileImage(mSelectedImage);
                 }
+                break;
             case ConstantManager.REQUEST_CAMERA_PICTURE:
                 if (resultCode == RESULT_OK && mPhotoFile != null) {
                     mSelectedImage = Uri.fromFile(mPhotoFile);
 
                     insertProfileImage(mSelectedImage);
                 }
+                break;
         }
 
 
+
     }
+
 
 
     /**
@@ -391,6 +447,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED
                 && ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED) {
 
+            //если есть права
             Intent takeCaptureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
 
             try {
@@ -405,14 +462,14 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
                 startActivityForResult(takeCaptureIntent, ConstantManager.REQUEST_CAMERA_PICTURE);
 
             }
-        } else {
+        } else { //запрашиваем разрешения
             ActivityCompat.requestPermissions(this, new String[]{
                     Manifest.permission.CAMERA,
                     Manifest.permission.WRITE_EXTERNAL_STORAGE
             }, ConstantManager.CAMERA_REQUEST_PERMISSION_CODE);
 
-            Snackbar.make(mCoordinatorLayout,"Необходимо дать разрешения", Snackbar.LENGTH_LONG)
-                    .setAction("Разрешить", new View.OnClickListener() {
+            Snackbar.make(mCoordinatorLayout, R.string.snackbar_give_permissions, Snackbar.LENGTH_LONG)
+                    .setAction(R.string.snackbar_give_permissions_button, new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
                             openApplicationSettings();
@@ -503,15 +560,28 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
 
         File image = File.createTempFile(imageFileName, ".jpg", storageDir);
 
+        ContentValues values = new ContentValues();
+        values.put(MediaStore.Images.Media.DATE_TAKEN, System.currentTimeMillis());
+        values.put(MediaStore.Images.Media.MIME_TYPE, "image/jpeg");
+        values.put(MediaStore.MediaColumns.DATA, image.getAbsolutePath());
+
+        this.getContentResolver().insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, values);
+
         return image;
 
     }
 
     private void insertProfileImage(Uri selectedImage) {
 
+
         Picasso.with(this)
                 .load(selectedImage)
+                .resize(768,512)
+                .centerCrop()
+                .placeholder(R.drawable.user_bg)
                 .into(mProfileImage);
+
+
 
         mDataManager.getPreferencesManager().saveUserPhoto(selectedImage);
     }
@@ -521,4 +591,35 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
 
         startActivityForResult(appSettingsIntent, ConstantManager.PERMISSION_REQUEST_SETTINGS_CODE);
     }
+
+    private void dial() {
+        String phoneNo = ((EditText) findViewById(R.id.phone_et)).getText().toString();
+
+        Intent dialIntent = new Intent(Intent.ACTION_DIAL, Uri.parse("tel:" + phoneNo));
+        startActivity(Intent.createChooser(dialIntent, getString(R.string.chooser_title_dial)));
+    }
+
+    private void sendEmail() {
+        String email = ((EditText) findViewById(R.id.email_et)).getText().toString();
+
+        Intent dialIntent = new Intent(Intent.ACTION_SENDTO);
+        //, Uri.parse("mailto:" + email)); выдает очень много вариантов
+        //dialIntent.setType("message/rfc822"); выдает меньше вариантов, но среди них тоже есть не почтовые клиенты
+        dialIntent.setData(Uri.parse("mailto:"));
+        dialIntent.putExtra(Intent.EXTRA_EMAIL, new String[]{email});
+        startActivity(Intent.createChooser(dialIntent, getString(R.string.chooser_title_sendEmail)));
+
+    }
+
+
+
+    private void viewInBrowser(View v) {
+
+        String link = ((EditText) ((TextInputLayout) ((LinearLayout) ((LinearLayout) v.getParent()).getChildAt(1)).getChildAt(0)).getChildAt(0)).getText().toString();
+
+        Intent openBrowser = new Intent(Intent.ACTION_VIEW, Uri.parse("http://" + link));
+        startActivity(Intent.createChooser(openBrowser, getString(R.string.chooser_title_openBrowser)));
+    }
+
+
 }

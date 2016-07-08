@@ -16,4 +16,10 @@
 
     </style>
 
+    <style name="AppTheme.Button.Red" parent="Base.Widget.AppCompat.Button">
+        <item name="colorButtonNormal">@color/color_accent</item>
+        <item name="android:textColor">@color/white</item>
+    </style>
+
+
 </resources>
