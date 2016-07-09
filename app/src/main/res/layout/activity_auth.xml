@@ -60,17 +60,11 @@
 
             <android.support.design.widget.TextInputLayout
                 style="@style/login_spacing"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/spacing_normal_16"
                 >
 
                 <EditText
                     android:id="@+id/login_email"
                     style="@style/infoField_et.loginField_et"
-                    android:enabled="true"
-                    android:focusable="true"
-                    android:focusableInTouchMode="true"
                     android:hint="@string/email"
                     android:inputType="textEmailAddress"
                     android:text="email@email.ru"
@@ -80,17 +74,11 @@
 
             <android.support.design.widget.TextInputLayout
                 style="@style/login_spacing"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/spacing_normal_16"
                 >
 
                 <EditText
                     android:id="@+id/login_password"
                     style="@style/infoField_et.loginField_et"
-                    android:enabled="true"
-                    android:focusable="true"
-                    android:focusableInTouchMode="true"
                     android:hint="@string/password"
                     android:inputType="textPassword"
                     />

@@ -30,4 +30,12 @@
     <string name="login_card_title">ВОЙТИ</string>
     <string name="login_button">ВОЙТИ</string>
     <string name="login_forgot_password">Забыли пароль?</string>
+    <string name="validate_user_phone_error">Шаблон: От 11 до 20 цифр</string>
+    <string name="validate_user_email_error">Шаблон: email@email.com</string>
+    <string name="validate_user_vk_error">Шаблон: vk.com/abc</string>
+    <string name="validate_user_github_error">Шаблон: github.com/abc</string>
+    <string name="need_camera_permissions">Дайте разрешения приложению для работы с камерой</string>
+    <string name="need_write_to_external_storage_permissions">Дайте приложению права на запись во внешнее хранилище</string>
+    <string name="error_create_file">Произошла ошибка создания файла</string>
+
 </resources>

@@ -123,6 +123,9 @@
 
     <style name="infoField_et.loginField_et">
         <item name="android:backgroundTint">@null</item> <!-- works sine API 21 -->
+        <item name="android:focusable">true</item>
+        <item name="android:enabled">true</item>
+        <item name="android:focusableInTouchMode">true</item>
 
     </style>
 
@@ -146,6 +149,9 @@
     <style name="login_spacing">
         <item name="android:layout_marginLeft">@dimen/spacing_medial_28</item>
         <item name="android:layout_marginRight">@dimen/spacing_medial_28</item>
+        <item name="android:layout_marginTop">@dimen/spacing_normal_16</item>
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
 
     </style>
 
