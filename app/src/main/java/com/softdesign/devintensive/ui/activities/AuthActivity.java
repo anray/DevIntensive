@@ -8,16 +8,20 @@ import android.widget.Button;
 
 import com.softdesign.devintensive.R;
 
+import butterknife.BindView;
+import butterknife.ButterKnife;
+
 public class AuthActivity extends AppCompatActivity implements View.OnClickListener {
 
-    private Button mLoginButton;
+    @BindView(R.id.login_button_btn) Button mLoginButton;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_auth);
+        ButterKnife.bind(this);
 
-        mLoginButton = (Button) findViewById(R.id.login_button_btn);
+        //mLoginButton = (Button) findViewById(R.id.login_button_btn);
         mLoginButton.setOnClickListener(this);
 
 

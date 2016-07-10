@@ -54,27 +54,37 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import butterknife.BindView;
+import butterknife.ButterKnife;
+
 public class MainActivity extends BaseActivity implements View.OnClickListener {
 
     private static final String TAG = ConstantManager.TAG_PREFIX + "Main Activity";
     private int mCurrentEditMode = 0;
 
     private DataManager mDataManager;
-    private ImageView mProfileTel;
-    private CoordinatorLayout mCoordinatorLayout;
-    private Toolbar mToolbar;
-    private DrawerLayout mNavigationDrawer;
-    private FloatingActionButton mFab;
-    private EditText mUserPhone, mUserMail, mUserVk, mUserGit1, mUserGit2, mUserGit3, mUserBio;
-    private RelativeLayout mProfilePlaceholder;
-    private CollapsingToolbarLayout mCollapsingToolbar;
-    private AppBarLayout mAppBarLayout;
-    private ImageView mProfileImage;
-    private ImageView mProfileEmail;
-    private ImageView mProfileVk;
-    private ImageView mProfileGithub1;
-    private ImageView mProfileGithub2;
-    private ImageView mProfileGithub3;
+    @BindView(R.id.navigation_drawer) DrawerLayout mNavigationDrawer;
+    @BindView(R.id.fab) FloatingActionButton mFab;
+    @BindView(R.id.profile_placeholder) RelativeLayout mProfilePlaceholder;
+    @BindView(R.id.collapsing_toolbar) CollapsingToolbarLayout mCollapsingToolbar;
+    @BindView(R.id.appbar_layout) AppBarLayout mAppBarLayout;
+    @BindView(R.id.user_photo_iv) ImageView mProfileImage;
+    @BindView(R.id.send_email_iv) ImageView mProfileEmail;
+    @BindView(R.id.open_VK_profile_iv) ImageView mProfileVk;
+    @BindView(R.id.open_repository1_iv) ImageView mProfileGithub1;
+    @BindView(R.id.open_repository2_iv) ImageView mProfileGithub2;
+    @BindView(R.id.open_repository3_iv) ImageView mProfileGithub3;
+    @BindView(R.id.call) ImageView mProfileTel;
+    @BindView(R.id.main_coordinator_container) CoordinatorLayout mCoordinatorLayout;
+    @BindView(R.id.toolbar) Toolbar mToolbar;
+    @BindView(R.id.phone_et) EditText mUserPhone;
+    @BindView(R.id.email_et) EditText mUserMail;
+    @BindView(R.id.vk_profile_et) EditText mUserVk;
+    @BindView(R.id.git_repository1_et) EditText mUserGit1;
+    @BindView(R.id.git_repository2_et) EditText mUserGit2;
+    @BindView(R.id.git_repository3_et) EditText mUserGit3;
+    @BindView(R.id.aboutMyself_et) EditText mUserBio;
+
 
 
     private AppBarLayout.LayoutParams mAppBarParams = null;
@@ -91,61 +101,63 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        ButterKnife.bind(this);
+
         //инициализация синглтона
         mDataManager = DataManager.getInstance();
 
 
-        mCoordinatorLayout = (CoordinatorLayout) findViewById(R.id.main_coordinator_container);
-        mToolbar = (Toolbar) findViewById(R.id.toolbar);
-        mNavigationDrawer = (DrawerLayout) findViewById(R.id.navigation_drawer);
-        mProfileImage = (ImageView) findViewById(R.id.user_photo_iv);
-        mCollapsingToolbar = (CollapsingToolbarLayout) findViewById(R.id.collapsing_toolbar);
-        mAppBarLayout = (AppBarLayout) findViewById(R.id.appbar_layout);
+        //mCoordinatorLayout = (CoordinatorLayout) findViewById(R.id.main_coordinator_container);
+        //mToolbar = (Toolbar) findViewById(R.id.toolbar);
+        //mNavigationDrawer = (DrawerLayout) findViewById(R.id.navigation_drawer);
+        //mProfileImage = (ImageView) findViewById(R.id.user_photo_iv);
+        //mCollapsingToolbar = (CollapsingToolbarLayout) findViewById(R.id.collapsing_toolbar);
+        //mAppBarLayout = (AppBarLayout) findViewById(R.id.appbar_layout);
 
 
-        mFab = (FloatingActionButton) findViewById(R.id.fab);
+        //mFab = (FloatingActionButton) findViewById(R.id.fab);
         mFab.setOnClickListener(this);
 
 
         //Инициализация и привязка листенара для заставки на апп баре
-        mProfilePlaceholder = (RelativeLayout) findViewById(R.id.profile_placeholder);
+        //mProfilePlaceholder = (RelativeLayout) findViewById(R.id.profile_placeholder);
         mProfilePlaceholder.setOnClickListener(this);
 
         //region
         /**
          * Инициализация и привязка листенара для кнопок справа от полей
          */
-        mProfileTel = (ImageView) findViewById(R.id.call);
+
+
+        //mProfileTel = (ImageView) findViewById(R.id.call);
+        //mProfileEmail = (ImageView) findViewById(R.id.send_email_iv);
+        //mProfileVk = (ImageView) findViewById(R.id.open_VK_profile_iv);
+        //mProfileGithub1 = (ImageView) findViewById(R.id.open_repository1_iv);
+        //mProfileGithub2 = (ImageView) findViewById(R.id.open_repository2_iv);
+        //mProfileGithub3 = (ImageView) findViewById(R.id.open_repository3_iv);
+
         mProfileTel.setOnClickListener(this);
-
-        mProfileEmail = (ImageView) findViewById(R.id.send_email_iv);
         mProfileEmail.setOnClickListener(this);
-
-        mProfileVk = (ImageView) findViewById(R.id.open_VK_profile_iv);
         mProfileVk.setOnClickListener(this);
-
-        mProfileGithub1 = (ImageView) findViewById(R.id.open_repository1_iv);
         mProfileGithub1.setOnClickListener(this);
-
-        mProfileGithub2 = (ImageView) findViewById(R.id.open_repository2_iv);
         mProfileGithub2.setOnClickListener(this);
-
-        mProfileGithub3 = (ImageView) findViewById(R.id.open_repository3_iv);
         mProfileGithub3.setOnClickListener(this);
+
         //endregion
 
         //region
         /**
          * Инициализация полей редактирования
-         */
+
 
         mUserPhone = (EditText) findViewById(R.id.phone_et);
         mUserMail = (EditText) findViewById(R.id.email_et);
-        mUserVk = (EditText) findViewById(R.id.VK_profile_et);
-        mUserGit1 = (EditText) findViewById(R.id.repository1_et);
-        mUserGit2 = (EditText) findViewById(R.id.repository2_et);
-        mUserGit3 = (EditText) findViewById(R.id.repository3_et);
+        mUserVk = (EditText) findViewById(R.id.vk_profile_et);
+        mUserGit1 = (EditText) findViewById(R.id.git_repository1_et);
+        mUserGit2 = (EditText) findViewById(R.id.git_repository2_et);
+        mUserGit3 = (EditText) findViewById(R.id.git_repository3_et);
         mUserBio = (EditText) findViewById(R.id.aboutMyself_et);
+         */
         //endregion
 
         //region

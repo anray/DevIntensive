@@ -2,7 +2,6 @@ package com.softdesign.devintensive.data.managers;
 
 import android.text.Editable;
 import android.text.TextWatcher;
-import android.util.Log;
 import android.widget.EditText;
 
 import com.softdesign.devintensive.R;
@@ -72,7 +71,7 @@ public class TextWatcherValidator implements TextWatcher {
                 }
                 break;
 
-            case R.id.VK_profile_et:
+            case R.id.vk_profile_et:
                 //удаляем все до vk.com
                 try { //try нужен для того чтобы можно было удалить vk.com
                     result = result.substring(result.toString().indexOf("vk.com"), result.length());
@@ -86,9 +85,9 @@ public class TextWatcherValidator implements TextWatcher {
                 }
                 break;
 
-            case R.id.repository1_et:
-            case R.id.repository2_et:
-            case R.id.repository3_et:
+            case R.id.git_repository1_et:
+            case R.id.git_repository2_et:
+            case R.id.git_repository3_et:
                 //удаляем все до github.com
                 try { //try нужен для того чтобы можно было удалить github.com
                     result = result.substring(result.toString().indexOf("github.com"), result.length());

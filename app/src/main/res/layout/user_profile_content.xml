@@ -61,6 +61,7 @@
         <LinearLayout style="@style/item_LinLay">
 
             <ImageView
+                android:id="@+id/test_butterknife_iv"
                 style="@style/icon.left"
                 android:src="@drawable/ic_email_black_24dp"
                 />
@@ -108,7 +109,7 @@
                     >
 
                     <EditText
-                        android:id="@+id/VK_profile_et"
+                        android:id="@+id/vk_profile_et"
                         style="@style/infoField_et"
                         android:hint="@string/VK_profile"
                         android:inputType="textUri"
@@ -143,7 +144,7 @@
                     >
 
                     <EditText
-                        android:id="@+id/repository1_et"
+                        android:id="@+id/git_repository1_et"
                         style="@style/infoField_et"
                         android:hint="@string/repository"
                         android:inputType="textUri"
@@ -178,7 +179,7 @@
                     >
 
                     <EditText
-                        android:id="@+id/repository2_et"
+                        android:id="@+id/git_repository2_et"
                         style="@style/infoField_et"
                         android:hint="@string/repository"
                         android:inputType="textUri"
@@ -213,7 +214,7 @@
                     >
 
                     <EditText
-                        android:id="@+id/repository3_et"
+                        android:id="@+id/git_repository3_et"
                         style="@style/infoField_et"
                         android:hint="@string/repository"
                         android:inputType="textUri"
