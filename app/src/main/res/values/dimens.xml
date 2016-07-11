@@ -29,8 +29,14 @@
     <dimen name="size_header">172dp</dimen>
     <dimen name="size_toolbar_image_256">256dp</dimen>
     <dimen name="line_size_1">1dp</dimen>
+    <dimen name="button_login_height_36">36dp</dimen>
+    <dimen name="button_login_width_125">125dp</dimen>
+    <dimen name="button_forgot_password_height_16">16dp</dimen>
+    <dimen name="placeholder_photo_size_90">90dp</dimen>
+    <dimen name="corner_radius_2">2dp</dimen>
+    <dimen name="card_elevation_8">8dp</dimen>
 
-    
+
     <!-- Fonts -->
     <dimen name="font_small_12">12sp</dimen>
     <dimen name="font_medium_14">14sp</dimen>
@@ -38,7 +44,6 @@
     <dimen name="font_large_18">18sp</dimen>
     <dimen name="font_huge_20">20sp</dimen>
     <dimen name="font_huge_24">24sp</dimen>
-
 
 
 </resources>

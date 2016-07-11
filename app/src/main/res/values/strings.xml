@@ -15,4 +15,27 @@
     <string name="about_myself">О себе</string>
     <string name="my_profile">Профиль</string>
     <string name="contacts">Контакты</string>
+    <string name="user_profile.placeholder.image">Изменить фотографию профиля</string>
+    <string name="user_profile_dialog.gallery">Загрузить из галереи</string>
+    <string name="user_profile_dialog.camera">Сделать снимок</string>
+    <string name="user_profile_dialog.cancel">Отменить</string>
+    <string name="user_profile_dialog.title">Изменить фотографию профиля</string>
+    <string name="user_profile.choose.message">выберите фото</string>
+    <string name="chooser_title_dial">Выберите программу дозвона:</string>
+    <string name="chooser_title_sendEmail">Выберите почтовый клиент:</string>
+    <string name="chooser_title_openBrowser">Выберите браузер:</string>
+    <string name="snackbar_give_permissions">Необходимо дать разрешения</string>
+    <string name="snackbar_give_permissions_button">Разрешить</string>
+    <string name="password">Пароль</string>
+    <string name="login_card_title">ВОЙТИ</string>
+    <string name="login_button">ВОЙТИ</string>
+    <string name="login_forgot_password">Забыли пароль?</string>
+    <string name="validate_user_phone_error">Шаблон: От 11 до 20 цифр</string>
+    <string name="validate_user_email_error">Шаблон: email@email.com</string>
+    <string name="validate_user_vk_error">Шаблон: vk.com/abc</string>
+    <string name="validate_user_github_error">Шаблон: github.com/abc</string>
+    <string name="need_camera_permissions">Дайте разрешения приложению для работы с камерой</string>
+    <string name="need_write_to_external_storage_permissions">Дайте приложению права на запись во внешнее хранилище</string>
+    <string name="error_create_file">Произошла ошибка создания файла</string>
+
 </resources>

@@ -11,7 +11,6 @@
     <style name="AppTheme.NoActionBar">
         <item name="android:windowNoTitle">true</item>
         <item name="android:windowActionBar">false</item>
-
     </style>
 
     <style name="AppTheme.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar"/>
@@ -19,9 +18,13 @@
 
     <style name="AppTheme.PopupOverlay" parent="ThemeOverlay.AppCompat.Light">
         <item name="android:textColor">@color/white</item>
-
-
     </style>
+
+    <style name="AppTheme.Button.Red" parent="Base.Widget.AppCompat.Button">
+        <item name="colorButtonNormal">@color/color_accent</item>
+        <item name="android:textColor">@color/white</item>
+    </style>
+
 
     <style name="header_LL">
          <item name="android:layout_height">@dimen/size_xtrabig_112</item>
@@ -118,6 +121,14 @@
         <item name="android:fontFamily">sans-serif-condensed</item> <!-- works sine API 16 -->
     </style>
 
+    <style name="infoField_et.loginField_et">
+        <item name="android:backgroundTint">@null</item> <!-- works sine API 21 -->
+        <item name="android:focusable">true</item>
+        <item name="android:enabled">true</item>
+        <item name="android:focusableInTouchMode">true</item>
+
+    </style>
+
     <style name="line">
         <item name="android:background">@color/grey_light</item>
         <item name="android:layout_marginLeft">@dimen/spacing_larger_72</item>
@@ -133,6 +144,15 @@
 
     <style name="custom_dialog">
         <item name="android:fullDark">@android:color/transparent</item>
+    </style>
+
+    <style name="login_spacing">
+        <item name="android:layout_marginLeft">@dimen/spacing_medial_28</item>
+        <item name="android:layout_marginRight">@dimen/spacing_medial_28</item>
+        <item name="android:layout_marginTop">@dimen/spacing_normal_16</item>
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+
     </style>
 
 </resources>

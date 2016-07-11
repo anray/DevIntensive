@@ -11,4 +11,7 @@
     <color name="grey_light">#e6e6e6</color>
     <color name="grey_backg">#f9f9f9</color>
     <color name="black">#000000</color>
+
+    <color name="grey_background">#454545</color>
+
 </resources>
