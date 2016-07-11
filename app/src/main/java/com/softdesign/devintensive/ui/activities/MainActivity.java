@@ -107,6 +107,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
         mDataManager = DataManager.getInstance();
 
 
+
         //mCoordinatorLayout = (CoordinatorLayout) findViewById(R.id.main_coordinator_container);
         //mToolbar = (Toolbar) findViewById(R.id.toolbar);
         //mNavigationDrawer = (DrawerLayout) findViewById(R.id.navigation_drawer);
@@ -348,7 +349,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
             @Override
             public void run() {
                 //TODO: Выполнить с задержкой
-                hideProgess();
+                hideProgress();
             }
         }, 5000);
 

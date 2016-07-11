@@ -36,7 +36,7 @@ public class BaseActivity extends AppCompatActivity {
 
     }
 
-    public void hideProgess(){
+    public void hideProgress(){
         if (mProgressDialog != null){
             if(mProgressDialog.isShowing()){
                 mProgressDialog.hide();

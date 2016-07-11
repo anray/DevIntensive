@@ -59,4 +59,26 @@ public class PreferencesManager {
     public Uri loadUserPhoto(){
         return Uri.parse(mSharedPreferences.getString(ConstantManager.USER_PHOTO_KEY, "android.resource://com.softdesign.devintensive/drawable/profile"));
     }
+
+    public void saveAuthToken(String authToken){
+        SharedPreferences.Editor editor = mSharedPreferences.edit();
+        editor.putString(ConstantManager.AUTH_TOKEN_KEY, authToken);
+        editor.apply();
+
+    }
+
+    public String getAuthToken(){
+        return mSharedPreferences.getString(ConstantManager.AUTH_TOKEN_KEY, "null");
+    }
+
+    public void saveUserId(String userId){
+        SharedPreferences.Editor editor = mSharedPreferences.edit();
+        editor.putString(ConstantManager.USER_ID_KEY, userId);
+        editor.apply();
+    }
+
+    public String getUserId(){
+        return mSharedPreferences.getString(ConstantManager.USER_ID_KEY, "null");
+    }
+
 }
