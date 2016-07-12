@@ -145,7 +145,7 @@
 
 
                 <TextView
-                    android:id="@+id/numOfCodeStrings_tv"
+                    android:id="@+id/numOfCodeLines_tv"
                     style="@style/header_tv"
                     android:text="5"
                     />

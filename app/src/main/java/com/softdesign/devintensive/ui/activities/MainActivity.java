@@ -39,6 +39,7 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
+import android.widget.TextView;
 
 import com.softdesign.devintensive.R;
 import com.softdesign.devintensive.data.managers.DataManager;
@@ -84,6 +85,18 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
     @BindView(R.id.git_repository2_et) EditText mUserGit2;
     @BindView(R.id.git_repository3_et) EditText mUserGit3;
     @BindView(R.id.aboutMyself_et) EditText mUserBio;
+
+    @BindView(R.id.rating_tv)
+    TextView mUserValueRating;
+
+    @BindView(R.id.projects_tv)
+    TextView mUserValueProjects;
+
+    @BindView(R.id.numOfCodeLines_tv)
+    TextView mUserValueCodeLines;
+
+    private List<TextView> mUserValueViews;
+
 
 
 
@@ -186,12 +199,19 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
         mUserInfoViews.add(mUserGit3);
         mUserInfoViews.add(mUserBio);
 
+        //инициализация ArrayList для загрузки в плашку из SharePrefernces
+        mUserValueViews = new ArrayList<>();
+        mUserValueViews.add(mUserValueRating);
+        mUserValueViews.add(mUserValueCodeLines);
+        mUserValueViews.add(mUserValueProjects);
 
         setupToolbar();
         setupDrawer();
 
         //region загрузка из Shared Preferences содержимого
-        loadUserInfoValue();
+        initUserFields();
+        initUserInfoValue();
+
         Picasso.with(this)
                 .load(mDataManager.getPreferencesManager().loadUserPhoto())
                 .resize(768, 512)
@@ -206,7 +226,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
         if (savedInstanceState == null) {
 
             //активити ни разу не запускалось
-            //saveUserInfoValue();
+            //saveUserFields();
             //showSnackbar("активити ни разу не запускалось");
             //showToast("активити ни разу не запускалось");
 
@@ -256,14 +276,14 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
     protected void onResume() {
         super.onResume();
         Log.d(TAG, "onResume");
-        //loadUserInfoValue();
+        //initUserFields();
     }
 
     @Override
     protected void onPause() {
         super.onPause();
         Log.d(TAG, "onPause");
-        saveUserInfoValue();
+        saveUserFields();
 
     }
 
@@ -284,7 +304,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
     protected void onRestart() {
         super.onRestart();
         Log.d(TAG, "onRestart");
-        loadUserInfoValue();
+        initUserFields();
     }
 
     /**
@@ -480,7 +500,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
 
                 mCollapsingToolbar.setExpandedTitleColor(getResources().getColor(R.color.white));
 
-                saveUserInfoValue();
+                saveUserFields();
             }
         }
 
@@ -489,7 +509,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
     /**
      * загружает содержимое полей из SharedPrefernces и устанавливает их полям
      */
-    private void loadUserInfoValue() {
+    private void initUserFields() {
         List<String> userData = mDataManager.getPreferencesManager().loadUserProfileData();
         for (int i = 0; i < userData.size(); i++) {
             mUserInfoViews.get(i).setText(userData.get(i));
@@ -500,12 +520,21 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
      * сохраняет содержимое полей в SharedPrefernces
      */
 
-    private void saveUserInfoValue() {
+    private void saveUserFields() {
         List<String> userData = new ArrayList<>();
         for (EditText userFieldView : mUserInfoViews) {
             userData.add(userFieldView.getText().toString());
         }
         mDataManager.getPreferencesManager().saveUserProfileData(userData);
+    }
+
+    private void initUserInfoValue(){
+        List<String> userInfoValues = mDataManager.getPreferencesManager().loadUserProfileValues();
+        for (int i = 0; i < userInfoValues.size(); i++) {
+            mUserValueViews.get(i).setText(userInfoValues.get(i));
+            Log.d(ConstantManager.TAG_PREFIX + "MainActivity",userInfoValues.get(i));
+        }
+
     }
 
     /**
