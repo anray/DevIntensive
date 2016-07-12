@@ -65,9 +65,20 @@ public class PreferencesManager {
 
     }
 
+    /**
+     *  Сохраняет в преференсы фото профиля
+     * @param uri
+     */
     public void saveUserPhoto(Uri uri) {
         SharedPreferences.Editor editor = mSharedPreferences.edit();
         editor.putString(ConstantManager.USER_PHOTO_KEY, uri.toString());
+        editor.apply();
+
+    }
+
+    public void saveUserAvatar(Uri uri) {
+        SharedPreferences.Editor editor = mSharedPreferences.edit();
+        editor.putString(ConstantManager.USER_AVATAR_KEY, uri.toString());
         editor.apply();
 
     }
@@ -109,6 +120,10 @@ public class PreferencesManager {
 
     public Uri loadUserPhoto() {
         return Uri.parse(mSharedPreferences.getString(ConstantManager.USER_PHOTO_KEY, "android.resource://com.softdesign.devintensive/drawable/profile"));
+    }
+
+    public Uri loadUserAvatar() {
+        return Uri.parse(mSharedPreferences.getString(ConstantManager.USER_AVATAR_KEY, "android.resource://com.softdesign.devintensive/drawable/avatar"));
     }
 
     public void saveAuthToken(String authToken) {

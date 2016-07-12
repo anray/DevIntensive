@@ -99,6 +99,8 @@ public class AuthActivity extends BaseActivity implements View.OnClickListener {
         mDataManager.getPreferencesManager().saveUserId(userModel.getData().getUser().getUserId());
         saveUserValues(userModel);
         saveUserProfileDetails(userModel);
+        saveUserProfileImage(userModel);
+        saveUserAvatarImage(userModel);
 
         Intent loginIntent = new Intent(this, MainActivity.class);
         startActivity(loginIntent);
@@ -178,6 +180,22 @@ public class AuthActivity extends BaseActivity implements View.OnClickListener {
 
 
         mDataManager.getPreferencesManager().saveUserProfileData(userValues);
+
+
+    }
+
+    private void saveUserProfileImage(UserModelResponse userModel) {
+
+        Uri photoUrl = Uri.parse(userModel.getData().getUser().getPublicInfo().getPhoto());
+        mDataManager.getPreferencesManager().saveUserPhoto(photoUrl);
+
+
+    }
+
+    private void saveUserAvatarImage(UserModelResponse userModel) {
+
+        Uri photoUrl = Uri.parse(userModel.getData().getUser().getPublicInfo().getAvatar());
+        mDataManager.getPreferencesManager().saveUserAvatar(photoUrl);
 
 
     }

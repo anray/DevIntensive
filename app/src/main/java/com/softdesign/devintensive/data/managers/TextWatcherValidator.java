@@ -75,12 +75,15 @@ public class TextWatcherValidator implements TextWatcher {
             case R.id.vk_profile_et:
                 //удаляем все до vk.com
                 try { //try нужен для того чтобы можно было удалить vk.com
-                    result = result.substring(result.toString().indexOf("vk.com"), result.length());
-                    //применяем все фильтры к строке
-                    mEditText.setText(result);
+                    result = result.substring(result.indexOf("vk.com"), result.length());
+                    
+
                 } catch (Exception e) {
 
                 }
+
+                //применяем все фильтры к строке
+                mEditText.setText(result);
 
                 //выводим ссобщение об ошибке если не совпадает с Regex
                 if (!isValid(mEditText.getText().toString(), mVkRegex)) {
@@ -93,12 +96,14 @@ public class TextWatcherValidator implements TextWatcher {
             case R.id.git_repository3_et:
                 //удаляем все до github.com
                 try { //try нужен для того чтобы можно было удалить github.com
-                    result = result.substring(result.toString().indexOf("github.com"), result.length());
-                    //применяем все фильтры к строке
-                    mEditText.setText(result);
+                    result = result.substring(result.indexOf("github.com"), result.length());
+
                 } catch (Exception e) {
 
                 }
+
+                //применяем все фильтры к строке
+                mEditText.setText(result);
 
                 //выводим ссобщение об ошибке если не совпадает с Regex
                 if (!isValid(mEditText.getText().toString(), mGithubRegex)) {

@@ -44,8 +44,11 @@ import android.widget.TextView;
 import com.softdesign.devintensive.R;
 import com.softdesign.devintensive.data.managers.DataManager;
 import com.softdesign.devintensive.data.managers.TextWatcherValidator;
+import com.softdesign.devintensive.utils.CircleTransform;
 import com.softdesign.devintensive.utils.ConstantManager;
+
 import com.softdesign.devintensive.utils.RoundedAvatarDrawable;
+import com.squareup.picasso.MemoryPolicy;
 import com.squareup.picasso.Picasso;
 
 import java.io.File;
@@ -116,6 +119,8 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
     private TextWatcherValidator mUserGit2Validator = null;
     private TextWatcherValidator mUserGit3Validator = null;
 
+    private ImageView mAvatar;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -127,6 +132,11 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
         //инициализация синглтона
         mDataManager = DataManager.getInstance();
 
+
+        //инициализация аватарки
+        NavigationView navigationView = (NavigationView) findViewById(R.id.navigation_view);
+        ImageView navImgView = (ImageView) navigationView.getHeaderView(0).findViewById(R.id.avatar);
+        mAvatar = navImgView;
 
 
         //mCoordinatorLayout = (CoordinatorLayout) findViewById(R.id.main_coordinator_container);
@@ -215,10 +225,20 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
 
         Picasso.with(this)
                 .load(mDataManager.getPreferencesManager().loadUserPhoto())
+                .memoryPolicy(MemoryPolicy.NO_CACHE)
                 .resize(768, 512)
                 .centerCrop()
                 .placeholder(R.drawable.user_bg)
                 .into(mProfileImage);
+
+        Picasso.with(mNavigationDrawer.getContext())
+                .load(mDataManager.getPreferencesManager().loadUserAvatar())
+                .memoryPolicy(MemoryPolicy.NO_CACHE)
+                .resize(120, 120)
+                .centerCrop()
+                .placeholder(R.drawable.user_bg)
+                .transform(new CircleTransform())
+                .into(mAvatar);
         //endregion
 
 
