@@ -24,7 +24,9 @@ public class PreferencesManager {
             ConstantManager.USER_GIT1_KEY,
             ConstantManager.USER_GIT2_KEY,
             ConstantManager.USER_GIT3_KEY,
-            ConstantManager.USER_BIO_KEY
+            ConstantManager.USER_BIO_KEY,
+            ConstantManager.USER_FIO_KEY
+
     };
 
     private static final String[] USER_VALUES = {
@@ -61,6 +63,7 @@ public class PreferencesManager {
         userFields.add(mSharedPreferences.getString(ConstantManager.USER_GIT2_KEY, "null"));
         userFields.add(mSharedPreferences.getString(ConstantManager.USER_GIT3_KEY, "null"));
         userFields.add(mSharedPreferences.getString(ConstantManager.USER_BIO_KEY, "null"));
+        userFields.add(mSharedPreferences.getString(ConstantManager.USER_FIO_KEY, "null"));
         return userFields;
 
     }

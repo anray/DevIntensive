@@ -46,7 +46,6 @@ import com.softdesign.devintensive.data.managers.DataManager;
 import com.softdesign.devintensive.data.managers.TextWatcherValidator;
 import com.softdesign.devintensive.utils.CircleTransform;
 import com.softdesign.devintensive.utils.ConstantManager;
-
 import com.softdesign.devintensive.utils.RoundedAvatarDrawable;
 import com.squareup.picasso.MemoryPolicy;
 import com.squareup.picasso.Picasso;
@@ -67,27 +66,48 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
     private int mCurrentEditMode = 0;
 
     private DataManager mDataManager;
-    @BindView(R.id.navigation_drawer) DrawerLayout mNavigationDrawer;
-    @BindView(R.id.fab) FloatingActionButton mFab;
-    @BindView(R.id.profile_placeholder) RelativeLayout mProfilePlaceholder;
-    @BindView(R.id.collapsing_toolbar) CollapsingToolbarLayout mCollapsingToolbar;
-    @BindView(R.id.appbar_layout) AppBarLayout mAppBarLayout;
-    @BindView(R.id.user_photo_iv) ImageView mProfileImage;
-    @BindView(R.id.send_email_iv) ImageView mProfileEmail;
-    @BindView(R.id.open_VK_profile_iv) ImageView mProfileVk;
-    @BindView(R.id.open_repository1_iv) ImageView mProfileGithub1;
-    @BindView(R.id.open_repository2_iv) ImageView mProfileGithub2;
-    @BindView(R.id.open_repository3_iv) ImageView mProfileGithub3;
-    @BindView(R.id.call) ImageView mProfileTel;
-    @BindView(R.id.main_coordinator_container) CoordinatorLayout mCoordinatorLayout;
-    @BindView(R.id.toolbar) Toolbar mToolbar;
-    @BindView(R.id.phone_et) EditText mUserPhone;
-    @BindView(R.id.email_et) EditText mUserMail;
-    @BindView(R.id.vk_profile_et) EditText mUserVk;
-    @BindView(R.id.git_repository1_et) EditText mUserGit1;
-    @BindView(R.id.git_repository2_et) EditText mUserGit2;
-    @BindView(R.id.git_repository3_et) EditText mUserGit3;
-    @BindView(R.id.aboutMyself_et) EditText mUserBio;
+    @BindView(R.id.navigation_drawer)
+    DrawerLayout mNavigationDrawer;
+    @BindView(R.id.fab)
+    FloatingActionButton mFab;
+    @BindView(R.id.profile_placeholder)
+    RelativeLayout mProfilePlaceholder;
+    @BindView(R.id.collapsing_toolbar)
+    CollapsingToolbarLayout mCollapsingToolbar;
+    @BindView(R.id.appbar_layout)
+    AppBarLayout mAppBarLayout;
+    @BindView(R.id.user_photo_iv)
+    ImageView mProfileImage;
+    @BindView(R.id.send_email_iv)
+    ImageView mProfileEmail;
+    @BindView(R.id.open_VK_profile_iv)
+    ImageView mProfileVk;
+    @BindView(R.id.open_repository1_iv)
+    ImageView mProfileGithub1;
+    @BindView(R.id.open_repository2_iv)
+    ImageView mProfileGithub2;
+    @BindView(R.id.open_repository3_iv)
+    ImageView mProfileGithub3;
+    @BindView(R.id.call)
+    ImageView mProfileTel;
+    @BindView(R.id.main_coordinator_container)
+    CoordinatorLayout mCoordinatorLayout;
+    @BindView(R.id.toolbar)
+    Toolbar mToolbar;
+    @BindView(R.id.phone_et)
+    EditText mUserPhone;
+    @BindView(R.id.email_et)
+    EditText mUserMail;
+    @BindView(R.id.vk_profile_et)
+    EditText mUserVk;
+    @BindView(R.id.git_repository1_et)
+    EditText mUserGit1;
+    @BindView(R.id.git_repository2_et)
+    EditText mUserGit2;
+    @BindView(R.id.git_repository3_et)
+    EditText mUserGit3;
+    @BindView(R.id.aboutMyself_et)
+    EditText mUserBio;
 
     @BindView(R.id.rating_tv)
     TextView mUserValueRating;
@@ -101,13 +121,11 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
     private List<TextView> mUserValueViews;
 
 
-
-
     private AppBarLayout.LayoutParams mAppBarParams = null;
     private File mPhotoFile = null;
     private Uri mSelectedImage = null;
 
-    private NavigationView navigationView;
+    private NavigationView mNavigationView;
 
     private List<EditText> mUserInfoViews;
 
@@ -119,7 +137,11 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
     private TextWatcherValidator mUserGit2Validator = null;
     private TextWatcherValidator mUserGit3Validator = null;
 
+
     private ImageView mAvatar;
+    private TextView mNavTxtNameView, mNavTxtEmailView;
+
+
 
 
     @Override
@@ -133,10 +155,18 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
         mDataManager = DataManager.getInstance();
 
 
+        //инициализация Navigation view
+        mNavigationView = (NavigationView) findViewById(R.id.navigation_view);
+
         //инициализация аватарки
-        NavigationView navigationView = (NavigationView) findViewById(R.id.navigation_view);
-        ImageView navImgView = (ImageView) navigationView.getHeaderView(0).findViewById(R.id.avatar);
-        mAvatar = navImgView;
+        mAvatar = (ImageView) mNavigationView.getHeaderView(0).findViewById(R.id.avatar);
+
+        //инициализация ФИО в drawere
+        mNavTxtNameView = (TextView) mNavigationView.getHeaderView(0).findViewById(R.id.user_name_txt);
+
+
+        //инициализация email в drawere
+        mNavTxtEmailView = (TextView) mNavigationView.getHeaderView(0).findViewById(R.id.user_email_txt);
 
 
         //mCoordinatorLayout = (CoordinatorLayout) findViewById(R.id.main_coordinator_container);
@@ -182,13 +212,13 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
          * Инициализация полей редактирования
 
 
-        mUserPhone = (EditText) findViewById(R.id.phone_et);
-        mUserMail = (EditText) findViewById(R.id.email_et);
-        mUserVk = (EditText) findViewById(R.id.vk_profile_et);
-        mUserGit1 = (EditText) findViewById(R.id.git_repository1_et);
-        mUserGit2 = (EditText) findViewById(R.id.git_repository2_et);
-        mUserGit3 = (EditText) findViewById(R.id.git_repository3_et);
-        mUserBio = (EditText) findViewById(R.id.aboutMyself_et);
+         mUserPhone = (EditText) findViewById(R.id.phone_et);
+         mUserMail = (EditText) findViewById(R.id.email_et);
+         mUserVk = (EditText) findViewById(R.id.vk_profile_et);
+         mUserGit1 = (EditText) findViewById(R.id.git_repository1_et);
+         mUserGit2 = (EditText) findViewById(R.id.git_repository2_et);
+         mUserGit3 = (EditText) findViewById(R.id.git_repository3_et);
+         mUserBio = (EditText) findViewById(R.id.aboutMyself_et);
          */
         //endregion
 
@@ -196,8 +226,6 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
         /**
          * Валидация полей
          */
-
-
 
 
         //инициализация ArrayList для сохранения в SharePrefernces
@@ -209,6 +237,8 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
         mUserInfoViews.add(mUserGit2);
         mUserInfoViews.add(mUserGit3);
         mUserInfoViews.add(mUserBio);
+
+
 
         //инициализация ArrayList для загрузки в плашку из SharePrefernces
         mUserValueViews = new ArrayList<>();
@@ -560,9 +590,13 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
      */
     private void initUserFields() {
         List<String> userData = mDataManager.getPreferencesManager().loadUserProfileData();
-        for (int i = 0; i < userData.size(); i++) {
+        for (int i = 0; i < userData.size()-1; i++) { //-1 потому что последний преференс предназначен не для EditText, а для TextView
             mUserInfoViews.get(i).setText(userData.get(i));
         }
+
+
+        mNavTxtEmailView.setText(userData.get(1)); //Установка email в drawere
+        mNavTxtNameView.setText(userData.get(userData.size()-1)); //Установка ФИО в drawere
     }
 
     /**
@@ -577,11 +611,11 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
         mDataManager.getPreferencesManager().saveUserProfileData(userData);
     }
 
-    private void initUserInfoValue(){
+    private void initUserInfoValue() {
         List<String> userInfoValues = mDataManager.getPreferencesManager().loadUserProfileValues();
         for (int i = 0; i < userInfoValues.size(); i++) {
             mUserValueViews.get(i).setText(userInfoValues.get(i));
-            Log.d(ConstantManager.TAG_PREFIX + "MainActivity",userInfoValues.get(i));
+            Log.d(ConstantManager.TAG_PREFIX + "MainActivity", userInfoValues.get(i));
         }
 
     }
@@ -841,9 +875,6 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
         Intent openBrowser = new Intent(Intent.ACTION_VIEW, Uri.parse("http://" + link));
         startActivity(Intent.createChooser(openBrowser, getString(R.string.chooser_title_openBrowser)));
     }
-
-
-
 
 
 }
