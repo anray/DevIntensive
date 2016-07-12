@@ -39,6 +39,10 @@ public class PreferencesManager {
 
     }
 
+    /**
+     * Сохраняет в SharedPreferences значения из профиля
+     * @param userFields Поля профиля пользователя
+     */
     public void saveUserProfileData(List<String> userFields) {
         SharedPreferences.Editor editor = mSharedPreferences.edit();
 
@@ -99,6 +103,8 @@ public class PreferencesManager {
         }
         editor.apply();
     }
+
+
 
 
     public Uri loadUserPhoto() {

@@ -18,7 +18,8 @@ import com.softdesign.devintensive.data.network.response.UserModelResponse;
 import com.softdesign.devintensive.utils.ConstantManager;
 import com.softdesign.devintensive.utils.NetworkStatusChecker;
 
-import java.util.Date;
+import java.util.ArrayList;
+import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -97,6 +98,7 @@ public class AuthActivity extends BaseActivity implements View.OnClickListener {
         mDataManager.getPreferencesManager().saveAuthToken(userModel.getData().getToken());
         mDataManager.getPreferencesManager().saveUserId(userModel.getData().getUser().getUserId());
         saveUserValues(userModel);
+        saveUserProfileDetails(userModel);
 
         Intent loginIntent = new Intent(this, MainActivity.class);
         startActivity(loginIntent);
@@ -145,6 +147,37 @@ public class AuthActivity extends BaseActivity implements View.OnClickListener {
         };
 
         mDataManager.getPreferencesManager().saveUserProfileValues(userValues);
+
+
+    }
+
+    private void saveUserProfileDetails(UserModelResponse userModel) {
+        List<String> userValues = new ArrayList<>();
+        userValues.add(userModel.getData().getUser().getContacts().getPhone());
+        userValues.add(userModel.getData().getUser().getContacts().getEmail());
+        userValues.add(userModel.getData().getUser().getContacts().getVk());
+
+
+        List<UserModelResponse.Repo> repo = (userModel.getData().getUser().getRepositories().getRepo());
+        for (int i = 0; i<3;i++){
+            String gitTitle = "";
+            try {
+                gitTitle = repo.get(i).getGit();
+            } catch (Exception ex) {
+                gitTitle = "No_" + (i+1) + "_git_repo";
+            }
+
+            userValues.add(gitTitle);
+
+        }
+
+//        userValues.add((userModel.getData().getUser().getRepositories().getRepo()).get(0).getGit());
+//        userValues.add((userModel.getData().getUser().getRepositories().getRepo()).get(1).getGit());
+//        userValues.add((userModel.getData().getUser().getRepositories().getRepo()).get(2).getGit());
+        userValues.add(userModel.getData().getUser().getPublicInfo().getBio());
+
+
+        mDataManager.getPreferencesManager().saveUserProfileData(userValues);
 
 
     }

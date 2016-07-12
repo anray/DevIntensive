@@ -10,6 +10,7 @@ import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.drawable.BitmapDrawable;
 import android.net.Uri;
+import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
 import android.os.SystemClock;
@@ -28,7 +29,6 @@ import android.support.v4.content.ContextCompat;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBar;
-import android.os.Bundle;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
@@ -109,6 +109,14 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
     private List<EditText> mUserInfoViews;
 
 
+    private TextWatcherValidator mPhoneValidator = null;
+    private TextWatcherValidator mUserMailValidator = null;
+    private TextWatcherValidator mUserVkValidator = null;
+    private TextWatcherValidator mUserGit1Validator = null;
+    private TextWatcherValidator mUserGit2Validator = null;
+    private TextWatcherValidator mUserGit3Validator = null;
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -179,14 +187,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
          * Валидация полей
          */
 
-        //mUserPhone.addTextChangedListener(new MaskedWatcher("+# ### ###-##-##"));
-        mUserPhone.addTextChangedListener(new TextWatcherValidator(mUserPhone, getString(R.string.validate_user_phone_error)));
-        mUserMail.addTextChangedListener(new TextWatcherValidator(mUserMail, getString(R.string.validate_user_email_error)));
-        mUserVk.addTextChangedListener(new TextWatcherValidator(mUserVk, getString(R.string.validate_user_vk_error)));
-        mUserGit1.addTextChangedListener(new TextWatcherValidator(mUserGit1, getString(R.string.validate_user_github_error)));
-        mUserGit2.addTextChangedListener(new TextWatcherValidator(mUserGit2, getString(R.string.validate_user_github_error)));
-        mUserGit3.addTextChangedListener(new TextWatcherValidator(mUserGit3, getString(R.string.validate_user_github_error)));
-        //endregion
+
 
 
         //инициализация ArrayList для сохранения в SharePrefernces
@@ -469,6 +470,24 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
 
         if (mode == 1) {
             mFab.setImageResource(R.drawable.ic_check_black_24dp);
+
+            //region Добавляем валидаторы
+            TextWatcherValidator mPhoneValidator = new TextWatcherValidator(mUserPhone, getString(R.string.validate_user_phone_error));
+            TextWatcherValidator mUserMailValidator = new TextWatcherValidator(mUserMail, getString(R.string.validate_user_email_error));
+            TextWatcherValidator mUserVkValidator = new TextWatcherValidator(mUserVk, getString(R.string.validate_user_vk_error));
+            TextWatcherValidator mUserGit1Validator = new TextWatcherValidator(mUserGit1, getString(R.string.validate_user_github_error));
+            TextWatcherValidator mUserGit2Validator = new TextWatcherValidator(mUserGit2, getString(R.string.validate_user_github_error));
+            TextWatcherValidator mUserGit3Validator = new TextWatcherValidator(mUserGit3, getString(R.string.validate_user_github_error));
+
+
+            mUserPhone.addTextChangedListener(mPhoneValidator);
+            mUserMail.addTextChangedListener(mUserMailValidator);
+            mUserVk.addTextChangedListener(mUserVkValidator);
+            mUserGit1.addTextChangedListener(mUserGit1Validator);
+            mUserGit2.addTextChangedListener(mUserGit2Validator);
+            mUserGit3.addTextChangedListener(mUserGit3Validator);
+            //endregion
+
             for (EditText userValue : mUserInfoViews) {
 
 
@@ -488,6 +507,16 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
             }
 
         } else {
+
+            //region Удаляем валидаторы с полей
+            mUserPhone.removeTextChangedListener(mPhoneValidator);
+            mUserMail.removeTextChangedListener(mUserMailValidator);
+            mUserVk.removeTextChangedListener(mUserVkValidator);
+            mUserGit1.removeTextChangedListener(mUserGit1Validator);
+            mUserGit2.removeTextChangedListener(mUserGit2Validator);
+            mUserGit3.removeTextChangedListener(mUserGit3Validator);
+            //endregion
+
             mFab.setImageResource(R.drawable.ic_mode_edit_black_24dp);
             for (EditText userValue : mUserInfoViews) {
 
@@ -792,6 +821,9 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
         Intent openBrowser = new Intent(Intent.ACTION_VIEW, Uri.parse("http://" + link));
         startActivity(Intent.createChooser(openBrowser, getString(R.string.chooser_title_openBrowser)));
     }
+
+
+
 
 
 }

@@ -47,9 +47,9 @@ public class UserModelResponse {
         @SerializedName("profileValues")
         @Expose
         private ProfileValues profileValues;
-        @SerializedName("privateInfo")
+        @SerializedName("publicInfo")
         @Expose
-        private privateInfo privateInfo;
+        private PublicInfo publicInfo;
         @SerializedName("specialization")
         @Expose
         private String specialization;
@@ -67,6 +67,26 @@ public class UserModelResponse {
         public ProfileValues getProfileValues() {
             return profileValues;
         }
+
+        public String getFirstName() {
+            return firstName;
+        }
+
+        public String getSecondName() {
+            return secondName;
+        }
+
+        public Repositories getRepositories() {
+            return repositories;
+        }
+
+        public Contacts getContacts() {
+            return contacts;
+        }
+
+        public PublicInfo getPublicInfo() {
+            return publicInfo;
+        }
     }
 
     public class Repositories {
@@ -78,6 +98,9 @@ public class UserModelResponse {
         @Expose
         private String updated;
 
+        public List<Repo> getRepo() {
+            return repo;
+        }
     }
 
     public class Repo {
@@ -92,9 +115,12 @@ public class UserModelResponse {
         @Expose
         private String title;
 
+        public String getGit() {
+            return git;
+        }
     }
 
-    public class privateInfo {
+    public class PublicInfo {
 
         @SerializedName("bio")
         @Expose
@@ -109,6 +135,17 @@ public class UserModelResponse {
         @Expose
         private String updated;
 
+        public String getBio() {
+            return bio;
+        }
+
+        public String getAvatar() {
+            return avatar;
+        }
+
+        public String getPhoto() {
+            return photo;
+        }
     }
 
     public class ProfileValues {
@@ -175,6 +212,17 @@ public class UserModelResponse {
         @Expose
         private String updated;
 
+        public String getVk() {
+            return vk;
+        }
+
+        public String getPhone() {
+            return phone;
+        }
+
+        public String getEmail() {
+            return email;
+        }
     }
 
 }
