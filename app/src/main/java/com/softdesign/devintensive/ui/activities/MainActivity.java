@@ -10,6 +10,7 @@ import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.drawable.BitmapDrawable;
 import android.net.Uri;
+import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
 import android.os.SystemClock;
@@ -28,7 +29,6 @@ import android.support.v4.content.ContextCompat;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBar;
-import android.os.Bundle;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
@@ -39,12 +39,15 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
+import android.widget.TextView;
 
 import com.softdesign.devintensive.R;
 import com.softdesign.devintensive.data.managers.DataManager;
 import com.softdesign.devintensive.data.managers.TextWatcherValidator;
+import com.softdesign.devintensive.utils.CircleTransform;
 import com.softdesign.devintensive.utils.ConstantManager;
 import com.softdesign.devintensive.utils.RoundedAvatarDrawable;
+import com.squareup.picasso.MemoryPolicy;
 import com.squareup.picasso.Picasso;
 
 import java.io.File;
@@ -63,37 +66,82 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
     private int mCurrentEditMode = 0;
 
     private DataManager mDataManager;
-    @BindView(R.id.navigation_drawer) DrawerLayout mNavigationDrawer;
-    @BindView(R.id.fab) FloatingActionButton mFab;
-    @BindView(R.id.profile_placeholder) RelativeLayout mProfilePlaceholder;
-    @BindView(R.id.collapsing_toolbar) CollapsingToolbarLayout mCollapsingToolbar;
-    @BindView(R.id.appbar_layout) AppBarLayout mAppBarLayout;
-    @BindView(R.id.user_photo_iv) ImageView mProfileImage;
-    @BindView(R.id.send_email_iv) ImageView mProfileEmail;
-    @BindView(R.id.open_VK_profile_iv) ImageView mProfileVk;
-    @BindView(R.id.open_repository1_iv) ImageView mProfileGithub1;
-    @BindView(R.id.open_repository2_iv) ImageView mProfileGithub2;
-    @BindView(R.id.open_repository3_iv) ImageView mProfileGithub3;
-    @BindView(R.id.call) ImageView mProfileTel;
-    @BindView(R.id.main_coordinator_container) CoordinatorLayout mCoordinatorLayout;
-    @BindView(R.id.toolbar) Toolbar mToolbar;
-    @BindView(R.id.phone_et) EditText mUserPhone;
-    @BindView(R.id.email_et) EditText mUserMail;
-    @BindView(R.id.vk_profile_et) EditText mUserVk;
-    @BindView(R.id.git_repository1_et) EditText mUserGit1;
-    @BindView(R.id.git_repository2_et) EditText mUserGit2;
-    @BindView(R.id.git_repository3_et) EditText mUserGit3;
-    @BindView(R.id.aboutMyself_et) EditText mUserBio;
+    @BindView(R.id.navigation_drawer)
+    DrawerLayout mNavigationDrawer;
+    @BindView(R.id.fab)
+    FloatingActionButton mFab;
+    @BindView(R.id.profile_placeholder)
+    RelativeLayout mProfilePlaceholder;
+    @BindView(R.id.collapsing_toolbar)
+    CollapsingToolbarLayout mCollapsingToolbar;
+    @BindView(R.id.appbar_layout)
+    AppBarLayout mAppBarLayout;
+    @BindView(R.id.user_photo_iv)
+    ImageView mProfileImage;
+    @BindView(R.id.send_email_iv)
+    ImageView mProfileEmail;
+    @BindView(R.id.open_VK_profile_iv)
+    ImageView mProfileVk;
+    @BindView(R.id.open_repository1_iv)
+    ImageView mProfileGithub1;
+    @BindView(R.id.open_repository2_iv)
+    ImageView mProfileGithub2;
+    @BindView(R.id.open_repository3_iv)
+    ImageView mProfileGithub3;
+    @BindView(R.id.call)
+    ImageView mProfileTel;
+    @BindView(R.id.main_coordinator_container)
+    CoordinatorLayout mCoordinatorLayout;
+    @BindView(R.id.toolbar)
+    Toolbar mToolbar;
+    @BindView(R.id.phone_et)
+    EditText mUserPhone;
+    @BindView(R.id.email_et)
+    EditText mUserMail;
+    @BindView(R.id.vk_profile_et)
+    EditText mUserVk;
+    @BindView(R.id.git_repository1_et)
+    EditText mUserGit1;
+    @BindView(R.id.git_repository2_et)
+    EditText mUserGit2;
+    @BindView(R.id.git_repository3_et)
+    EditText mUserGit3;
+    @BindView(R.id.aboutMyself_et)
+    EditText mUserBio;
 
+    @BindView(R.id.rating_tv)
+    TextView mUserValueRating;
+
+    @BindView(R.id.projects_tv)
+    TextView mUserValueProjects;
+
+    @BindView(R.id.numOfCodeLines_tv)
+    TextView mUserValueCodeLines;
+
+    private List<TextView> mUserValueViews;
 
 
     private AppBarLayout.LayoutParams mAppBarParams = null;
     private File mPhotoFile = null;
     private Uri mSelectedImage = null;
 
-    private NavigationView navigationView;
+    private NavigationView mNavigationView;
 
     private List<EditText> mUserInfoViews;
+
+
+    private TextWatcherValidator mPhoneValidator = null;
+    private TextWatcherValidator mUserMailValidator = null;
+    private TextWatcherValidator mUserVkValidator = null;
+    private TextWatcherValidator mUserGit1Validator = null;
+    private TextWatcherValidator mUserGit2Validator = null;
+    private TextWatcherValidator mUserGit3Validator = null;
+
+
+    private ImageView mAvatar;
+    private TextView mNavTxtNameView, mNavTxtEmailView;
+
+
 
 
     @Override
@@ -105,6 +153,20 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
 
         //инициализация синглтона
         mDataManager = DataManager.getInstance();
+
+
+        //инициализация Navigation view
+        mNavigationView = (NavigationView) findViewById(R.id.navigation_view);
+
+        //инициализация аватарки
+        mAvatar = (ImageView) mNavigationView.getHeaderView(0).findViewById(R.id.avatar);
+
+        //инициализация ФИО в drawere
+        mNavTxtNameView = (TextView) mNavigationView.getHeaderView(0).findViewById(R.id.user_name_txt);
+
+
+        //инициализация email в drawere
+        mNavTxtEmailView = (TextView) mNavigationView.getHeaderView(0).findViewById(R.id.user_email_txt);
 
 
         //mCoordinatorLayout = (CoordinatorLayout) findViewById(R.id.main_coordinator_container);
@@ -150,13 +212,13 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
          * Инициализация полей редактирования
 
 
-        mUserPhone = (EditText) findViewById(R.id.phone_et);
-        mUserMail = (EditText) findViewById(R.id.email_et);
-        mUserVk = (EditText) findViewById(R.id.vk_profile_et);
-        mUserGit1 = (EditText) findViewById(R.id.git_repository1_et);
-        mUserGit2 = (EditText) findViewById(R.id.git_repository2_et);
-        mUserGit3 = (EditText) findViewById(R.id.git_repository3_et);
-        mUserBio = (EditText) findViewById(R.id.aboutMyself_et);
+         mUserPhone = (EditText) findViewById(R.id.phone_et);
+         mUserMail = (EditText) findViewById(R.id.email_et);
+         mUserVk = (EditText) findViewById(R.id.vk_profile_et);
+         mUserGit1 = (EditText) findViewById(R.id.git_repository1_et);
+         mUserGit2 = (EditText) findViewById(R.id.git_repository2_et);
+         mUserGit3 = (EditText) findViewById(R.id.git_repository3_et);
+         mUserBio = (EditText) findViewById(R.id.aboutMyself_et);
          */
         //endregion
 
@@ -164,15 +226,6 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
         /**
          * Валидация полей
          */
-
-        //mUserPhone.addTextChangedListener(new MaskedWatcher("+# ### ###-##-##"));
-        mUserPhone.addTextChangedListener(new TextWatcherValidator(mUserPhone, getString(R.string.validate_user_phone_error)));
-        mUserMail.addTextChangedListener(new TextWatcherValidator(mUserMail, getString(R.string.validate_user_email_error)));
-        mUserVk.addTextChangedListener(new TextWatcherValidator(mUserVk, getString(R.string.validate_user_vk_error)));
-        mUserGit1.addTextChangedListener(new TextWatcherValidator(mUserGit1, getString(R.string.validate_user_github_error)));
-        mUserGit2.addTextChangedListener(new TextWatcherValidator(mUserGit2, getString(R.string.validate_user_github_error)));
-        mUserGit3.addTextChangedListener(new TextWatcherValidator(mUserGit3, getString(R.string.validate_user_github_error)));
-        //endregion
 
 
         //инициализация ArrayList для сохранения в SharePrefernces
@@ -186,17 +239,36 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
         mUserInfoViews.add(mUserBio);
 
 
+
+        //инициализация ArrayList для загрузки в плашку из SharePrefernces
+        mUserValueViews = new ArrayList<>();
+        mUserValueViews.add(mUserValueRating);
+        mUserValueViews.add(mUserValueCodeLines);
+        mUserValueViews.add(mUserValueProjects);
+
         setupToolbar();
         setupDrawer();
 
         //region загрузка из Shared Preferences содержимого
-        loadUserInfoValue();
+        initUserFields();
+        initUserInfoValue();
+
         Picasso.with(this)
                 .load(mDataManager.getPreferencesManager().loadUserPhoto())
+                .memoryPolicy(MemoryPolicy.NO_CACHE)
                 .resize(768, 512)
                 .centerCrop()
                 .placeholder(R.drawable.user_bg)
                 .into(mProfileImage);
+
+        Picasso.with(mNavigationDrawer.getContext())
+                .load(mDataManager.getPreferencesManager().loadUserAvatar())
+                .memoryPolicy(MemoryPolicy.NO_CACHE)
+                .resize(120, 120)
+                .centerCrop()
+                .placeholder(R.drawable.user_bg)
+                .transform(new CircleTransform())
+                .into(mAvatar);
         //endregion
 
 
@@ -205,7 +277,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
         if (savedInstanceState == null) {
 
             //активити ни разу не запускалось
-            //saveUserInfoValue();
+            //saveUserFields();
             //showSnackbar("активити ни разу не запускалось");
             //showToast("активити ни разу не запускалось");
 
@@ -255,14 +327,14 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
     protected void onResume() {
         super.onResume();
         Log.d(TAG, "onResume");
-        //loadUserInfoValue();
+        //initUserFields();
     }
 
     @Override
     protected void onPause() {
         super.onPause();
         Log.d(TAG, "onPause");
-        saveUserInfoValue();
+        saveUserFields();
 
     }
 
@@ -283,7 +355,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
     protected void onRestart() {
         super.onRestart();
         Log.d(TAG, "onRestart");
-        loadUserInfoValue();
+        initUserFields();
     }
 
     /**
@@ -348,7 +420,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
             @Override
             public void run() {
                 //TODO: Выполнить с задержкой
-                hideProgess();
+                hideProgress();
             }
         }, 5000);
 
@@ -448,6 +520,24 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
 
         if (mode == 1) {
             mFab.setImageResource(R.drawable.ic_check_black_24dp);
+
+            //region Добавляем валидаторы
+            TextWatcherValidator mPhoneValidator = new TextWatcherValidator(mUserPhone, getString(R.string.validate_user_phone_error));
+            TextWatcherValidator mUserMailValidator = new TextWatcherValidator(mUserMail, getString(R.string.validate_user_email_error));
+            TextWatcherValidator mUserVkValidator = new TextWatcherValidator(mUserVk, getString(R.string.validate_user_vk_error));
+            TextWatcherValidator mUserGit1Validator = new TextWatcherValidator(mUserGit1, getString(R.string.validate_user_github_error));
+            TextWatcherValidator mUserGit2Validator = new TextWatcherValidator(mUserGit2, getString(R.string.validate_user_github_error));
+            TextWatcherValidator mUserGit3Validator = new TextWatcherValidator(mUserGit3, getString(R.string.validate_user_github_error));
+
+
+            mUserPhone.addTextChangedListener(mPhoneValidator);
+            mUserMail.addTextChangedListener(mUserMailValidator);
+            mUserVk.addTextChangedListener(mUserVkValidator);
+            mUserGit1.addTextChangedListener(mUserGit1Validator);
+            mUserGit2.addTextChangedListener(mUserGit2Validator);
+            mUserGit3.addTextChangedListener(mUserGit3Validator);
+            //endregion
+
             for (EditText userValue : mUserInfoViews) {
 
 
@@ -467,6 +557,16 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
             }
 
         } else {
+
+            //region Удаляем валидаторы с полей
+            mUserPhone.removeTextChangedListener(mPhoneValidator);
+            mUserMail.removeTextChangedListener(mUserMailValidator);
+            mUserVk.removeTextChangedListener(mUserVkValidator);
+            mUserGit1.removeTextChangedListener(mUserGit1Validator);
+            mUserGit2.removeTextChangedListener(mUserGit2Validator);
+            mUserGit3.removeTextChangedListener(mUserGit3Validator);
+            //endregion
+
             mFab.setImageResource(R.drawable.ic_mode_edit_black_24dp);
             for (EditText userValue : mUserInfoViews) {
 
@@ -479,7 +579,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
 
                 mCollapsingToolbar.setExpandedTitleColor(getResources().getColor(R.color.white));
 
-                saveUserInfoValue();
+                saveUserFields();
             }
         }
 
@@ -488,23 +588,36 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
     /**
      * загружает содержимое полей из SharedPrefernces и устанавливает их полям
      */
-    private void loadUserInfoValue() {
+    private void initUserFields() {
         List<String> userData = mDataManager.getPreferencesManager().loadUserProfileData();
-        for (int i = 0; i < userData.size(); i++) {
+        for (int i = 0; i < userData.size()-1; i++) { //-1 потому что последний преференс предназначен не для EditText, а для TextView
             mUserInfoViews.get(i).setText(userData.get(i));
         }
+
+
+        mNavTxtEmailView.setText(userData.get(1)); //Установка email в drawere
+        mNavTxtNameView.setText(userData.get(userData.size()-1)); //Установка ФИО в drawere
     }
 
     /**
      * сохраняет содержимое полей в SharedPrefernces
      */
 
-    private void saveUserInfoValue() {
+    private void saveUserFields() {
         List<String> userData = new ArrayList<>();
         for (EditText userFieldView : mUserInfoViews) {
             userData.add(userFieldView.getText().toString());
         }
         mDataManager.getPreferencesManager().saveUserProfileData(userData);
+    }
+
+    private void initUserInfoValue() {
+        List<String> userInfoValues = mDataManager.getPreferencesManager().loadUserProfileValues();
+        for (int i = 0; i < userInfoValues.size(); i++) {
+            mUserValueViews.get(i).setText(userInfoValues.get(i));
+            Log.d(ConstantManager.TAG_PREFIX + "MainActivity", userInfoValues.get(i));
+        }
+
     }
 
     /**

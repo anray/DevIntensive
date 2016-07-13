@@ -16,10 +16,10 @@ public class TextWatcherValidator implements TextWatcher {
 
     private EditText mEditText;
     private String mErrorMessage;
-    private final Pattern mPhoneRegex = Pattern.compile("^\\d{11,20}$");
+    private final Pattern mPhoneRegex = Pattern.compile("^(\\d{11,20}|\\+[\\d]\\(\\d{3}\\)\\d{3}-\\d{2}-\\d{2,6})$");
     private final Pattern mEmailRegex = Pattern.compile("^[\\w]{3,}@[\\w]{2,}\\.[\\w]{2,3}$");
-    private final Pattern mVkRegex = Pattern.compile("^vk\\.com\\/\\w{3,}$");
-    private final Pattern mGithubRegex = Pattern.compile("^github\\.com\\/\\w{3,}$");
+    private final Pattern mVkRegex = Pattern.compile("^vk\\.com[\\\\\\/]\\w{3,}$");
+    private final Pattern mGithubRegex = Pattern.compile("^(github\\.com[\\\\\\/]\\w{3,}[\\\\\\/]\\w{3,}|No_[\\d]_git_repo)$");
 
 
     private boolean isValid(CharSequence s, Pattern regEx) {
@@ -53,7 +53,7 @@ public class TextWatcherValidator implements TextWatcher {
         String result = s.toString().replaceAll(" ", "");
         if (!s.toString().equals(result)) {
             mEditText.setText(result);
-            mEditText.setSelection(result.length());
+            mEditText.setSelection(result.length()); //ставит курсор справа
         }
 
         switch (mEditText.getId()) {
@@ -61,6 +61,7 @@ public class TextWatcherValidator implements TextWatcher {
                 //выводим ссобщение об ошибке если не совпадает с Regex
                 if (!isValid(mEditText.getText().toString(), mPhoneRegex)) {
                     mEditText.setError(mErrorMessage);
+
 
                 }
                 break;
@@ -74,10 +75,15 @@ public class TextWatcherValidator implements TextWatcher {
             case R.id.vk_profile_et:
                 //удаляем все до vk.com
                 try { //try нужен для того чтобы можно было удалить vk.com
-                    result = result.substring(result.toString().indexOf("vk.com"), result.length());
+                    result = result.substring(result.indexOf("vk.com"), result.length());
+                    
+
                 } catch (Exception e) {
 
                 }
+
+                //применяем все фильтры к строке
+                mEditText.setText(result);
 
                 //выводим ссобщение об ошибке если не совпадает с Regex
                 if (!isValid(mEditText.getText().toString(), mVkRegex)) {
@@ -90,20 +96,24 @@ public class TextWatcherValidator implements TextWatcher {
             case R.id.git_repository3_et:
                 //удаляем все до github.com
                 try { //try нужен для того чтобы можно было удалить github.com
-                    result = result.substring(result.toString().indexOf("github.com"), result.length());
+                    result = result.substring(result.indexOf("github.com"), result.length());
+
                 } catch (Exception e) {
 
                 }
+
+                //применяем все фильтры к строке
+                mEditText.setText(result);
 
                 //выводим ссобщение об ошибке если не совпадает с Regex
                 if (!isValid(mEditText.getText().toString(), mGithubRegex)) {
                     mEditText.setError(mErrorMessage);
                 }
                 break;
-
-
-
         }
+
+
+
 
 
     }
