@@ -290,6 +290,10 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
             changeEditMode(mCurrentEditMode);
         }
 
+        //добавляем валидаторы для UserInfoValues чтобы валидация сработала на загруженные поля
+        //и тут же удаляем чтобы память не кушала
+        addValidators();
+        removeValidators();
 
     }
 
@@ -521,22 +525,10 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
         if (mode == 1) {
             mFab.setImageResource(R.drawable.ic_check_black_24dp);
 
-            //region Добавляем валидаторы
-            TextWatcherValidator mPhoneValidator = new TextWatcherValidator(mUserPhone, getString(R.string.validate_user_phone_error));
-            TextWatcherValidator mUserMailValidator = new TextWatcherValidator(mUserMail, getString(R.string.validate_user_email_error));
-            TextWatcherValidator mUserVkValidator = new TextWatcherValidator(mUserVk, getString(R.string.validate_user_vk_error));
-            TextWatcherValidator mUserGit1Validator = new TextWatcherValidator(mUserGit1, getString(R.string.validate_user_github_error));
-            TextWatcherValidator mUserGit2Validator = new TextWatcherValidator(mUserGit2, getString(R.string.validate_user_github_error));
-            TextWatcherValidator mUserGit3Validator = new TextWatcherValidator(mUserGit3, getString(R.string.validate_user_github_error));
+            //Добавляем валидаторы
+           addValidators();
 
 
-            mUserPhone.addTextChangedListener(mPhoneValidator);
-            mUserMail.addTextChangedListener(mUserMailValidator);
-            mUserVk.addTextChangedListener(mUserVkValidator);
-            mUserGit1.addTextChangedListener(mUserGit1Validator);
-            mUserGit2.addTextChangedListener(mUserGit2Validator);
-            mUserGit3.addTextChangedListener(mUserGit3Validator);
-            //endregion
 
             for (EditText userValue : mUserInfoViews) {
 
@@ -551,21 +543,16 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
                 mUserPhone.requestFocus();
 
                 //region это нужно чтобы показывалась клавиатура
-                mUserPhone.dispatchTouchEvent(MotionEvent.obtain(SystemClock.uptimeMillis(), SystemClock.uptimeMillis(), MotionEvent.ACTION_DOWN, 0, 0, 0));
-                mUserPhone.dispatchTouchEvent(MotionEvent.obtain(SystemClock.uptimeMillis(), SystemClock.uptimeMillis(), MotionEvent.ACTION_UP, 0, 0, 0));
+//                mUserPhone.dispatchTouchEvent(MotionEvent.obtain(SystemClock.uptimeMillis(), SystemClock.uptimeMillis(), MotionEvent.ACTION_DOWN, 0, 0, 0));
+//                mUserPhone.dispatchTouchEvent(MotionEvent.obtain(SystemClock.uptimeMillis(), SystemClock.uptimeMillis(), MotionEvent.ACTION_UP, 0, 0, 0));
                 //endregion
             }
 
         } else {
 
-            //region Удаляем валидаторы с полей
-            mUserPhone.removeTextChangedListener(mPhoneValidator);
-            mUserMail.removeTextChangedListener(mUserMailValidator);
-            mUserVk.removeTextChangedListener(mUserVkValidator);
-            mUserGit1.removeTextChangedListener(mUserGit1Validator);
-            mUserGit2.removeTextChangedListener(mUserGit2Validator);
-            mUserGit3.removeTextChangedListener(mUserGit3Validator);
-            //endregion
+            //Удаляем валидаторы с полей
+           removeValidators();
+
 
             mFab.setImageResource(R.drawable.ic_mode_edit_black_24dp);
             for (EditText userValue : mUserInfoViews) {
@@ -590,7 +577,11 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
      */
     private void initUserFields() {
         List<String> userData = mDataManager.getPreferencesManager().loadUserProfileData();
-        for (int i = 0; i < userData.size()-1; i++) { //-1 потому что последний преференс предназначен не для EditText, а для TextView
+//        for (int i = 0; i < userData.size()-1; i++) { //нужно уменьшить на 1 потому что в сохраненном листе больше полей, чем в листе EditText-ов
+//            mUserInfoViews.get(i).setText(userData.get(i));
+//        }
+
+        for (int i = 0; i < mUserInfoViews.size(); i++ ) {
             mUserInfoViews.get(i).setText(userData.get(i));
         }
 
@@ -608,6 +599,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
         for (EditText userFieldView : mUserInfoViews) {
             userData.add(userFieldView.getText().toString());
         }
+        userData.add(mNavTxtNameView.getText().toString());
         mDataManager.getPreferencesManager().saveUserProfileData(userData);
     }
 
@@ -876,5 +868,39 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
         startActivity(Intent.createChooser(openBrowser, getString(R.string.chooser_title_openBrowser)));
     }
 
+    private void addValidators(){
+
+        TextWatcherValidator mPhoneValidator = new TextWatcherValidator(mUserPhone, getString(R.string.validate_user_phone_error));
+        TextWatcherValidator mUserMailValidator = new TextWatcherValidator(mUserMail, getString(R.string.validate_user_email_error));
+        TextWatcherValidator mUserVkValidator = new TextWatcherValidator(mUserVk, getString(R.string.validate_user_vk_error));
+        TextWatcherValidator mUserGit1Validator = new TextWatcherValidator(mUserGit1, getString(R.string.validate_user_github_error));
+        TextWatcherValidator mUserGit2Validator = new TextWatcherValidator(mUserGit2, getString(R.string.validate_user_github_error));
+        TextWatcherValidator mUserGit3Validator = new TextWatcherValidator(mUserGit3, getString(R.string.validate_user_github_error));
+
+
+        mUserPhone.addTextChangedListener(mPhoneValidator);
+        mUserMail.addTextChangedListener(mUserMailValidator);
+        mUserVk.addTextChangedListener(mUserVkValidator);
+        mUserGit1.addTextChangedListener(mUserGit1Validator);
+        mUserGit2.addTextChangedListener(mUserGit2Validator);
+        mUserGit3.addTextChangedListener(mUserGit3Validator);
+
+        //нужно чтобы валидация сработала
+        mUserPhone.setText(mUserPhone.getText());
+        mUserMail.setText(mUserMail.getText());
+        mUserVk.setText(mUserVk.getText());
+        mUserGit1.setText(mUserGit1.getText());
+        mUserGit2.setText(mUserGit2.getText());
+        mUserGit3.setText(mUserGit3.getText());
+    }
+
+    private void removeValidators(){
+        mUserPhone.removeTextChangedListener(mPhoneValidator);
+        mUserMail.removeTextChangedListener(mUserMailValidator);
+        mUserVk.removeTextChangedListener(mUserVkValidator);
+        mUserGit1.removeTextChangedListener(mUserGit1Validator);
+        mUserGit2.removeTextChangedListener(mUserGit2Validator);
+        mUserGit3.removeTextChangedListener(mUserGit3Validator);
+    }
 
 }
