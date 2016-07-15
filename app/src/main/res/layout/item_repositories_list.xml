@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/spacing_larger_72">
+
+
+    <android.support.design.widget.TextInputLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginRight="@dimen/spacing_larger_72"
+        android:layout_centerVertical="true"
+        >
+
+        <EditText
+            android:id="@+id/github_et"
+            style="@style/infoField_et"
+            android:hint="@string/repository"
+            android:inputType="textUri"
+            android:text="github.com/anray/DevIntensive"
+            />
+
+    </android.support.design.widget.TextInputLayout>
+
+    <ImageView
+        android:id="@+id/open_repository1_iv"
+        style="@style/icon.right"
+        android:src="@drawable/eye"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true"
+        android:layout_centerVertical="true"
+
+        />
+
+</RelativeLayout>

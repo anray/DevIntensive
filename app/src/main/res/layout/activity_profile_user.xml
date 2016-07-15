@@ -1,26 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 
-<android.support.v4.widget.DrawerLayout
+
+<android.support.design.widget.CoordinatorLayout
+
+    android:id="@+id/user_info_main_coordinator_container"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:fitsSystemWindows="true"
 
     xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/navigation_drawer"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:fitsSystemWindows="true"
-    tools:context=".ui.activities.MainActivity"
-    >
-
-
-    <android.support.design.widget.CoordinatorLayout
-
-        android:id="@+id/main_coordinator_container"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:fitsSystemWindows="true"
-
-        >
+    xmlns:app="http://schemas.android.com/apk/res-auto">
 
         <android.support.design.widget.AppBarLayout
             android:id="@+id/appbar_layout"
@@ -32,18 +21,14 @@
             >
 
             <android.support.design.widget.CollapsingToolbarLayout
-                android:id="@+id/collapsing_toolbar"
+                android:id="@+id/user_info_collapsing_toolbar"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 app:contentScrim="@color/color_primary"
                 app:layout_scrollFlags="scroll|exitUntilCollapsed"
                 >
 
-                <FrameLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="@dimen/size_toolbar_image_256"
-                    android:fitsSystemWindows="true"
-                    >
+
 
                     <ImageView
                         android:id="@+id/user_info_user_photo_iv"
@@ -51,51 +36,22 @@
                         android:layout_height="@dimen/size_toolbar_image_256"
                         android:fitsSystemWindows="true"
                         android:scaleType="centerCrop"
-                        android:src="@drawable/profile"
+                        android:src="@drawable/user_bg"
                         />
 
-                    <RelativeLayout
-                        android:id="@+id/profile_placeholder"
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:background="@color/grey_background"
-                        android:visibility="gone"
-                        >
 
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="@string/user_profile.placeholder.image"
-                            android:textColor="@color/white"
-                            android:fontFamily="sans-serif-medium"
-                            android:layout_centerHorizontal="true"
-                            android:layout_above="@+id/photo_placeholder"
-                            android:layout_marginBottom="@dimen/spacing_small_8"
-                            />
 
-                        <ImageView
-                            android:id="@+id/photo_placeholder"
-                            android:layout_width="@dimen/placeholder_photo_size_90"
-                            android:layout_height="@dimen/placeholder_photo_size_90"
-                            android:scaleType="centerCrop"
-                            android:src="@drawable/add_a_photo_48px"
-                            android:layout_centerHorizontal="true"
-                            android:layout_alignParentBottom="true"
-                            android:layout_marginBottom="@dimen/spacing_large_56"
-                            />
-
-                    </RelativeLayout>
-
-                </FrameLayout>
 
 
                 <android.support.v7.widget.Toolbar
                     android:id="@+id/user_info_toolbar"
                     android:layout_width="match_parent"
                     android:layout_height="?attr/actionBarSize"
-                    android:theme="@style/AppTheme.PopupOverlay"
+
                     android:titleTextColor="@color/white"
                     app:layout_collapseMode="pin"
+                    app:popupTheme="@style/AppTheme.PopupOverlay"
+                    app:theme="@style/ToolBarStyle"
                     />
 
 
@@ -180,27 +136,9 @@
 
         </LinearLayout>
 
-        <include layout="@layout/user_profile_content"/>
+        <include layout="@layout/static_profile_content"/>
 
-        <android.support.design.widget.FloatingActionButton
-            android:id="@+id/fab"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginRight="@dimen/spacing_fab_right"
-            android:src="@drawable/ic_mode_edit_black_24dp"
-            app:layout_anchor="@id/appbar_layout"
-            app:layout_anchorGravity="right|bottom"
-            />
+
 
     </android.support.design.widget.CoordinatorLayout>
 
-    <android.support.design.widget.NavigationView
-        android:id="@+id/navigation_view"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_gravity="left"
-        app:headerLayout="@layout/drawer_header"
-        app:menu="@menu/drawer_menu"
-        />
-
-</android.support.v4.widget.DrawerLayout>

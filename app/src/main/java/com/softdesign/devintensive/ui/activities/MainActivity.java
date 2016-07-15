@@ -13,7 +13,6 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
-import android.os.SystemClock;
 import android.provider.MediaStore;
 import android.provider.Settings;
 import android.support.annotation.NonNull;
@@ -33,7 +32,6 @@ import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.MenuItem;
-import android.view.MotionEvent;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -76,7 +74,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
     CollapsingToolbarLayout mCollapsingToolbar;
     @BindView(R.id.appbar_layout)
     AppBarLayout mAppBarLayout;
-    @BindView(R.id.user_photo_iv)
+    @BindView(R.id.user_info_user_photo_iv)
     ImageView mProfileImage;
     @BindView(R.id.send_email_iv)
     ImageView mProfileEmail;
@@ -92,7 +90,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
     ImageView mProfileTel;
     @BindView(R.id.main_coordinator_container)
     CoordinatorLayout mCoordinatorLayout;
-    @BindView(R.id.toolbar)
+    @BindView(R.id.user_info_toolbar)
     Toolbar mToolbar;
     @BindView(R.id.phone_et)
     EditText mUserPhone;
@@ -106,16 +104,16 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
     EditText mUserGit2;
     @BindView(R.id.git_repository3_et)
     EditText mUserGit3;
-    @BindView(R.id.aboutMyself_et)
+    @BindView(R.id.user_info_aboutMyself_et)
     EditText mUserBio;
 
-    @BindView(R.id.rating_tv)
+    @BindView(R.id.user_info_rating_tv)
     TextView mUserValueRating;
 
-    @BindView(R.id.projects_tv)
+    @BindView(R.id.user_info_projects_tv)
     TextView mUserValueProjects;
 
-    @BindView(R.id.numOfCodeLines_tv)
+    @BindView(R.id.user_info_numOfCodeLines_tv)
     TextView mUserValueCodeLines;
 
     private List<TextView> mUserValueViews;
@@ -885,7 +883,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
         mUserGit2.addTextChangedListener(mUserGit2Validator);
         mUserGit3.addTextChangedListener(mUserGit3Validator);
 
-        //нужно чтобы валидация сработала
+        //нужно чтобы валидация сработала сразу после добавления Watcher-а
         mUserPhone.setText(mUserPhone.getText());
         mUserMail.setText(mUserMail.getText());
         mUserVk.setText(mUserVk.getText());

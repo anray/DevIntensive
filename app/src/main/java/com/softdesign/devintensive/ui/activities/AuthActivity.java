@@ -69,6 +69,7 @@ public class AuthActivity extends BaseActivity implements View.OnClickListener {
                 //openMainActivity();
                 signIn();
 
+
                 break;
             case R.id.forgot_password_tv:
                 forgotPassword();
@@ -102,7 +103,7 @@ public class AuthActivity extends BaseActivity implements View.OnClickListener {
         saveUserProfileImage(userModel);
         saveUserAvatarImage(userModel);
 
-        Intent loginIntent = new Intent(this, MainActivity.class);
+        Intent loginIntent = new Intent(this, UserListActivity.class);
         startActivity(loginIntent);
     }
 
