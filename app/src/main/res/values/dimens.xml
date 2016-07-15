@@ -45,6 +45,7 @@
     <dimen name="font_huge_20">20sp</dimen>
     <dimen name="font_huge_24">24sp</dimen>
     <dimen name="login_card_width_240">240dp</dimen>
+    <dimen name="spacing_button_6">6dp</dimen>
 
 
 </resources>

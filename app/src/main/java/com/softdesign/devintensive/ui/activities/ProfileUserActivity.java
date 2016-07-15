@@ -8,9 +8,11 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
 
@@ -61,6 +63,8 @@ public class ProfileUserActivity extends AppCompatActivity {
         setContentView(R.layout.activity_profile_user);
         ButterKnife.bind(this);
 
+
+
         setupToolbar();
         initProfileData();
     }
@@ -86,12 +90,13 @@ public class ProfileUserActivity extends AppCompatActivity {
         final RepositoriesAdapter repositoriesAdapter = new RepositoriesAdapter(this,repositories);
 
         mRepoListView.setAdapter(repositoriesAdapter);
+        setListViewHeightBasedOnChildren(mRepoListView);
 
         mRepoListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 Snackbar.make(mCoordinatorLayout,"Репозиторий " + repositories.get(position), Snackbar.LENGTH_LONG).show();
-                // TODO: 15.07.2016 Реализовать просмотр репозитория 
+                // TODO: 15.07.2016 Реализовать просмотр репозитория
             }
         });
 
@@ -104,10 +109,37 @@ public class ProfileUserActivity extends AppCompatActivity {
 
         Picasso.with(this)
                 .load(userDTO.getPhoto())
+                .resize(768,512)
                 .placeholder(R.drawable.user_bg)
                 .error(R.drawable.user_bg)
                 .into(mProfileImage);
 
 
+    }
+
+    public static void setListViewHeightBasedOnChildren(ListView listView) {
+        ListAdapter listAdapter = listView.getAdapter();
+        if (listAdapter == null)
+            return;
+
+//        int desiredWidth = View.MeasureSpec.makeMeasureSpec(listView.getWidth(), View.MeasureSpec.UNSPECIFIED);
+//        int totalHeight = 0;
+//        View view = null;
+//        for (int i = 0; i < listAdapter.getCount(); i++) {
+//            view = listAdapter.getView(i, view, listView);
+//            if (i == 0)
+//                view.setLayoutParams(new ViewGroup.LayoutParams(desiredWidth, ViewGroup.LayoutParams.WRAP_CONTENT));
+//
+//            view.measure(desiredWidth, View.MeasureSpec.UNSPECIFIED);
+//            totalHeight += view.getMeasuredHeight();
+//        }
+//        ViewGroup.LayoutParams params = listView.getLayoutParams();
+//        params.height = totalHeight + (listView.getDividerHeight() * (listAdapter.getCount() - 1));
+//        listView.setLayoutParams(params);
+
+        ViewGroup.LayoutParams params = listView.getLayoutParams();
+        listView.measure(0, 0);
+        params.height = listView.getMeasuredHeight() * listAdapter.getCount() + (listView.getDividerHeight() * (listAdapter.getCount() - 1));
+        listView.setLayoutParams(params);
     }
 }

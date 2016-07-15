@@ -47,6 +47,7 @@ public class UsersAdapter extends RecyclerView.Adapter<UsersAdapter.UserViewHold
         if (!photo.isEmpty()) {
             Picasso.with(mContext)
                     .load(photo)
+                    .resize(768,512)
                     .placeholder(mContext.getResources().getDrawable(R.drawable.user_bg))
                     .error(mContext.getResources().getDrawable(R.drawable.user_bg))
                     .into(holder.mUserImage);

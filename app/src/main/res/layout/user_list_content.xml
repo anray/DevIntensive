@@ -6,6 +6,7 @@
     android:layout_height="wrap_content"
     android:layout_marginTop="@dimen/spacing_large_56"
     android:paddingLeft="@dimen/spacing_small_8"
+
     android:paddingRight="@dimen/spacing_small_8"
     />
 
