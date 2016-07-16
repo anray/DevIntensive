@@ -153,6 +153,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
         mDataManager = DataManager.getInstance();
 
 
+
         //инициализация Navigation view
         mNavigationView = (NavigationView) findViewById(R.id.navigation_view);
 
@@ -480,6 +481,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
                         break;
                     case R.id.logout:
                         //mDataManager.setPreferencesManager(null);
+                        //mDataManager = new DataManager();
                         Intent logout = new Intent(MainActivity.this, AuthActivity.class);
                         startActivity(logout);
                         break;

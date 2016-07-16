@@ -195,6 +195,7 @@ public class UserListActivity extends BaseActivity {
                         break;
                     case R.id.logout:
                         //mDataManager.setPreferencesManager(null);
+                        //mDataManager = new DataManager();
                         Intent logout = new Intent(UserListActivity.this, AuthActivity.class);
                         startActivity(logout);
                         break;
