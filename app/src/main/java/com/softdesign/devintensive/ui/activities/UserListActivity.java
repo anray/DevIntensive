@@ -6,13 +6,15 @@ import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.NavigationView;
 import android.support.design.widget.Snackbar;
 import android.support.v4.view.GravityCompat;
+import android.support.v4.view.MenuItemCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBar;
-import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.SearchView;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -27,6 +29,7 @@ import com.softdesign.devintensive.utils.ConstantManager;
 import com.squareup.picasso.MemoryPolicy;
 import com.squareup.picasso.Picasso;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import butterknife.BindView;
@@ -35,7 +38,7 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-public class UserListActivity extends BaseActivity {
+public class UserListActivity extends BaseActivity implements SearchView.OnQueryTextListener {
 
 
     @BindView(R.id.navigation_drawer)
@@ -53,6 +56,8 @@ public class UserListActivity extends BaseActivity {
     private DataManager mDataManager;
     private UsersAdapter mUsersAdapter;
     private List<UserListRes.UserData> mUsers;
+
+    private List<UserListRes.UserData> mFilteredResponse = new ArrayList<UserListRes.UserData>();
 
     private final String TAG = ConstantManager.TAG_PREFIX + "UserListActivity";
 
@@ -72,9 +77,10 @@ public class UserListActivity extends BaseActivity {
         setupToolbar();
         setupDrawer();
 
-        loadUsers();
+        loadUsers("");
 
     }
+
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
@@ -90,7 +96,7 @@ public class UserListActivity extends BaseActivity {
         Snackbar.make(mCoordinatorLayout, message, Snackbar.LENGTH_LONG).show();
     }
 
-    private void loadUsers() {
+    private void loadUsers(final String query) {
 
         showProgress();
 
@@ -100,15 +106,32 @@ public class UserListActivity extends BaseActivity {
             public void onResponse(Call<UserListRes> call, Response<UserListRes> response) {
                 if (response.code() == 200) {
 
-
                     try {
+
                         mUsers = response.body().getData();
-                        mUsersAdapter = new UsersAdapter(mUsers, new UsersAdapter.UserViewHolder.CustomClickListener() {
+
+                        mFilteredResponse.clear();
+
+                        if (query != null && !query.isEmpty()) {
+
+
+                            for (int i = 0; i < mUsers.size(); i++) {
+                                if (mUsers.get(i).getFullName().toLowerCase().contains(query.toLowerCase())) {
+                                    mFilteredResponse.add(mUsers.get(i));
+                                }
+
+                            }
+                        } else {
+                            mFilteredResponse = mUsers;
+                        }
+
+
+                        mUsersAdapter = new UsersAdapter(mFilteredResponse, new UsersAdapter.UserViewHolder.CustomClickListener() {
                             @Override
                             public void onUserItemClickListener(int position) {
                                 //showSnackbar("Пользователь с индексом " + position);
 
-                                UserDTO userDTO = new UserDTO(mUsers.get(position));
+                                UserDTO userDTO = new UserDTO(mFilteredResponse.get(position));
 
                                 Intent profileIntent = new Intent(UserListActivity.this, ProfileUserActivity.class);
                                 profileIntent.putExtra(ConstantManager.PARCELABLE_KEY, userDTO);
@@ -176,8 +199,6 @@ public class UserListActivity extends BaseActivity {
         mNavTxtNameView.setText(userData.get(userData.size() - 1)); //Установка ФИО в drawere из SharedPreferences
 
 
-
-
         mNavigationView.setNavigationItemSelectedListener(new NavigationView
                 .OnNavigationItemSelectedListener() {
             @Override
@@ -215,8 +236,54 @@ public class UserListActivity extends BaseActivity {
 
         if (actionBar != null) {
             actionBar.setHomeAsUpIndicator(R.drawable.ic_menu_black_24dp);
+
             actionBar.setDisplayHomeAsUpEnabled(true);
+
         }
     }
 
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+
+
+        getMenuInflater().inflate(R.menu.menu_search, menu);
+
+        MenuItem searchItem = menu.findItem(R.id.search);
+        SearchView searchView = (SearchView) MenuItemCompat.getActionView(searchItem);
+        searchView.setOnQueryTextListener(this);
+
+        MenuItemCompat.setOnActionExpandListener(searchItem, new MenuItemCompat.OnActionExpandListener() {
+            @Override
+            public boolean onMenuItemActionCollapse(MenuItem item) {
+                // Do something when collapsed
+                loadUsers("");
+                return true;  // Return true to collapse action view
+            }
+
+            @Override
+            public boolean onMenuItemActionExpand(MenuItem item) {
+                return true;
+            }
+        });
+
+        return true;
+
+
+        //return super.onCreateOptionsMenu(menu);
+
+
+    }
+
+    @Override
+    public boolean onQueryTextSubmit(String query) {
+        loadUsers(query);
+        return true;
+    }
+
+    @Override
+    public boolean onQueryTextChange(String newText) {
+        //mUsersAdapter.getFilter().filter(newText);
+        //loadUsers("");
+        return false;
+    }
 }

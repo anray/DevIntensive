@@ -6,6 +6,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.Filter;
+import android.widget.Filterable;
 import android.widget.TextView;
 
 import com.softdesign.devintensive.R;
@@ -18,7 +20,7 @@ import java.util.List;
 /**
  * Created by anray on 14.07.2016.
  */
-public class UsersAdapter extends RecyclerView.Adapter<UsersAdapter.UserViewHolder> {
+public class UsersAdapter extends RecyclerView.Adapter<UsersAdapter.UserViewHolder>  {
 
     private List<UserListRes.UserData> mUsers;
     private Context mContext;
@@ -72,6 +74,8 @@ public class UsersAdapter extends RecyclerView.Adapter<UsersAdapter.UserViewHold
     public int getItemCount() {
         return mUsers.size();
     }
+
+
 
     public static class UserViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
         protected AspectRatioImageView mUserImage;
