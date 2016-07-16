@@ -1,5 +1,8 @@
 package com.softdesign.devintensive.ui.activities;
 
+import android.content.Intent;
+import android.content.IntentFilter;
+import android.net.Uri;
 import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.Snackbar;
@@ -83,7 +86,7 @@ public class ProfileUserActivity extends AppCompatActivity {
 
     private void initProfileData(){
 
-        UserDTO userDTO = getIntent().getParcelableExtra(ConstantManager.PARCELABLE_KEY);
+        final UserDTO userDTO = getIntent().getParcelableExtra(ConstantManager.PARCELABLE_KEY);
 
         final List<String> repositories = userDTO.getRepositories();
 
@@ -95,8 +98,9 @@ public class ProfileUserActivity extends AppCompatActivity {
         mRepoListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                Snackbar.make(mCoordinatorLayout,"Репозиторий " + repositories.get(position), Snackbar.LENGTH_LONG).show();
-                // TODO: 15.07.2016 Реализовать просмотр репозитория
+                //Snackbar.make(mCoordinatorLayout,"Репозиторий " + repositories.get(position), Snackbar.LENGTH_LONG).show();
+                Intent viewRepo = new Intent(Intent.ACTION_VIEW, Uri.parse("https://" + userDTO.getRepositories().get(position)));
+                startActivity(viewRepo);
             }
         });
 
@@ -122,20 +126,6 @@ public class ProfileUserActivity extends AppCompatActivity {
         if (listAdapter == null)
             return;
 
-//        int desiredWidth = View.MeasureSpec.makeMeasureSpec(listView.getWidth(), View.MeasureSpec.UNSPECIFIED);
-//        int totalHeight = 0;
-//        View view = null;
-//        for (int i = 0; i < listAdapter.getCount(); i++) {
-//            view = listAdapter.getView(i, view, listView);
-//            if (i == 0)
-//                view.setLayoutParams(new ViewGroup.LayoutParams(desiredWidth, ViewGroup.LayoutParams.WRAP_CONTENT));
-//
-//            view.measure(desiredWidth, View.MeasureSpec.UNSPECIFIED);
-//            totalHeight += view.getMeasuredHeight();
-//        }
-//        ViewGroup.LayoutParams params = listView.getLayoutParams();
-//        params.height = totalHeight + (listView.getDividerHeight() * (listAdapter.getCount() - 1));
-//        listView.setLayoutParams(params);
 
         ViewGroup.LayoutParams params = listView.getLayoutParams();
         listView.measure(0, 0);

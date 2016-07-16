@@ -132,7 +132,8 @@ public class AuthActivity extends BaseActivity implements View.OnClickListener {
 
                 @Override
                 public void onFailure(Call<UserModelResponse> call, Throwable t) {
-                    // TODO: 11.07.2016 обработать ошибки ретрофита
+
+                    Log.d(TAG, t.toString());
 
                 }
             });

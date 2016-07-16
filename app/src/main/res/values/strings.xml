@@ -14,7 +14,7 @@
     <string name="repository">Репозиторий</string>
     <string name="about_myself">О себе</string>
     <string name="my_profile">Профиль</string>
-    <string name="contacts">Контакты</string>
+    <string name="contacts">Команды</string>
     <string name="user_profile.placeholder.image">Изменить фотографию профиля</string>
     <string name="user_profile_dialog.gallery">Загрузить из галереи</string>
     <string name="user_profile_dialog.camera">Сделать снимок</string>
@@ -44,5 +44,6 @@
     <!--Fonts-->
     <string name="ff_medium">sans-serif-medium</string>
     <string name="more_info_btn">Просмотр</string>
+    <string name="logout">Выход</string>
 
 </resources>
