@@ -2,6 +2,7 @@ package com.softdesign.devintensive.data.managers;
 
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.widget.EditText;
 
 import com.softdesign.devintensive.R;
@@ -21,6 +22,8 @@ public class TextWatcherValidator implements TextWatcher {
     private final Pattern mVkRegex = Pattern.compile("^vk\\.com[\\\\\\/]\\w{3,}$");
     private final Pattern mGithubRegex = Pattern.compile("^(github\\.com[\\\\\\/]\\w{3,}[\\\\\\/]\\w{3,}|No_[\\d]_git_repo)$");
 
+    private int mCursorPosition;
+
 
     private boolean isValid(CharSequence s, Pattern regEx) {
         return regEx.matcher(s).matches();
@@ -38,11 +41,19 @@ public class TextWatcherValidator implements TextWatcher {
 
     @Override
     public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+        mCursorPosition = start + after;
+        Log.d("XXX-before-start", String.valueOf(start));
+        Log.d("XXX-before-count", String.valueOf(count));
+        Log.d("XXX-before-after", String.valueOf(after));
 
     }
 
     @Override
     public void onTextChanged(CharSequence s, int start, int before, int count) {
+
+        Log.d("XXX-on-start", String.valueOf(start));
+        Log.d("XXX-on-before", String.valueOf(before));
+        Log.d("XXX-on-count", String.valueOf(count));
 
     }
 
@@ -51,15 +62,12 @@ public class TextWatcherValidator implements TextWatcher {
 
         //удаляем пробелы
         String result = s.toString().replaceAll(" ", "");
-        if (!s.toString().equals(result)) {
-            mEditText.setText(result);
-            mEditText.setSelection(result.length()); //ставит курсор справа
-        }
+
 
         switch (mEditText.getId()) {
             case R.id.phone_et:
                 //выводим ссобщение об ошибке если не совпадает с Regex
-                if (!isValid(mEditText.getText().toString(), mPhoneRegex)) {
+                if (!isValid(result, mPhoneRegex)) {
                     mEditText.setError(mErrorMessage);
 
 
@@ -67,14 +75,16 @@ public class TextWatcherValidator implements TextWatcher {
                 break;
             case R.id.email_et:
                 //выводим ссобщение об ошибке если не совпадает с Regex
-                if (!isValid(mEditText.getText().toString(), mEmailRegex)) {
+                if (!isValid(result, mEmailRegex)) {
                     mEditText.setError(mErrorMessage);
                 }
                 break;
 
             case R.id.vk_profile_et:
                 //удаляем все до vk.com
+
                 try { //try нужен для того чтобы можно было удалить vk.com
+
                     result = result.substring(result.indexOf("vk.com"), result.length());
                     
 
@@ -82,11 +92,12 @@ public class TextWatcherValidator implements TextWatcher {
 
                 }
 
+                mEditText.setSelection(result.length()); //ставит курсор в конец строки
                 //применяем все фильтры к строке
-                mEditText.setText(result);
+                //mEditText.setText(result);
 
                 //выводим ссобщение об ошибке если не совпадает с Regex
-                if (!isValid(mEditText.getText().toString(), mVkRegex)) {
+                if (!isValid(result, mVkRegex)) {
                     mEditText.setError(mErrorMessage);
                 }
                 break;
@@ -102,19 +113,22 @@ public class TextWatcherValidator implements TextWatcher {
 
                 }
 
+                mEditText.setSelection(result.length()); //ставит курсор в конец строки
                 //применяем все фильтры к строке
-                mEditText.setText(result);
+                //mEditText.setText(result);
 
                 //выводим ссобщение об ошибке если не совпадает с Regex
-                if (!isValid(mEditText.getText().toString(), mGithubRegex)) {
+                if (!isValid(result, mGithubRegex)) {
                     mEditText.setError(mErrorMessage);
                 }
                 break;
         }
 
+        if (!s.toString().equals(result)) {
+            mEditText.setText(result);
+        }
 
-
-
+        mEditText.setSelection(mCursorPosition); //ставит курс в текущую позицию
 
     }
 }

@@ -57,6 +57,18 @@
         <item name="android:fontFamily">sans-serif-condensed</item> <!-- works sine API 16 -->
     </style>
 
+    <style name="header_tv.rv">
+        <item name="android:textSize">@dimen/font_huge_20</item>
+        <item name="android:textColor">@color/black</item>
+        <item name="android:fontFamily">@string/ff_medium</item>
+
+    </style>
+
+    <style name="header_tv.rv.sub">
+        <item name="android:textSize">@dimen/font_medium_14</item>
+
+    </style>
+
     <style name="header_tv.sub">
         <item name="android:textSize">@dimen/font_large_16</item>
     </style>
@@ -152,6 +164,16 @@
         <item name="android:layout_marginTop">@dimen/spacing_normal_16</item>
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">wrap_content</item>
+
+    </style>
+    
+    <!--Toolbar-->
+    
+    <style name="ToolBarStyle" parent="Theme.AppCompat">
+
+        <item name="android:textColorPrimary">@color/white</item>
+        <item name="android:textColorSecondary">@color/white</item>
+        <item name="android:actionMenuTextColor">@color/white</item>
 
     </style>
 

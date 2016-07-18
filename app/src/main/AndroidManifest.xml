@@ -12,10 +12,8 @@
         android:required="false"/>
 
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
-
     <uses-permission android:name="android.permission.INTERNET"/>
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
-
 
     <application
         android:name=".utils.DevintensiveApplication"
@@ -28,8 +26,26 @@
         <activity android:name=".ui.activities.AuthActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
+
                 <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
+        </activity>
+        <activity android:name=".ui.activities.UserListActivity"
+            android:label="DevIntesive Crew"
+            >
+
+            <!-- <intent-filter> -->
+            <!-- <action android:name="android.intent.action.MAIN"/> -->
+
+
+            <!-- <category android:name="android.intent.category.LAUNCHER"/> -->
+            <!-- </intent-filter> -->
+        </activity>
+        <activity android:name=".ui.activities.ProfileUserActivity" android:parentActivityName=".ui.activities.UserListActivity">
+<meta-data
+    android:name="android.support.PARENT_ACTIVITY"
+    android:value=".ui.activities.UserListActivity"
+    />
         </activity>
     </application>
 

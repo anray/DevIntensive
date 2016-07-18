@@ -1,0 +1,7 @@
+
+<resources>
+
+    <declare-styleable name="AspectRatioImageView">
+        <attr name="aspect_ratio" format="float"/>
+    </declare-styleable>
+</resources>

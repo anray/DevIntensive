@@ -46,7 +46,7 @@
                     >
 
                     <ImageView
-                        android:id="@+id/user_photo_iv"
+                        android:id="@+id/user_info_user_photo_iv"
                         android:layout_width="match_parent"
                         android:layout_height="@dimen/size_toolbar_image_256"
                         android:fitsSystemWindows="true"
@@ -90,7 +90,7 @@
 
 
                 <android.support.v7.widget.Toolbar
-                    android:id="@+id/toolbar"
+                    android:id="@+id/user_info_toolbar"
                     android:layout_width="match_parent"
                     android:layout_height="?attr/actionBarSize"
                     android:theme="@style/AppTheme.PopupOverlay"
@@ -124,14 +124,14 @@
 
 
                 <TextView
-                    android:id="@+id/rating_tv"
+                    android:id="@+id/user_info_rating_tv"
                     style="@style/header_tv"
                     android:text="5"
                     />
 
                 <TextView
                     style="@style/header_tv.sub"
-                    android:text="Рейтинг"
+                    android:text="@string/rating"
                     />
 
             </LinearLayout>
@@ -145,14 +145,14 @@
 
 
                 <TextView
-                    android:id="@+id/numOfCodeLines_tv"
+                    android:id="@+id/user_info_numOfCodeLines_tv"
                     style="@style/header_tv"
                     android:text="5"
                     />
 
                 <TextView
                     style="@style/header_tv.sub"
-                    android:text="Написано строк кода"
+                    android:text="@string/num_of_code_strings"
                     />
 
             </LinearLayout>
@@ -166,14 +166,14 @@
 
 
                 <TextView
-                    android:id="@+id/projects_tv"
+                    android:id="@+id/user_info_projects_tv"
                     style="@style/header_tv"
                     android:text="5"
                     />
 
                 <TextView
                     style="@style/header_tv.sub"
-                    android:text="Проектов"
+                    android:text="@string/projects"
                     />
 
             </LinearLayout>

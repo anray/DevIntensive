@@ -1,0 +1,133 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.design.widget.CoordinatorLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/user_info_main_coordinator_container"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+
+    tools:context=".ui.activities.UserListActivity"
+    android:fitsSystemWindows="true"
+    >
+    <android.support.design.widget.AppBarLayout
+        android:id="@+id/appbar_layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/color_primary"
+        android:fitsSystemWindows="true"
+        android:theme="@style/AppTheme.AppBarOverlay"
+        >
+        <android.support.design.widget.CollapsingToolbarLayout
+            android:id="@+id/user_info_collapsing_toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:contentScrim="@color/color_primary"
+            app:layout_scrollFlags="scroll|exitUntilCollapsed"
+            >
+            <ImageView
+                android:id="@+id/user_info_user_photo_iv"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/size_toolbar_image_256"
+                android:fitsSystemWindows="true"
+                android:scaleType="centerCrop"
+                android:src="@drawable/user_bg"
+                />
+            <android.support.v7.widget.Toolbar
+                android:id="@+id/user_info_toolbar"
+                android:layout_width="match_parent"
+                android:layout_height="?attr/actionBarSize"
+
+                android:titleTextColor="@color/white"
+                app:layout_collapseMode="pin"
+                app:popupTheme="@style/AppTheme.PopupOverlay"
+                app:theme="@style/ToolBarStyle"
+                />
+
+
+        </android.support.design.widget.CollapsingToolbarLayout>
+
+
+    </android.support.design.widget.AppBarLayout>
+
+    <LinearLayout
+        android:id="@+id/LL_top"
+        style="@style/header_LL"
+        android:layout_gravity="top"
+        android:gravity="center_vertical"
+
+        app:layout_anchor="@id/appbar_layout"
+        app:layout_behavior=".ui.view.behaviours.TopMenuBehavior"
+
+
+        >
+
+        <LinearLayout
+            style="@style/subheader_LL"
+            android:layout_weight="0.25"
+            app:layout_collapseMode="pin"
+            >
+
+
+            <TextView
+                android:id="@+id/user_info_rating_tv"
+                style="@style/header_tv"
+                android:text="5"
+                />
+
+            <TextView
+                style="@style/header_tv.sub"
+                android:text="@string/rating"
+                />
+
+        </LinearLayout>
+
+        <View style="@style/vertical_line_tv"/>
+
+        <LinearLayout
+            style="@style/subheader_LL"
+            android:layout_weight="0.5"
+            >
+
+
+            <TextView
+                android:id="@+id/user_info_numOfCodeLines_tv"
+                style="@style/header_tv"
+                android:text="5"
+                />
+
+            <TextView
+                style="@style/header_tv.sub"
+                android:text="@string/num_of_code_strings"
+                />
+
+        </LinearLayout>
+
+        <View style="@style/vertical_line_tv"/>
+
+        <LinearLayout
+            style="@style/subheader_LL"
+            android:layout_weight="0.25"
+            >
+
+
+            <TextView
+                android:id="@+id/user_info_projects_tv"
+                style="@style/header_tv"
+                android:text="5"
+                />
+
+            <TextView
+                style="@style/header_tv.sub"
+                android:text="@string/projects"
+                />
+
+        </LinearLayout>
+
+    </LinearLayout>
+
+    <include layout="@layout/static_profile_content"/>
+
+
+</android.support.design.widget.CoordinatorLayout>
+

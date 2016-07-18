@@ -13,7 +13,6 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
-import android.os.SystemClock;
 import android.provider.MediaStore;
 import android.provider.Settings;
 import android.support.annotation.NonNull;
@@ -33,7 +32,6 @@ import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.MenuItem;
-import android.view.MotionEvent;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -76,7 +74,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
     CollapsingToolbarLayout mCollapsingToolbar;
     @BindView(R.id.appbar_layout)
     AppBarLayout mAppBarLayout;
-    @BindView(R.id.user_photo_iv)
+    @BindView(R.id.user_info_user_photo_iv)
     ImageView mProfileImage;
     @BindView(R.id.send_email_iv)
     ImageView mProfileEmail;
@@ -92,7 +90,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
     ImageView mProfileTel;
     @BindView(R.id.main_coordinator_container)
     CoordinatorLayout mCoordinatorLayout;
-    @BindView(R.id.toolbar)
+    @BindView(R.id.user_info_toolbar)
     Toolbar mToolbar;
     @BindView(R.id.phone_et)
     EditText mUserPhone;
@@ -106,16 +104,16 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
     EditText mUserGit2;
     @BindView(R.id.git_repository3_et)
     EditText mUserGit3;
-    @BindView(R.id.aboutMyself_et)
+    @BindView(R.id.user_info_aboutMyself_et)
     EditText mUserBio;
 
-    @BindView(R.id.rating_tv)
+    @BindView(R.id.user_info_rating_tv)
     TextView mUserValueRating;
 
-    @BindView(R.id.projects_tv)
+    @BindView(R.id.user_info_projects_tv)
     TextView mUserValueProjects;
 
-    @BindView(R.id.numOfCodeLines_tv)
+    @BindView(R.id.user_info_numOfCodeLines_tv)
     TextView mUserValueCodeLines;
 
     private List<TextView> mUserValueViews;
@@ -153,6 +151,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
 
         //инициализация синглтона
         mDataManager = DataManager.getInstance();
+
 
 
         //инициализация Navigation view
@@ -261,14 +260,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
                 .placeholder(R.drawable.user_bg)
                 .into(mProfileImage);
 
-        Picasso.with(mNavigationDrawer.getContext())
-                .load(mDataManager.getPreferencesManager().loadUserAvatar())
-                .memoryPolicy(MemoryPolicy.NO_CACHE)
-                .resize(120, 120)
-                .centerCrop()
-                .placeholder(R.drawable.user_bg)
-                .transform(new CircleTransform())
-                .into(mAvatar);
+
         //endregion
 
 
@@ -290,6 +282,10 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
             changeEditMode(mCurrentEditMode);
         }
 
+        //добавляем валидаторы для UserInfoValues чтобы валидация сработала на загруженные поля
+        //и тут же удаляем чтобы память не кушала
+        addValidators();
+        removeValidators();
 
     }
 
@@ -419,7 +415,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
         handler.postDelayed(new Runnable() {
             @Override
             public void run() {
-                //TODO: Выполнить с задержкой
+                // Выполнить с задержкой
                 hideProgress();
             }
         }, 5000);
@@ -451,15 +447,47 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
     private void setupDrawer() {
         NavigationView navigationView = (NavigationView) findViewById(R.id.navigation_view);
 
-        //делает аватарку круглой
-        roundCorners(navigationView);
+        ImageView mAvatar = (ImageView) mNavigationView.getHeaderView(0).findViewById(R.id.avatar);
+
+
+        //устанавливает выбранным пункт меню, где мы находимся
+        mNavigationView.getMenu().findItem(R.id.user_profile_id).setChecked(true);
+
+
+        Picasso.with(mNavigationDrawer.getContext())
+                .load(mDataManager.getPreferencesManager().loadUserAvatar())
+                .memoryPolicy(MemoryPolicy.NO_CACHE)
+                .resize(120, 120)
+                .centerCrop()
+                .placeholder(R.drawable.user_bg)
+                .transform(new CircleTransform())
+                .into(mAvatar);
+
 
         navigationView.setNavigationItemSelectedListener(new NavigationView
                 .OnNavigationItemSelectedListener() {
             @Override
             public boolean onNavigationItemSelected(MenuItem item) {
                 //showSnackbar(item.getTitle().toString());
-                item.setChecked(true);
+
+                switch (item.getItemId()){
+                    case R.id.user_profile_id:
+
+                        break;
+                    case R.id.team_menu:
+                        item.setChecked(true);
+                        Intent openTeamList = new Intent(MainActivity.this, UserListActivity.class);
+                        startActivity(openTeamList);
+                        break;
+                    case R.id.logout:
+                        //mDataManager.setPreferencesManager(null);
+                        //mDataManager = new DataManager();
+                        Intent logout = new Intent(MainActivity.this, AuthActivity.class);
+                        startActivity(logout);
+                        break;
+                }
+
+
                 mNavigationDrawer.closeDrawer(GravityCompat.START);
 
                 return false;
@@ -467,21 +495,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
         });
     }
 
-    /**
-     * Делает аватрку круглой
-     *
-     * @param navigationView левая менюшка Navigation Drawer
-     */
-    private void roundCorners(NavigationView navigationView) {
 
-        ImageView navImgView = (ImageView) navigationView.getHeaderView(0).findViewById(R.id
-                .avatar);
-        Bitmap mbitmap = (Bitmap) ((BitmapDrawable) getResources().getDrawable(R.drawable.avatar)
-        ).getBitmap();
-        navImgView.setImageBitmap(RoundedAvatarDrawable.getCircularBitmap(mbitmap));
-
-
-    }
 
     /**
      * Получение результата от другой Activity: фото из камеры или галерии
@@ -521,22 +535,10 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
         if (mode == 1) {
             mFab.setImageResource(R.drawable.ic_check_black_24dp);
 
-            //region Добавляем валидаторы
-            TextWatcherValidator mPhoneValidator = new TextWatcherValidator(mUserPhone, getString(R.string.validate_user_phone_error));
-            TextWatcherValidator mUserMailValidator = new TextWatcherValidator(mUserMail, getString(R.string.validate_user_email_error));
-            TextWatcherValidator mUserVkValidator = new TextWatcherValidator(mUserVk, getString(R.string.validate_user_vk_error));
-            TextWatcherValidator mUserGit1Validator = new TextWatcherValidator(mUserGit1, getString(R.string.validate_user_github_error));
-            TextWatcherValidator mUserGit2Validator = new TextWatcherValidator(mUserGit2, getString(R.string.validate_user_github_error));
-            TextWatcherValidator mUserGit3Validator = new TextWatcherValidator(mUserGit3, getString(R.string.validate_user_github_error));
+            //Добавляем валидаторы
+           addValidators();
 
 
-            mUserPhone.addTextChangedListener(mPhoneValidator);
-            mUserMail.addTextChangedListener(mUserMailValidator);
-            mUserVk.addTextChangedListener(mUserVkValidator);
-            mUserGit1.addTextChangedListener(mUserGit1Validator);
-            mUserGit2.addTextChangedListener(mUserGit2Validator);
-            mUserGit3.addTextChangedListener(mUserGit3Validator);
-            //endregion
 
             for (EditText userValue : mUserInfoViews) {
 
@@ -551,21 +553,16 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
                 mUserPhone.requestFocus();
 
                 //region это нужно чтобы показывалась клавиатура
-                mUserPhone.dispatchTouchEvent(MotionEvent.obtain(SystemClock.uptimeMillis(), SystemClock.uptimeMillis(), MotionEvent.ACTION_DOWN, 0, 0, 0));
-                mUserPhone.dispatchTouchEvent(MotionEvent.obtain(SystemClock.uptimeMillis(), SystemClock.uptimeMillis(), MotionEvent.ACTION_UP, 0, 0, 0));
+//                mUserPhone.dispatchTouchEvent(MotionEvent.obtain(SystemClock.uptimeMillis(), SystemClock.uptimeMillis(), MotionEvent.ACTION_DOWN, 0, 0, 0));
+//                mUserPhone.dispatchTouchEvent(MotionEvent.obtain(SystemClock.uptimeMillis(), SystemClock.uptimeMillis(), MotionEvent.ACTION_UP, 0, 0, 0));
                 //endregion
             }
 
         } else {
 
-            //region Удаляем валидаторы с полей
-            mUserPhone.removeTextChangedListener(mPhoneValidator);
-            mUserMail.removeTextChangedListener(mUserMailValidator);
-            mUserVk.removeTextChangedListener(mUserVkValidator);
-            mUserGit1.removeTextChangedListener(mUserGit1Validator);
-            mUserGit2.removeTextChangedListener(mUserGit2Validator);
-            mUserGit3.removeTextChangedListener(mUserGit3Validator);
-            //endregion
+            //Удаляем валидаторы с полей
+           removeValidators();
+
 
             mFab.setImageResource(R.drawable.ic_mode_edit_black_24dp);
             for (EditText userValue : mUserInfoViews) {
@@ -590,7 +587,11 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
      */
     private void initUserFields() {
         List<String> userData = mDataManager.getPreferencesManager().loadUserProfileData();
-        for (int i = 0; i < userData.size()-1; i++) { //-1 потому что последний преференс предназначен не для EditText, а для TextView
+//        for (int i = 0; i < userData.size()-1; i++) { //нужно уменьшить на 1 потому что в сохраненном листе больше полей, чем в листе EditText-ов
+//            mUserInfoViews.get(i).setText(userData.get(i));
+//        }
+
+        for (int i = 0; i < mUserInfoViews.size(); i++ ) {
             mUserInfoViews.get(i).setText(userData.get(i));
         }
 
@@ -608,6 +609,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
         for (EditText userFieldView : mUserInfoViews) {
             userData.add(userFieldView.getText().toString());
         }
+        userData.add(mNavTxtNameView.getText().toString());
         mDataManager.getPreferencesManager().saveUserProfileData(userData);
     }
 
@@ -660,7 +662,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
                 mPhotoFile = createImageFile();
             } catch (IOException e) {
                 e.printStackTrace();
-                // TODO: 07.07.2016 обработать ошибку
+
                 Log.e(ConstantManager.TAG_CAMERA, "Load from camera was not successful");
                 showToast(getString(R.string.error_create_file));
 
@@ -692,12 +694,12 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         if (requestCode == ConstantManager.CAMERA_REQUEST_PERMISSION_CODE && grantResults.length == 2) {
             if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                // TODO: 07.07.2016 тут обрабатываем разрешение, если разрешение получено вывести сообщение или реализовать какую-то другую логику
+                // 07.07.2016 тут обрабатываем разрешение, если разрешение получено вывести сообщение или реализовать какую-то другую логику
                 showToast(getString(R.string.need_camera_permissions));
             }
 
             if (grantResults[1] == PackageManager.PERMISSION_GRANTED) {
-                // TODO: 07.07.2016 тут обрабатываем разрешение, если разрешение получено вывести сообщение или реализовать какую-то другую логику
+                // 07.07.2016 тут обрабатываем разрешение, если разрешение получено вывести сообщение или реализовать какую-то другую логику
                 showToast(getString(R.string.need_write_to_external_storage_permissions));
             }
         }
@@ -759,7 +761,6 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
                         switch (choiceItem) {
 
                             case 0:
-                                // TODO: 06.07.2016 загрузить из галереи
                                 loadPhotoFromGallery();
                                 //showSnackbar("загрузить из галереи");
                                 break;
@@ -876,5 +877,39 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
         startActivity(Intent.createChooser(openBrowser, getString(R.string.chooser_title_openBrowser)));
     }
 
+    private void addValidators(){
+
+        TextWatcherValidator mPhoneValidator = new TextWatcherValidator(mUserPhone, getString(R.string.validate_user_phone_error));
+        TextWatcherValidator mUserMailValidator = new TextWatcherValidator(mUserMail, getString(R.string.validate_user_email_error));
+        TextWatcherValidator mUserVkValidator = new TextWatcherValidator(mUserVk, getString(R.string.validate_user_vk_error));
+        TextWatcherValidator mUserGit1Validator = new TextWatcherValidator(mUserGit1, getString(R.string.validate_user_github_error));
+        TextWatcherValidator mUserGit2Validator = new TextWatcherValidator(mUserGit2, getString(R.string.validate_user_github_error));
+        TextWatcherValidator mUserGit3Validator = new TextWatcherValidator(mUserGit3, getString(R.string.validate_user_github_error));
+
+
+        mUserPhone.addTextChangedListener(mPhoneValidator);
+        mUserMail.addTextChangedListener(mUserMailValidator);
+        mUserVk.addTextChangedListener(mUserVkValidator);
+        mUserGit1.addTextChangedListener(mUserGit1Validator);
+        mUserGit2.addTextChangedListener(mUserGit2Validator);
+        mUserGit3.addTextChangedListener(mUserGit3Validator);
+
+        //нужно чтобы валидация сработала сразу после добавления Watcher-а
+        mUserPhone.setText(mUserPhone.getText());
+        mUserMail.setText(mUserMail.getText());
+        mUserVk.setText(mUserVk.getText());
+        mUserGit1.setText(mUserGit1.getText());
+        mUserGit2.setText(mUserGit2.getText());
+        mUserGit3.setText(mUserGit3.getText());
+    }
+
+    private void removeValidators(){
+        mUserPhone.removeTextChangedListener(mPhoneValidator);
+        mUserMail.removeTextChangedListener(mUserMailValidator);
+        mUserVk.removeTextChangedListener(mUserVkValidator);
+        mUserGit1.removeTextChangedListener(mUserGit1Validator);
+        mUserGit2.removeTextChangedListener(mUserGit2Validator);
+        mUserGit3.removeTextChangedListener(mUserGit3Validator);
+    }
 
 }

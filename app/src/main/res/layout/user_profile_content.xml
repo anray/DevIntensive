@@ -254,7 +254,7 @@
                     >
 
                     <EditText
-                        android:id="@+id/aboutMyself_et"
+                        android:id="@+id/user_info_aboutMyself_et"
 
                         style="@style/infoField_et"
                         android:hint="@string/about_myself"

@@ -35,7 +35,7 @@ public class TopMenuBehavior extends CoordinatorLayout.Behavior<LinearLayout> {
     public boolean onDependentViewChanged(CoordinatorLayout parent, LinearLayout child, View dependency) {
 
         CoordinatorLayout.LayoutParams lp = (CoordinatorLayout.LayoutParams) child.getLayoutParams();
-        int pxindp = TypedValue.COMPLEX_UNIT_DIP;
+        //CoordinatorLayout.LayoutParams lp2 = (CoordinatorLayout.LayoutParams) dependency.getLayoutParams();
 
         LinearLayout ratingMenu = (LinearLayout) parent.getChildAt(1); //rating menu
 
@@ -86,7 +86,12 @@ public class TopMenuBehavior extends CoordinatorLayout.Behavior<LinearLayout> {
         //set sizes for Views
         child.setY(dependency.getY());
         child.setLayoutParams(lp);
-        dependency.setPadding(dependency.getPaddingLeft(), lp.height, dependency.getPaddingRight(), dependency.getPaddingBottom());
+        Log.d("onDependentViewChanged:", String.valueOf(dependency.getBottom()));
+
+        dependency.setPadding(dependency.getPaddingLeft(), lp.height, dependency.getPaddingRight(), dependency.getPaddingBottom()); //20 нужно чтобы показывалась последняя строка в NestedScroll
+        //lp2.topMargin = lp.height;
+        //dependency.setLayoutParams(lp2);
+
 
 
         return true;
