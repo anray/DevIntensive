@@ -2,6 +2,7 @@ package com.softdesign.devintensive.ui.activities;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.NavigationView;
 import android.support.design.widget.Snackbar;
@@ -11,17 +12,17 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBar;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.SearchView;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.ImageView;
+import android.widget.SearchView;
 import android.widget.TextView;
 
 import com.softdesign.devintensive.R;
 import com.softdesign.devintensive.data.managers.DataManager;
 import com.softdesign.devintensive.data.network.response.UserListRes;
+import com.softdesign.devintensive.data.storage.models.User;
 import com.softdesign.devintensive.data.storage.models.UserDTO;
 import com.softdesign.devintensive.ui.adapters.UsersAdapter;
 import com.softdesign.devintensive.utils.CircleTransform;
@@ -34,11 +35,8 @@ import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
 
-public class UserListActivity extends BaseActivity implements SearchView.OnQueryTextListener {
+public class UserListActivity extends BaseActivity {
 
 
     @BindView(R.id.navigation_drawer)
@@ -55,11 +53,14 @@ public class UserListActivity extends BaseActivity implements SearchView.OnQuery
 
     private DataManager mDataManager;
     private UsersAdapter mUsersAdapter;
-    private List<UserListRes.UserData> mUsers;
+    private List<User> mUsers;
+    private MenuItem mSearchItem;
 
     private List<UserListRes.UserData> mFilteredResponse = new ArrayList<UserListRes.UserData>();
 
     private final String TAG = ConstantManager.TAG_PREFIX + "UserListActivity";
+    private String mQuery;
+    private Handler mHandler;
 
 
     @Override
@@ -69,6 +70,7 @@ public class UserListActivity extends BaseActivity implements SearchView.OnQuery
         ButterKnife.bind(this);
 
         mDataManager = DataManager.getInstance();
+        mHandler = new Handler();
 
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this);
         mRecyclerView.setLayoutManager(linearLayoutManager);
@@ -77,7 +79,7 @@ public class UserListActivity extends BaseActivity implements SearchView.OnQuery
         setupToolbar();
         setupDrawer();
 
-        loadUsers("");
+        loadUsersFromDb("");
 
     }
 
@@ -96,78 +98,86 @@ public class UserListActivity extends BaseActivity implements SearchView.OnQuery
         Snackbar.make(mCoordinatorLayout, message, Snackbar.LENGTH_LONG).show();
     }
 
-    private void loadUsers(final String query) {
-
-        showProgress();
-
-        Call<UserListRes> call = mDataManager.getUserList();
-        call.enqueue(new Callback<UserListRes>() {
-            @Override
-            public void onResponse(Call<UserListRes> call, Response<UserListRes> response) {
-                if (response.code() == 200) {
-
-                    try {
-
-                        mUsers = response.body().getData();
-
-                        mFilteredResponse.clear();
-
-                        if (query != null && !query.isEmpty()) {
+    private void loadUsersFromDb(final String query) {
 
 
-                            for (int i = 0; i < mUsers.size(); i++) {
-                                if (mUsers.get(i).getFullName().toLowerCase().contains(query.toLowerCase())) {
-                                    mFilteredResponse.add(mUsers.get(i));
-                                }
+        if (mDataManager.getUserListFromDb().size() == 0) {
+            showSnackbar("Список пользователей пуст, не может быть загружен");
+        } else {
 
-                            }
-                        } else {
-                            mFilteredResponse = mUsers;
-                        }
+            showUsers(mDataManager.getUserListFromDb());
+        }
 
-
-                        mUsersAdapter = new UsersAdapter(mFilteredResponse, new UsersAdapter.UserViewHolder.CustomClickListener() {
-                            @Override
-                            public void onUserItemClickListener(int position) {
-                                //showSnackbar("Пользователь с индексом " + position);
-
-                                UserDTO userDTO = new UserDTO(mFilteredResponse.get(position));
-
-                                Intent profileIntent = new Intent(UserListActivity.this, ProfileUserActivity.class);
-                                profileIntent.putExtra(ConstantManager.PARCELABLE_KEY, userDTO);
-                                startActivity(profileIntent);
-
-
-                            }
-                        });
-                        mRecyclerView.setAdapter(mUsersAdapter);
-                    } catch (NullPointerException e) {
-                        Log.d(TAG, e.toString());
-                        showSnackbar("Ответ 200, но данные не пришли почему-то");
-                    }
-
-                } else if (response.code() == 404) {
-                    showSnackbar("Неверный логин или пароль");
-                } else {
-                    showSnackbar("Другая ошибка");
-
-                    //region Logging
-                    if (ConstantManager.DEBUG == true) {
-                        Log.d(TAG, String.valueOf(response.code()));
-                    }
-                    //endregion
-                }
-                hideProgress();
-            }
-
-            @Override
-            public void onFailure(Call<UserListRes> call, Throwable t) {
-                // 14.07.2016 обработка ошибок ретрофита
-                hideProgress();
-                Log.d(TAG, t.toString());
-
-            }
-        });
+//        showProgress();
+//
+//        Call<UserListRes> call = mDataManager.getUserListFromNetwork();
+//        call.enqueue(new Callback<UserListRes>() {
+//            @Override
+//            public void onResponse(Call<UserListRes> call, Response<UserListRes> response) {
+//                if (response.code() == 200) {
+//
+//                    try {
+//
+//                        mUsers = response.body().getData();
+//
+//                        mFilteredResponse.clear();
+//
+//                        if (query != null && !query.isEmpty()) {
+//
+//
+//                            for (int i = 0; i < mUsers.size(); i++) {
+//                                if (mUsers.get(i).getFullName().toLowerCase().trim().contains(query.toLowerCase().trim())) {
+//                                    mFilteredResponse.add(mUsers.get(i));
+//                                }
+//
+//                            }
+//                        } else {
+//                            mFilteredResponse = mUsers;
+//                        }
+//
+//
+//                        mUsersAdapter = new UsersAdapter(mFilteredResponse, new UsersAdapter.UserViewHolder.CustomClickListener() {
+//                            @Override
+//                            public void onUserItemClickListener(int position) {
+//                                //showSnackbar("Пользователь с индексом " + position);
+//
+//                                UserDTO userDTO = new UserDTO(mFilteredResponse.get(position));
+//
+//                                Intent profileIntent = new Intent(UserListActivity.this, ProfileUserActivity.class);
+//                                profileIntent.putExtra(ConstantManager.PARCELABLE_KEY, userDTO);
+//                                startActivity(profileIntent);
+//
+//
+//                            }
+//                        });
+//                        mRecyclerView.setAdapter(mUsersAdapter);
+//                    } catch (NullPointerException e) {
+//                        Log.d(TAG, e.toString());
+//                        showSnackbar("Ответ 200, но данные не пришли почему-то");
+//                    }
+//
+//                } else if (response.code() == 404) {
+//                    showSnackbar("Неверный логин или пароль");
+//                } else {
+//                    showSnackbar("Другая ошибка");
+//
+//                    //region Logging
+//                    if (ConstantManager.DEBUG == true) {
+//                        Log.d(TAG, String.valueOf(response.code()));
+//                    }
+//                    //endregion
+//                }
+//                hideProgress();
+//            }
+//
+//            @Override
+//            public void onFailure(Call<UserListRes> call, Throwable t) {
+//                // 14.07.2016 обработка ошибок ретрофита
+//                hideProgress();
+//                Log.d(TAG, t.toString());
+//
+//            }
+//        });
     }
 
     private void setupDrawer() {
@@ -242,48 +252,116 @@ public class UserListActivity extends BaseActivity implements SearchView.OnQuery
         }
     }
 
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
+//    @Override
+//    public boolean onCreateOptionsMenu(Menu menu) {
+//
+//
+//        getMenuInflater().inflate(R.menu.menu_search, menu);
+//
+//        MenuItem searchItem = menu.findItem(R.id.search);
+//        SearchView searchView = (SearchView) MenuItemCompat.getActionView(searchItem);
+//        searchView.setOnQueryTextListener(this);
+//
+//        MenuItemCompat.setOnActionExpandListener(searchItem, new MenuItemCompat.OnActionExpandListener() {
+//            @Override
+//            public boolean onMenuItemActionCollapse(MenuItem item) {
+//                // Do something when collapsed
+//                loadUsersFromDb("");
+//                return true;  // Return true to collapse action view
+//            }
+//
+//            @Override
+//            public boolean onMenuItemActionExpand(MenuItem item) {
+//                return true;
+//            }
+//        });
+//
+//        return true;
+//
+//
+//        //return super.onCreateOptionsMenu(menu);
+//
+//
+//    }
 
+
+    @Override
+    public boolean onPrepareOptionsMenu(Menu menu) {
 
         getMenuInflater().inflate(R.menu.menu_search, menu);
-
-        MenuItem searchItem = menu.findItem(R.id.search);
-        SearchView searchView = (SearchView) MenuItemCompat.getActionView(searchItem);
-        searchView.setOnQueryTextListener(this);
-
-        MenuItemCompat.setOnActionExpandListener(searchItem, new MenuItemCompat.OnActionExpandListener() {
+        mSearchItem = menu.findItem(R.id.search);
+        SearchView searchView = (SearchView) MenuItemCompat.getActionView(mSearchItem);
+        searchView.setQueryHint(getString(R.string.query_hint));
+        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
-            public boolean onMenuItemActionCollapse(MenuItem item) {
-                // Do something when collapsed
-                loadUsers("");
-                return true;  // Return true to collapse action view
+            public boolean onQueryTextSubmit(String query) {
+                return false;
             }
 
             @Override
-            public boolean onMenuItemActionExpand(MenuItem item) {
-                return true;
+            public boolean onQueryTextChange(String newText) {
+
+                // TODO: 19.07.2016 Вызвать поиск тут
+                showUsersByQuery(newText);
+
+                return false;
             }
         });
 
-        return true;
 
-
-        //return super.onCreateOptionsMenu(menu);
-
-
+        return super.onPrepareOptionsMenu(menu);
     }
 
-    @Override
-    public boolean onQueryTextSubmit(String query) {
-        loadUsers(query);
-        return true;
+    private void showUsers(List<User> users) {
+        mUsers = users;
+
+        mUsersAdapter = new UsersAdapter(mUsers, new UsersAdapter.UserViewHolder.CustomClickListener() {
+            @Override
+            public void onUserItemClickListener(int position) {
+                //showSnackbar("Пользователь с индексом " + position);
+
+                UserDTO userDTO = new UserDTO(mUsers.get(position));
+
+                Intent profileIntent = new Intent(UserListActivity.this, ProfileUserActivity.class);
+                profileIntent.putExtra(ConstantManager.PARCELABLE_KEY, userDTO);
+                startActivity(profileIntent);
+
+
+            }
+        });
+        mRecyclerView.swapAdapter(mUsersAdapter, false);
     }
 
-    @Override
-    public boolean onQueryTextChange(String newText) {
-        //mUsersAdapter.getFilter().filter(newText);
-        //loadUsers("");
-        return false;
+    //    @Override
+//    public boolean onQueryTextSubmit(String query) {
+//        loadUsersFromDb(query);
+//        return true;
+//    }
+//
+//    @Override
+//    public boolean onQueryTextChange(String newText) {
+//        //mUsersAdapter.getFilter().filter(newText);
+//        //loadUsersFromDb("");
+//        return false;
+//    }
+    private void showUsersByQuery(String query) {
+        mQuery = query;
+
+        if (mQuery.isEmpty()) {
+            showUsers(mDataManager.getUserListByName(mQuery));
+        } else {
+
+            Runnable searchUsers = new Runnable() {
+                @Override
+                public void run() {
+                    showUsers(mDataManager.getUserListByName(mQuery));
+
+                }
+            };
+
+            mHandler.removeCallbacks(searchUsers);
+            mHandler.postDelayed(searchUsers, ConstantManager.SEARCH_DELAY);
+
+        }
     }
 }
