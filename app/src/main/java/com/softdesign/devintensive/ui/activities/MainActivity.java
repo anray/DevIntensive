@@ -255,7 +255,8 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
         Picasso.with(this)
                 .load(mDataManager.getPreferencesManager().loadUserPhoto())
                 .memoryPolicy(MemoryPolicy.NO_CACHE)
-                .resize(768, 512)
+                //.resize(768, 512)
+                .fit()
                 .centerCrop()
                 .placeholder(R.drawable.user_bg)
                 .into(mProfileImage);
@@ -457,7 +458,8 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
         Picasso.with(mNavigationDrawer.getContext())
                 .load(mDataManager.getPreferencesManager().loadUserAvatar())
                 .memoryPolicy(MemoryPolicy.NO_CACHE)
-                .resize(120, 120)
+                //.resize(120, 120)
+                .fit()
                 .centerCrop()
                 .placeholder(R.drawable.user_bg)
                 .transform(new CircleTransform())
@@ -819,7 +821,8 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
 
         Picasso.with(this)
                 .load(selectedImage)
-                .resize(768, 512)
+                //.resize(768, 512)
+                .fit()
                 .centerCrop()
                 .placeholder(R.drawable.user_bg)
                 .into(mProfileImage);

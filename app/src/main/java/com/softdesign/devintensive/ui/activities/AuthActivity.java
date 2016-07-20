@@ -3,7 +3,7 @@ package com.softdesign.devintensive.ui.activities;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
-import android.os.Handler;
+import android.support.annotation.NonNull;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.Snackbar;
 import android.util.Log;
@@ -12,13 +12,17 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 
+import com.redmadrobot.chronos.ChronosConnector;
 import com.softdesign.devintensive.R;
 import com.softdesign.devintensive.data.managers.DataManager;
 import com.softdesign.devintensive.data.network.request.UserLoginRequest;
+import com.softdesign.devintensive.data.network.response.UserListRes;
 import com.softdesign.devintensive.data.network.response.UserModelResponse;
-import com.softdesign.devintensive.utils.AppConfig;
+import com.softdesign.devintensive.data.storage.models.RepositoryDao;
+import com.softdesign.devintensive.data.storage.models.UserDao;
 import com.softdesign.devintensive.utils.ConstantManager;
 import com.softdesign.devintensive.utils.NetworkStatusChecker;
+import com.softdesign.devintensive.utils.SaveUsersToDbChronos;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -48,25 +52,59 @@ public class AuthActivity extends BaseActivity implements View.OnClickListener {
     CoordinatorLayout mCoordinatorLayout;
 
     private DataManager mDataManager;
-//    private RepositoryDao mRepositoryDao;
-//    private UserDao mUserDao;
+    private RepositoryDao mRepositoryDao;
+    private UserDao mUserDao;
+    private ChronosConnector mConnector;
+
 
     @Override
 
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        mConnector = new ChronosConnector();
+        mConnector.onCreate(this, savedInstanceState);
         setContentView(R.layout.activity_auth);
+
         ButterKnife.bind(this);
         mDataManager = DataManager.getInstance();
 
-//        mUserDao = mDataManager.getDaoSession().getUserDao();
-//        mRepositoryDao = mDataManager.getDaoSession().getRepositoryDao();
+        mUserDao = mDataManager.getDaoSession().getUserDao();
+        mRepositoryDao = mDataManager.getDaoSession().getRepositoryDao();
 
         //mSignIn = (Button) findViewById(R.id.login_button_btn);
         mSignIn.setOnClickListener(this);
         mForgotPassword.setOnClickListener(this);
 
 
+    }
+
+    public void onOperationFinished(final SaveUsersToDbChronos.Result result) {
+        //  20.07.2016 Переход в UserListActivity
+        if (result.isSuccessful()) {
+            Intent loginIntent = new Intent(AuthActivity.this, UserListActivity.class);
+            startActivity(loginIntent);
+        } else {
+            Log.d(TAG, result.getErrorMessage().toString());
+        }
+
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        mConnector.onResume();
+    }
+
+    @Override
+    protected void onSaveInstanceState(@NonNull final Bundle outState) {
+        super.onSaveInstanceState(outState);
+        mConnector.onSaveInstanceState(outState);
+    }
+
+    @Override
+    protected void onPause() {
+        mConnector.onPause();
+        super.onPause();
     }
 
     @Override
@@ -110,16 +148,16 @@ public class AuthActivity extends BaseActivity implements View.OnClickListener {
         saveUserProfileDetails(userModel);
         saveUserProfileImage(userModel);
         saveUserAvatarImage(userModel);
-        //saveUserInDb();
+        saveUsersInDb();
 
-        Handler handler = new Handler();
-        handler.postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                Intent loginIntent = new Intent(AuthActivity.this, UserListActivity.class);
-                startActivity(loginIntent);
-            }
-        }, AppConfig.START_DELAY);
+//        Handler handler = new Handler();
+//        handler.postDelayed(new Runnable() {
+//            @Override
+//            public void run() {
+//                Intent loginIntent = new Intent(AuthActivity.this, UserListActivity.class);
+//                startActivity(loginIntent);
+//            }
+//        }, AppConfig.START_DELAY);
 
 
     }
@@ -150,7 +188,8 @@ public class AuthActivity extends BaseActivity implements View.OnClickListener {
                 @Override
                 public void onFailure(Call<UserModelResponse> call, Throwable t) {
 
-                    Log.d(TAG, t.toString());
+                    Log.d(TAG, "in onFailure" + t.toString());
+                    showSnackbar("Произошла ошибка чтения с сервера, попробуйте еще раз");
 
                 }
             });
@@ -219,6 +258,61 @@ public class AuthActivity extends BaseActivity implements View.OnClickListener {
 
 
     }
+
+    private void saveUsersInDb() {
+        showProgress();
+
+        Call<UserListRes> call = mDataManager.getUserListFromNetwork();
+        call.enqueue(new Callback<UserListRes>() {
+                         @Override
+                         public void onResponse(Call<UserListRes> call, Response<UserListRes> response) {
+
+                             try {
+
+                                 if (response.code() == 200) {
+
+
+                                     mConnector.runOperation(new SaveUsersToDbChronos(response.body().getData()), false);
+
+
+                                 } else {
+                                     showSnackbar("Список пользователей не может быть получен");
+                                     Log.e(TAG, "onResponse: " + String.valueOf(response.errorBody().source()));
+                                 }
+
+
+                             } catch (NullPointerException e) {
+                                 e.printStackTrace();
+                                 Log.d(TAG, e.toString());
+                                 showSnackbar("Ответ 200, но данные не пришли почему-то");
+                             }
+
+
+                             hideProgress();
+                         }
+
+                         @Override
+                         public void onFailure(Call<UserListRes> call, Throwable t) {
+                             // 14.07.2016 обработка ошибок ретрофита
+                             hideProgress();
+                             Log.d(TAG, t.toString());
+
+                         }
+                     }
+
+        );
+    }
+
+//    private List<Repository> getRepoListFromUserRes(UserListRes.UserData userData) {
+//        final String userId = userData.getId();
+//
+//        List<Repository> repositories = new ArrayList<>();
+//        for (UserModelResponse.Repo repositoryRes : userData.getRepositories().getRepo()) {
+//            repositories.add(new Repository(repositoryRes, userId));
+//        }
+//
+//        return repositories;
+//    }
 
 
 }

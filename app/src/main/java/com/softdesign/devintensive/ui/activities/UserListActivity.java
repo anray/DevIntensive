@@ -100,9 +100,9 @@ public class UserListActivity extends BaseActivity {
         setupDrawer();
 
         //if (mDataManager.getUserListFromDb().size() == 0) {
-        if(mUsers == null || mUsers.size() == 0){
-            saveUsersInDb();
-        }
+//        if(mUsers == null || mUsers.size() == 0){
+//            saveUsersInDb();
+//        }
 
         //} else {
             //loadUsersFromDb();
@@ -170,7 +170,8 @@ public class UserListActivity extends BaseActivity {
         Picasso.with(mNavigationDrawer.getContext())
                 .load(mDataManager.getPreferencesManager().loadUserAvatar())
                 .memoryPolicy(MemoryPolicy.NO_CACHE)
-                .resize(120, 120)
+                //.resize(120, 120)
+                .fit()
                 .centerCrop()
                 .placeholder(R.drawable.user_bg)
                 .transform(new CircleTransform())
@@ -301,73 +302,6 @@ public class UserListActivity extends BaseActivity {
         }
     }
 
-    private void saveUsersInDb() {
-        showProgress();
-
-        Call<UserListRes> call = mDataManager.getUserListFromNetwork();
-        call.enqueue(new Callback<UserListRes>() {
-                         @Override
-                         public void onResponse(Call<UserListRes> call, Response<UserListRes> response) {
-
-                             try {
-
-                                 if (response.code() == 200) {
-
-                                     List<Repository> allRepositories = new ArrayList<Repository>();
-                                     List<User> allUsers = new ArrayList<User>();
-
-                                     for (UserListRes.UserData userRes : response.body().getData()) {
-
-                                         allRepositories.addAll(getRepoListFromUserRes(userRes));
-                                         allUsers.add(new User(userRes));
-
-                                         //allRepositories.addAll(userRes.getRepositories().getRepo());
-
-                                     }
-
-                                     mRepositoryDao.insertOrReplaceInTx(allRepositories);
-                                     mUserDao.insertOrReplaceInTx(allUsers);
-
-                                     //loadUsersFromDb();
-
-                                 } else {
-                                     showSnackbar("Список пользователей не может быть получен");
-                                     Log.e(TAG, "onResponse: " + String.valueOf(response.errorBody().source()));
-                                 }
-
-
-                             } catch (NullPointerException e) {
-                                 e.printStackTrace();
-                                 Log.d(TAG, e.toString());
-                                 showSnackbar("Ответ 200, но данные не пришли почему-то");
-                             }
-
-
-                             hideProgress();
-                         }
-
-                         @Override
-                         public void onFailure(Call<UserListRes> call, Throwable t) {
-                             // 14.07.2016 обработка ошибок ретрофита
-                             hideProgress();
-                             Log.d(TAG, t.toString());
-
-                         }
-                     }
-
-        );
-    }
-
-    private List<Repository> getRepoListFromUserRes(UserListRes.UserData userData) {
-        final String userId = userData.getId();
-
-        List<Repository> repositories = new ArrayList<>();
-        for (UserModelResponse.Repo repositoryRes : userData.getRepositories().getRepo()) {
-            repositories.add(new Repository(repositoryRes, userId));
-        }
-
-        return repositories;
-    }
 
 
     private void loadUsersFromDb() {

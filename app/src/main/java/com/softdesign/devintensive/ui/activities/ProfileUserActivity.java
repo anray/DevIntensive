@@ -113,7 +113,8 @@ public class ProfileUserActivity extends AppCompatActivity {
 
         Picasso.with(this)
                 .load(userDTO.getPhoto())
-                .resize(768,512)
+                //.resize(768,512)
+                .fit()
                 .placeholder(R.drawable.user_bg)
                 .error(R.drawable.user_bg)
                 .into(mProfileImage);

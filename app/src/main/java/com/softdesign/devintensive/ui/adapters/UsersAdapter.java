@@ -61,13 +61,14 @@ public class UsersAdapter extends RecyclerView.Adapter<UsersAdapter.UserViewHold
                 .load(userPhoto)
                 .error(holder.mDummy)
                 .placeholder(holder.mDummy)
-                .resize(768, 512)
+                //.resize(768, 512)
+                .fit()
                 .centerCrop()
                 .networkPolicy(NetworkPolicy.OFFLINE)
                 .into(holder.mUserImage, new Callback() {
                     @Override
                     public void onSuccess() {
-                        Log.d(TAG, " load from cache successful");
+                        Log.d(TAG, "user profile photo load from cache successful");
                     }
 
                     @Override
@@ -76,7 +77,8 @@ public class UsersAdapter extends RecyclerView.Adapter<UsersAdapter.UserViewHold
                                 .load(userPhoto)
                                 .error(holder.mDummy)
                                 .placeholder(holder.mDummy)
-                                .resize(768, 512)
+                                //.resize(768, 512)
+                                .fit()
                                 .centerCrop()
                                 .into(holder.mUserImage, new Callback() {
                                     @Override
@@ -86,7 +88,7 @@ public class UsersAdapter extends RecyclerView.Adapter<UsersAdapter.UserViewHold
 
                                     @Override
                                     public void onError() {
-                                        Log.d(TAG, " was not able to load photo from network");
+                                        Log.d(TAG, " was not able to load user profile photo from network");
 
                                     }
                                 });
