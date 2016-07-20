@@ -6,6 +6,7 @@ import com.softdesign.devintensive.data.network.PicassoCache;
 import com.softdesign.devintensive.data.network.request.UserLoginRequest;
 import com.softdesign.devintensive.data.network.response.UserListRes;
 import com.softdesign.devintensive.data.network.response.UserModelResponse;
+import com.softdesign.devintensive.data.network.response.UserModelResponseByToken;
 import com.softdesign.devintensive.data.network.restmodels.RestService;
 import com.softdesign.devintensive.data.network.restmodels.ServiceGenerator;
 import com.softdesign.devintensive.data.storage.models.DaoSession;
@@ -68,6 +69,11 @@ public class DataManager {
     public Call<UserModelResponse> loginUser(UserLoginRequest userLoginRequest) {
         return mRestService.loginUser(userLoginRequest);
     }
+
+    public Call<UserModelResponseByToken> loginUserByToken(String userId) {
+        return mRestService.loginUserByToken(userId);
+    }
+
 
     public Call<UserListRes> getUserListFromNetwork() {
         return mRestService.getUserList();

@@ -28,6 +28,7 @@
             app:cardBackgroundColor="@color/white"
             app:cardCornerRadius="@dimen/corner_radius_2"
             app:cardElevation="@dimen/card_elevation_8"
+            android:visibility="gone"
             >
 
             <LinearLayout

@@ -1,6 +1,7 @@
 package com.softdesign.devintensive.ui.activities;
 
 import android.Manifest;
+import android.app.Activity;
 import android.app.Dialog;
 import android.content.ContentValues;
 import android.content.DialogInterface;
@@ -484,8 +485,13 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
                     case R.id.logout:
                         //mDataManager.setPreferencesManager(null);
                         //mDataManager = new DataManager();
-                        Intent logout = new Intent(MainActivity.this, AuthActivity.class);
-                        startActivity(logout);
+//                        Intent logout = new Intent(MainActivity.this, AuthActivity.class);
+//                        startActivity(logout);
+//                        System.runFinalizersOnExit(true);
+//                        System.exit(0);
+                        //finishAndRemoveTask();
+
+                        finish();
                         break;
                 }
 

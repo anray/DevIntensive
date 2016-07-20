@@ -20,6 +20,7 @@ import com.softdesign.devintensive.data.managers.DataManager;
 import com.softdesign.devintensive.data.network.request.UserLoginRequest;
 import com.softdesign.devintensive.data.network.response.UserListRes;
 import com.softdesign.devintensive.data.network.response.UserModelResponse;
+import com.softdesign.devintensive.data.network.response.UserModelResponseByToken;
 import com.softdesign.devintensive.data.storage.models.RepositoryDao;
 import com.softdesign.devintensive.data.storage.models.UserDao;
 import com.softdesign.devintensive.utils.ConstantManager;
@@ -62,30 +63,35 @@ public class AuthActivity extends BaseActivity implements View.OnClickListener {
     private ChronosConnector mConnector;
 
 
-
-
     @Override
 
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         mConnector = new ChronosConnector();
         mConnector.onCreate(this, savedInstanceState);
+
         setContentView(R.layout.activity_auth);
 
+
         ButterKnife.bind(this);
+
+
         mDataManager = DataManager.getInstance();
 
         mUserDao = mDataManager.getDaoSession().getUserDao();
         mRepositoryDao = mDataManager.getDaoSession().getRepositoryDao();
 
-        //mSignIn = (Button) findViewById(R.id.login_button_btn);
+
         mSignIn.setOnClickListener(this);
         mForgotPassword.setOnClickListener(this);
 
 
+        signInByToken();
+
+
+
 
     }
-
 
 
     @Override
@@ -106,11 +112,7 @@ public class AuthActivity extends BaseActivity implements View.OnClickListener {
         super.onPause();
     }
 
-    @Override
-    public boolean onKeyUp(int keyCode, KeyEvent event) {
-        mCardView.setVisibility(View.VISIBLE);
-        return super.onKeyUp(keyCode, event);
-    }
+
 
     @Override
     public void onClick(View v) {
@@ -144,6 +146,37 @@ public class AuthActivity extends BaseActivity implements View.OnClickListener {
         startActivity(rememberPasswordIntent);
     }
 
+    private void loginSuccessByToken(UserModelResponseByToken userModelByToken) {
+
+        //region=============Splash Screen
+        showProgress();
+        mCardView.setVisibility(View.GONE);
+        //endregion
+
+        //showSnackbar(userModel.getData().getToken());
+        //mDataManager.getPreferencesManager().saveAuthToken(userModelByToken.ge);
+        //mDataManager.getPreferencesManager().saveUserId(userModel.getData().getUser().getUserId());
+
+        saveUserValuesByToken(userModelByToken);
+        saveUserProfileDetailsByToken(userModelByToken);
+        saveUserProfileImageByToken(userModelByToken);
+        saveUserAvatarImageByToken(userModelByToken);
+        saveUsersInDb();
+
+
+//        Handler handler = new Handler();
+//        handler.postDelayed(new Runnable() {
+//            @Override
+//            public void run() {
+//                Intent loginIntent = new Intent(AuthActivity.this, UserListActivity.class);
+//                startActivity(loginIntent);
+//            }
+//        }, AppConfig.START_DELAY);
+
+
+    }
+
+
     private void loginSuccess(UserModelResponse userModel) {
 
         //region=============Splash Screen
@@ -154,6 +187,7 @@ public class AuthActivity extends BaseActivity implements View.OnClickListener {
         //showSnackbar(userModel.getData().getToken());
         mDataManager.getPreferencesManager().saveAuthToken(userModel.getData().getToken());
         mDataManager.getPreferencesManager().saveUserId(userModel.getData().getUser().getUserId());
+
         saveUserValues(userModel);
         saveUserProfileDetails(userModel);
         saveUserProfileImage(userModel);
@@ -189,9 +223,52 @@ public class AuthActivity extends BaseActivity implements View.OnClickListener {
 
     }
 
+    private void signInByToken() {
+
+        if (NetworkStatusChecker.isNetworkAvailable(this)) {
+
+            String tempid = mDataManager.getPreferencesManager().getUserId();
+
+            Call<UserModelResponseByToken> call = mDataManager.loginUserByToken(tempid);
+            call.enqueue(new Callback<UserModelResponseByToken>() {
+                @Override
+                public void onResponse(Call<UserModelResponseByToken> call, Response<UserModelResponseByToken> response) {
+                    if (response.code() == 200) {
+
+                        loginSuccessByToken(response.body());
+
+
+                    } else {
+
+                        mCardView.setVisibility(View.VISIBLE);
+                        return;
+
+                    }
+                }
+
+                @Override
+                public void onFailure(Call<UserModelResponseByToken> call, Throwable t) {
+
+                    Log.d(TAG, "in onFailure" + t.toString());
+                    //showSnackbar("Произошла ошибка чтения с сервера, попробуйте еще раз");
+                    mCardView.setVisibility(View.VISIBLE);
+                    return;
+
+                }
+            });
+
+        } else {
+            mCardView.setVisibility(View.VISIBLE);
+            return;
+            //showSnackbar("Сеть недоступна, попробуйте позже");
+        }
+    }
+
+
     private void signIn() {
 
         if (NetworkStatusChecker.isNetworkAvailable(this)) {
+
             Call<UserModelResponse> call = mDataManager.loginUser(new UserLoginRequest(mLogin.getText().toString(), mPassword.getText().toString()));
             call.enqueue(new Callback<UserModelResponse>() {
                 @Override
@@ -239,6 +316,18 @@ public class AuthActivity extends BaseActivity implements View.OnClickListener {
 
     }
 
+    private void saveUserValuesByToken(UserModelResponseByToken userModel) {
+        int[] userValues = {
+                userModel.getData().getProfileValues().getRaiting(),
+                userModel.getData().getProfileValues().getLinesCode(),
+                userModel.getData().getProfileValues().getProjects()
+        };
+
+        mDataManager.getPreferencesManager().saveUserProfileValues(userValues);
+
+
+    }
+
     private void saveUserProfileDetails(UserModelResponse userModel) {
         List<String> userValues = new ArrayList<>();
         userValues.add(userModel.getData().getUser().getContacts().getPhone());
@@ -271,6 +360,38 @@ public class AuthActivity extends BaseActivity implements View.OnClickListener {
 
     }
 
+    private void saveUserProfileDetailsByToken (UserModelResponseByToken userModel) {
+        List<String> userValues = new ArrayList<>();
+        userValues.add(userModel.getData().getContacts().getPhone());
+        userValues.add(userModel.getData().getContacts().getEmail());
+        userValues.add(userModel.getData().getContacts().getVk());
+
+
+        List<UserModelResponse.Repo> repo = (userModel.getData().getRepositories().getRepo());
+        for (int i = 0; i < 3; i++) {
+            String gitTitle = "";
+            try {
+                gitTitle = repo.get(i).getGit();
+            } catch (Exception ex) {
+                gitTitle = "No_" + (i + 1) + "_git_repo";
+            }
+
+            userValues.add(gitTitle);
+
+        }
+
+//        userValues.add((userModel.getData().getUser().getRepositories().getRepo()).get(0).getGit());
+//        userValues.add((userModel.getData().getUser().getRepositories().getRepo()).get(1).getGit());
+//        userValues.add((userModel.getData().getUser().getRepositories().getRepo()).get(2).getGit());
+        userValues.add(userModel.getData().getPublicInfo().getBio());
+        userValues.add(userModel.getData().getFirstName() + " " + userModel.getData().getSecondName());
+
+
+        mDataManager.getPreferencesManager().saveUserProfileData(userValues);
+
+
+    }
+
     private void saveUserProfileImage(UserModelResponse userModel) {
 
         Uri photoUrl = Uri.parse(userModel.getData().getUser().getPublicInfo().getPhoto());
@@ -279,9 +400,25 @@ public class AuthActivity extends BaseActivity implements View.OnClickListener {
 
     }
 
+    private void saveUserProfileImageByToken(UserModelResponseByToken userModel) {
+
+        Uri photoUrl = Uri.parse(userModel.getData().getPublicInfo().getPhoto());
+        mDataManager.getPreferencesManager().saveUserPhoto(photoUrl);
+
+
+    }
+
     private void saveUserAvatarImage(UserModelResponse userModel) {
 
         Uri photoUrl = Uri.parse(userModel.getData().getUser().getPublicInfo().getAvatar());
+        mDataManager.getPreferencesManager().saveUserAvatar(photoUrl);
+
+
+    }
+
+    private void saveUserAvatarImageByToken(UserModelResponseByToken userModel) {
+
+        Uri photoUrl = Uri.parse(userModel.getData().getPublicInfo().getAvatar());
         mDataManager.getPreferencesManager().saveUserAvatar(photoUrl);
 
 
@@ -314,7 +451,6 @@ public class AuthActivity extends BaseActivity implements View.OnClickListener {
                                  Log.d(TAG, e.toString());
                                  showSnackbar("Ответ 200, но данные не пришли почему-то");
                              }
-
 
 
                          }
