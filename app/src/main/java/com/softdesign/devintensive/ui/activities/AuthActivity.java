@@ -15,12 +15,7 @@ import android.widget.TextView;
 import com.softdesign.devintensive.R;
 import com.softdesign.devintensive.data.managers.DataManager;
 import com.softdesign.devintensive.data.network.request.UserLoginRequest;
-import com.softdesign.devintensive.data.network.response.UserListRes;
 import com.softdesign.devintensive.data.network.response.UserModelResponse;
-import com.softdesign.devintensive.data.storage.models.Repository;
-import com.softdesign.devintensive.data.storage.models.RepositoryDao;
-import com.softdesign.devintensive.data.storage.models.User;
-import com.softdesign.devintensive.data.storage.models.UserDao;
 import com.softdesign.devintensive.utils.AppConfig;
 import com.softdesign.devintensive.utils.ConstantManager;
 import com.softdesign.devintensive.utils.NetworkStatusChecker;
@@ -53,8 +48,8 @@ public class AuthActivity extends BaseActivity implements View.OnClickListener {
     CoordinatorLayout mCoordinatorLayout;
 
     private DataManager mDataManager;
-    private RepositoryDao mRepositoryDao;
-    private UserDao mUserDao;
+//    private RepositoryDao mRepositoryDao;
+//    private UserDao mUserDao;
 
     @Override
 
@@ -64,8 +59,8 @@ public class AuthActivity extends BaseActivity implements View.OnClickListener {
         ButterKnife.bind(this);
         mDataManager = DataManager.getInstance();
 
-        mUserDao = mDataManager.getDaoSession().getUserDao();
-        mRepositoryDao = mDataManager.getDaoSession().getRepositoryDao();
+//        mUserDao = mDataManager.getDaoSession().getUserDao();
+//        mRepositoryDao = mDataManager.getDaoSession().getRepositoryDao();
 
         //mSignIn = (Button) findViewById(R.id.login_button_btn);
         mSignIn.setOnClickListener(this);
@@ -115,7 +110,7 @@ public class AuthActivity extends BaseActivity implements View.OnClickListener {
         saveUserProfileDetails(userModel);
         saveUserProfileImage(userModel);
         saveUserAvatarImage(userModel);
-        saveUserInDb();
+        //saveUserInDb();
 
         Handler handler = new Handler();
         handler.postDelayed(new Runnable() {
@@ -225,70 +220,5 @@ public class AuthActivity extends BaseActivity implements View.OnClickListener {
 
     }
 
-    private void saveUserInDb() {
-        showProgress();
-
-        Call<UserListRes> call = mDataManager.getUserListFromNetwork();
-        call.enqueue(new Callback<UserListRes>() {
-                         @Override
-                         public void onResponse(Call<UserListRes> call, Response<UserListRes> response) {
-
-                             try {
-
-                                 if (response.code() == 200) {
-
-                                     List<Repository> allRepositories = new ArrayList<Repository>();
-                                     List<User> allUsers = new ArrayList<User>();
-
-                                     for (UserListRes.UserData userRes : response.body().getData()) {
-
-                                         allRepositories.addAll(getRepoListFromUserRes(userRes));
-                                         allUsers.add(new User(userRes));
-
-                                         //allRepositories.addAll(userRes.getRepositories().getRepo());
-
-                                     }
-
-                                     mRepositoryDao.insertOrReplaceInTx(allRepositories);
-                                     mUserDao.insertOrReplaceInTx(allUsers);
-
-                                 } else {
-                                     showSnackbar("Список пользователей не может быть получен");
-                                     Log.e(TAG, "onResponse: " + String.valueOf(response.errorBody().source()));
-                                 }
-
-
-                             } catch (NullPointerException e) {
-                                 e.printStackTrace();
-                                 Log.d(TAG, e.toString());
-                                 showSnackbar("Ответ 200, но данные не пришли почему-то");
-                             }
-
-
-                             hideProgress();
-                         }
-
-                         @Override
-                         public void onFailure(Call<UserListRes> call, Throwable t) {
-                             // 14.07.2016 обработка ошибок ретрофита
-                             hideProgress();
-                             Log.d(TAG, t.toString());
-
-                         }
-                     }
-
-        );
-    }
-
-    private List<Repository> getRepoListFromUserRes(UserListRes.UserData userData) {
-        final String userId = userData.getId();
-
-        List<Repository> repositories = new ArrayList<>();
-        for (UserModelResponse.Repo repositoryRes : userData.getRepositories().getRepo()) {
-            repositories.add(new Repository(repositoryRes, userId));
-        }
-
-        return repositories;
-    }
 
 }

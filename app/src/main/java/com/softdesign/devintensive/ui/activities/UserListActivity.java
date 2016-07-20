@@ -13,6 +13,7 @@ import android.support.v7.app.ActionBar;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.ImageView;
@@ -22,8 +23,12 @@ import android.widget.TextView;
 import com.softdesign.devintensive.R;
 import com.softdesign.devintensive.data.managers.DataManager;
 import com.softdesign.devintensive.data.network.response.UserListRes;
+import com.softdesign.devintensive.data.network.response.UserModelResponse;
+import com.softdesign.devintensive.data.storage.models.Repository;
+import com.softdesign.devintensive.data.storage.models.RepositoryDao;
 import com.softdesign.devintensive.data.storage.models.User;
 import com.softdesign.devintensive.data.storage.models.UserDTO;
+import com.softdesign.devintensive.data.storage.models.UserDao;
 import com.softdesign.devintensive.ui.adapters.UsersAdapter;
 import com.softdesign.devintensive.utils.CircleTransform;
 import com.softdesign.devintensive.utils.ConstantManager;
@@ -35,6 +40,9 @@ import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 public class UserListActivity extends BaseActivity {
 
@@ -61,6 +69,8 @@ public class UserListActivity extends BaseActivity {
     private final String TAG = ConstantManager.TAG_PREFIX + "UserListActivity";
     private String mQuery;
     private Handler mHandler;
+    private RepositoryDao mRepositoryDao;
+    private UserDao mUserDao;
 
 
     @Override
@@ -70,6 +80,10 @@ public class UserListActivity extends BaseActivity {
         ButterKnife.bind(this);
 
         mDataManager = DataManager.getInstance();
+        mUserDao = mDataManager.getDaoSession().getUserDao();
+        mRepositoryDao = mDataManager.getDaoSession().getRepositoryDao();
+
+
         mHandler = new Handler();
 
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this);
@@ -79,7 +93,11 @@ public class UserListActivity extends BaseActivity {
         setupToolbar();
         setupDrawer();
 
-        loadUsersFromDb("");
+        if (mDataManager.getUserListFromDb().size() == 0) {
+            saveUsersInDb();
+        } else {
+            loadUsersFromDb();
+        }
 
     }
 
@@ -98,7 +116,7 @@ public class UserListActivity extends BaseActivity {
         Snackbar.make(mCoordinatorLayout, message, Snackbar.LENGTH_LONG).show();
     }
 
-    private void loadUsersFromDb(final String query) {
+    private void loadUsersFromDb() {
 
 
         if (mDataManager.getUserListFromDb().size() == 0) {
@@ -364,4 +382,73 @@ public class UserListActivity extends BaseActivity {
 
         }
     }
+
+    private void saveUsersInDb() {
+        showProgress();
+
+        Call<UserListRes> call = mDataManager.getUserListFromNetwork();
+        call.enqueue(new Callback<UserListRes>() {
+                         @Override
+                         public void onResponse(Call<UserListRes> call, Response<UserListRes> response) {
+
+                             try {
+
+                                 if (response.code() == 200) {
+
+                                     List<Repository> allRepositories = new ArrayList<Repository>();
+                                     List<User> allUsers = new ArrayList<User>();
+
+                                     for (UserListRes.UserData userRes : response.body().getData()) {
+
+                                         allRepositories.addAll(getRepoListFromUserRes(userRes));
+                                         allUsers.add(new User(userRes));
+
+                                         //allRepositories.addAll(userRes.getRepositories().getRepo());
+
+                                     }
+
+                                     mRepositoryDao.insertOrReplaceInTx(allRepositories);
+                                     mUserDao.insertOrReplaceInTx(allUsers);
+
+                                     loadUsersFromDb();
+
+                                 } else {
+                                     showSnackbar("Список пользователей не может быть получен");
+                                     Log.e(TAG, "onResponse: " + String.valueOf(response.errorBody().source()));
+                                 }
+
+
+                             } catch (NullPointerException e) {
+                                 e.printStackTrace();
+                                 Log.d(TAG, e.toString());
+                                 showSnackbar("Ответ 200, но данные не пришли почему-то");
+                             }
+
+
+                             hideProgress();
+                         }
+
+                         @Override
+                         public void onFailure(Call<UserListRes> call, Throwable t) {
+                             // 14.07.2016 обработка ошибок ретрофита
+                             hideProgress();
+                             Log.d(TAG, t.toString());
+
+                         }
+                     }
+
+        );
+    }
+
+    private List<Repository> getRepoListFromUserRes(UserListRes.UserData userData) {
+        final String userId = userData.getId();
+
+        List<Repository> repositories = new ArrayList<>();
+        for (UserModelResponse.Repo repositoryRes : userData.getRepositories().getRepo()) {
+            repositories.add(new Repository(repositoryRes, userId));
+        }
+
+        return repositories;
+    }
+
 }
