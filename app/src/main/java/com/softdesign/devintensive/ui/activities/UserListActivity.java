@@ -34,6 +34,7 @@ import com.softdesign.devintensive.data.storage.models.UserDao;
 import com.softdesign.devintensive.ui.adapters.UsersAdapter;
 import com.softdesign.devintensive.utils.CircleTransform;
 import com.softdesign.devintensive.utils.ConstantManager;
+import com.softdesign.devintensive.utils.DevintensiveApplication;
 import com.softdesign.devintensive.utils.LoadUsersFromDbChronos;
 import com.squareup.picasso.MemoryPolicy;
 import com.squareup.picasso.Picasso;
@@ -203,11 +204,8 @@ public class UserListActivity extends BaseActivity {
                         item.setChecked(true);
                         break;
                     case R.id.logout:
-                        //mDataManager.setPreferencesManager(null);
-                        //mDataManager = new DataManager();
-//                        Intent logout = new Intent(UserListActivity.this, AuthActivity.class);
-//                        startActivity(logout);
-                        finish();
+                        DevintensiveApplication.getSharedPreferences().edit().clear().apply();
+                        finishAffinity();
                         break;
                 }
 

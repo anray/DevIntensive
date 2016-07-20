@@ -45,6 +45,7 @@ import com.softdesign.devintensive.data.managers.DataManager;
 import com.softdesign.devintensive.data.managers.TextWatcherValidator;
 import com.softdesign.devintensive.utils.CircleTransform;
 import com.softdesign.devintensive.utils.ConstantManager;
+import com.softdesign.devintensive.utils.DevintensiveApplication;
 import com.softdesign.devintensive.utils.RoundedAvatarDrawable;
 import com.squareup.picasso.MemoryPolicy;
 import com.squareup.picasso.Picasso;
@@ -483,15 +484,8 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
                         startActivity(openTeamList);
                         break;
                     case R.id.logout:
-                        //mDataManager.setPreferencesManager(null);
-                        //mDataManager = new DataManager();
-//                        Intent logout = new Intent(MainActivity.this, AuthActivity.class);
-//                        startActivity(logout);
-//                        System.runFinalizersOnExit(true);
-//                        System.exit(0);
-                        //finishAndRemoveTask();
-
-                        finish();
+                        DevintensiveApplication.getSharedPreferences().edit().clear().apply();
+                        finishAffinity();
                         break;
                 }
 
