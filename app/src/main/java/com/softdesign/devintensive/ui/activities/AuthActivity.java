@@ -6,7 +6,9 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.Snackbar;
+import android.support.v7.widget.CardView;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -51,10 +53,15 @@ public class AuthActivity extends BaseActivity implements View.OnClickListener {
     @BindView(R.id.auth_main_coordinator)
     CoordinatorLayout mCoordinatorLayout;
 
+    @BindView(R.id.authorization_box)
+    CardView mCardView;
+
     private DataManager mDataManager;
     private RepositoryDao mRepositoryDao;
     private UserDao mUserDao;
     private ChronosConnector mConnector;
+
+
 
 
     @Override
@@ -76,18 +83,10 @@ public class AuthActivity extends BaseActivity implements View.OnClickListener {
         mForgotPassword.setOnClickListener(this);
 
 
-    }
-
-    public void onOperationFinished(final SaveUsersToDbChronos.Result result) {
-        //  20.07.2016 Переход в UserListActivity
-        if (result.isSuccessful()) {
-            Intent loginIntent = new Intent(AuthActivity.this, UserListActivity.class);
-            startActivity(loginIntent);
-        } else {
-            Log.d(TAG, result.getErrorMessage().toString());
-        }
 
     }
+
+
 
     @Override
     protected void onResume() {
@@ -105,6 +104,12 @@ public class AuthActivity extends BaseActivity implements View.OnClickListener {
     protected void onPause() {
         mConnector.onPause();
         super.onPause();
+    }
+
+    @Override
+    public boolean onKeyUp(int keyCode, KeyEvent event) {
+        mCardView.setVisibility(View.VISIBLE);
+        return super.onKeyUp(keyCode, event);
     }
 
     @Override
@@ -141,6 +146,11 @@ public class AuthActivity extends BaseActivity implements View.OnClickListener {
 
     private void loginSuccess(UserModelResponse userModel) {
 
+        //region=============Splash Screen
+        showProgress();
+        mCardView.setVisibility(View.GONE);
+        //endregion
+
         //showSnackbar(userModel.getData().getToken());
         mDataManager.getPreferencesManager().saveAuthToken(userModel.getData().getToken());
         mDataManager.getPreferencesManager().saveUserId(userModel.getData().getUser().getUserId());
@@ -149,6 +159,7 @@ public class AuthActivity extends BaseActivity implements View.OnClickListener {
         saveUserProfileImage(userModel);
         saveUserAvatarImage(userModel);
         saveUsersInDb();
+
 
 //        Handler handler = new Handler();
 //        handler.postDelayed(new Runnable() {
@@ -162,7 +173,24 @@ public class AuthActivity extends BaseActivity implements View.OnClickListener {
 
     }
 
+    public void onOperationFinished(final SaveUsersToDbChronos.Result result) {
+        hideProgress();
+
+        //  20.07.2016 Переход в UserListActivity
+        if (result.isSuccessful()) {
+
+            Intent loginIntent = new Intent(AuthActivity.this, UserListActivity.class);
+            startActivity(loginIntent);
+        } else {
+            Log.d(TAG, result.getErrorMessage().toString());
+        }
+
+        finish();
+
+    }
+
     private void signIn() {
+
         if (NetworkStatusChecker.isNetworkAvailable(this)) {
             Call<UserModelResponse> call = mDataManager.loginUser(new UserLoginRequest(mLogin.getText().toString(), mPassword.getText().toString()));
             call.enqueue(new Callback<UserModelResponse>() {
@@ -260,7 +288,7 @@ public class AuthActivity extends BaseActivity implements View.OnClickListener {
     }
 
     private void saveUsersInDb() {
-        showProgress();
+
 
         Call<UserListRes> call = mDataManager.getUserListFromNetwork();
         call.enqueue(new Callback<UserListRes>() {
@@ -288,13 +316,13 @@ public class AuthActivity extends BaseActivity implements View.OnClickListener {
                              }
 
 
-                             hideProgress();
+
                          }
 
                          @Override
                          public void onFailure(Call<UserListRes> call, Throwable t) {
                              // 14.07.2016 обработка ошибок ретрофита
-                             hideProgress();
+
                              Log.d(TAG, t.toString());
 
                          }
