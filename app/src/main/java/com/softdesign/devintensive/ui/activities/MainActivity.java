@@ -147,8 +147,6 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
     private TextView mNavTxtNameView, mNavTxtEmailView;
 
 
-
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -158,7 +156,6 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
 
         //инициализация синглтона
         mDataManager = DataManager.getInstance();
-
 
 
         //инициализация Navigation view
@@ -175,34 +172,16 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
         mNavTxtEmailView = (TextView) mNavigationView.getHeaderView(0).findViewById(R.id.user_email_txt);
 
 
-        //mCoordinatorLayout = (CoordinatorLayout) findViewById(R.id.main_coordinator_container);
-        //mToolbar = (Toolbar) findViewById(R.id.toolbar);
-        //mNavigationDrawer = (DrawerLayout) findViewById(R.id.navigation_drawer);
-        //mProfileImage = (ImageView) findViewById(R.id.user_photo_iv);
-        //mCollapsingToolbar = (CollapsingToolbarLayout) findViewById(R.id.collapsing_toolbar);
-        //mAppBarLayout = (AppBarLayout) findViewById(R.id.appbar_layout);
-
-
-        //mFab = (FloatingActionButton) findViewById(R.id.fab);
+        //привязка листенара для FAB
         mFab.setOnClickListener(this);
 
-
-        //Инициализация и привязка листенара для заставки на апп баре
-        //mProfilePlaceholder = (RelativeLayout) findViewById(R.id.profile_placeholder);
+        //привязка листенара для заставки на апп баре
         mProfilePlaceholder.setOnClickListener(this);
 
         //region
         /**
-         * Инициализация и привязка листенара для кнопок справа от полей
+         * Привязка листенара для кнопок справа от полей
          */
-
-
-        //mProfileTel = (ImageView) findViewById(R.id.call);
-        //mProfileEmail = (ImageView) findViewById(R.id.send_email_iv);
-        //mProfileVk = (ImageView) findViewById(R.id.open_VK_profile_iv);
-        //mProfileGithub1 = (ImageView) findViewById(R.id.open_repository1_iv);
-        //mProfileGithub2 = (ImageView) findViewById(R.id.open_repository2_iv);
-        //mProfileGithub3 = (ImageView) findViewById(R.id.open_repository3_iv);
 
         mProfileTel.setOnClickListener(this);
         mProfileEmail.setOnClickListener(this);
@@ -213,28 +192,14 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
 
         //endregion
 
-        //region
-        /**
-         * Инициализация полей редактирования
-
-
-         mUserPhone = (EditText) findViewById(R.id.phone_et);
-         mUserMail = (EditText) findViewById(R.id.email_et);
-         mUserVk = (EditText) findViewById(R.id.vk_profile_et);
-         mUserGit1 = (EditText) findViewById(R.id.git_repository1_et);
-         mUserGit2 = (EditText) findViewById(R.id.git_repository2_et);
-         mUserGit3 = (EditText) findViewById(R.id.git_repository3_et);
-         mUserBio = (EditText) findViewById(R.id.aboutMyself_et);
-         */
-        //endregion
 
         //region
         /**
-         * Валидация полей
+         * Валидация полей редактирования
          */
 
 
-        //инициализация ArrayList для сохранения в SharePrefernces
+        //инициализация ArrayList для сохранения в SharedPrefernces
         mUserInfoViews = new ArrayList<>();
         mUserInfoViews.add(mUserPhone);
         mUserInfoViews.add(mUserMail);
@@ -243,7 +208,6 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
         mUserInfoViews.add(mUserGit2);
         mUserInfoViews.add(mUserGit3);
         mUserInfoViews.add(mUserBio);
-
 
 
         //инициализация ArrayList для загрузки в плашку из SharePrefernces
@@ -271,8 +235,6 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
 
         //endregion
 
-
-        //List<String> test = mDataManager.getPreferencesManager().loadUserProfileData();
 
         if (savedInstanceState == null) {
 
@@ -479,7 +441,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
             public boolean onNavigationItemSelected(MenuItem item) {
                 //showSnackbar(item.getTitle().toString());
 
-                switch (item.getItemId()){
+                switch (item.getItemId()) {
                     case R.id.user_profile_id:
 
                         break;
@@ -503,7 +465,6 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
     }
 
 
-
     /**
      * Получение результата от другой Activity: фото из камеры или галерии
      *
@@ -517,12 +478,8 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
             case ConstantManager.REQUEST_GALLERY_PICTURE:
                 if (resultCode == RESULT_OK && data != null) {
                     mSelectedImage = data.getData();
-                    //File imageFile = new File(getRealPathFromURI(selectedImageURI));
-//                    String path = FileUtils.getPath(this, mSelectedImage);
-//                    FileUtils
 
                     insertProfileImage(mSelectedImage);
-
                 }
                 break;
             case ConstantManager.REQUEST_CAMERA_PICTURE:
@@ -547,8 +504,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
             mFab.setImageResource(R.drawable.ic_check_black_24dp);
 
             //Добавляем валидаторы
-           addValidators();
-
+            addValidators();
 
 
             for (EditText userValue : mUserInfoViews) {
@@ -572,7 +528,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
         } else {
 
             //Удаляем валидаторы с полей
-           removeValidators();
+            removeValidators();
             uploadPhotoFile(mSelectedImage);
 
 
@@ -603,13 +559,13 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
 //            mUserInfoViews.get(i).setText(userData.get(i));
 //        }
 
-        for (int i = 0; i < mUserInfoViews.size(); i++ ) {
+        for (int i = 0; i < mUserInfoViews.size(); i++) {
             mUserInfoViews.get(i).setText(userData.get(i));
         }
 
 
         mNavTxtEmailView.setText(userData.get(1)); //Установка email в drawere
-        mNavTxtNameView.setText(userData.get(userData.size()-1)); //Установка ФИО в drawere
+        mNavTxtNameView.setText(userData.get(userData.size() - 1)); //Установка ФИО в drawere
     }
 
     /**
@@ -891,7 +847,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
         startActivity(Intent.createChooser(openBrowser, getString(R.string.chooser_title_openBrowser)));
     }
 
-    private void addValidators(){
+    private void addValidators() {
 
         TextWatcherValidator mPhoneValidator = new TextWatcherValidator(mUserPhone, getString(R.string.validate_user_phone_error));
         TextWatcherValidator mUserMailValidator = new TextWatcherValidator(mUserMail, getString(R.string.validate_user_email_error));
@@ -917,7 +873,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
         mUserGit3.setText(mUserGit3.getText());
     }
 
-    private void removeValidators(){
+    private void removeValidators() {
         mUserPhone.removeTextChangedListener(mPhoneValidator);
         mUserMail.removeTextChangedListener(mUserMailValidator);
         mUserVk.removeTextChangedListener(mUserVkValidator);
@@ -926,20 +882,19 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
         mUserGit3.removeTextChangedListener(mUserGit3Validator);
     }
 
+    /**
+     * загрузка фото в профиль на сервер
+     *
+     * @param fileUri файла для загрузки в профиль на сервер
+     */
     public void uploadPhotoFile(Uri fileUri) {
         File file;
 
-        // https://github.com/iPaulPro/aFileChooser/blob/master/aFileChooser/src/com/ipaulpro/afilechooser/utils/FileUtils.java
-        // use the FileUtils to get the actual file by uri
-        //File file = FileUtils.getFile(mContext, fileUri);
-
-
-        //File file = FileUtils.getFile(mContext, fileUri);
-
         if (fileUri.getScheme() == "file") {
-
+            //из камеры приходит путь вида (схема file) file:///storage/emulated/0/Pictures/JPEG-234234-3454332.jpg
             file = new File(fileUri.getPath());
         } else {
+            //из галереи приходит путь вида (схема content) content://media/external/images/media/24324
             file = new File(getRealPathFromURI(this, fileUri));
         }
 
@@ -950,7 +905,6 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
         // MultipartBody.Part is used to send also the actual file name
         MultipartBody.Part body =
                 MultipartBody.Part.createFormData("photo", file.getName(), requestFile);
-
 
 
         // finally, execute the request
@@ -970,11 +924,18 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
         });
     }
 
+    /**
+     * Метод нужен чтоб получить абсолютный путь к файлу, так как из галереи приходит путь типа content://media/external/images/media/24324
+     *
+     * @param context
+     * @param contentUri
+     * @return
+     */
     public String getRealPathFromURI(Context context, Uri contentUri) {
         Cursor cursor = null;
         try {
-            String[] proj = { MediaStore.Images.Media.DATA };
-            cursor = context.getContentResolver().query(contentUri,  proj, null, null, null);
+            String[] proj = {MediaStore.Images.Media.DATA};
+            cursor = context.getContentResolver().query(contentUri, proj, null, null, null);
             int column_index = cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATA);
             cursor.moveToFirst();
             return cursor.getString(column_index);

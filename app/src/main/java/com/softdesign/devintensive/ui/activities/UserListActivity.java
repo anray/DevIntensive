@@ -26,8 +26,6 @@ import com.redmadrobot.chronos.ChronosConnector;
 import com.softdesign.devintensive.R;
 import com.softdesign.devintensive.data.managers.DataManager;
 import com.softdesign.devintensive.data.network.response.UserListRes;
-import com.softdesign.devintensive.data.network.response.UserModelResponse;
-import com.softdesign.devintensive.data.storage.models.Repository;
 import com.softdesign.devintensive.data.storage.models.RepositoryDao;
 import com.softdesign.devintensive.data.storage.models.User;
 import com.softdesign.devintensive.data.storage.models.UserDTO;
@@ -46,9 +44,6 @@ import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
 
 public class UserListActivity extends BaseActivity {
 
@@ -102,23 +97,20 @@ public class UserListActivity extends BaseActivity {
         setupToolbar();
         setupDrawer();
 
-        //if (mDataManager.getUserListFromDb().size() == 0) {
-//        if(mUsers == null || mUsers.size() == 0){
-//            saveUsersInDb();
-//        }
 
-        //} else {
-            //loadUsersFromDb();
-        //}
-
-
-        mConnector.runOperation(new LoadUsersFromDbChronos(),false);
+        //start Chronus operation
+        mConnector.runOperation(new LoadUsersFromDbChronos(), false);
 
     }
 
+    /**
+     * запускается по окончании Chronus потока
+     *
+     * @param result Список пользователей из БД
+     */
     public void onOperationFinished(final LoadUsersFromDbChronos.Result result) {
         if (result.isSuccessful()) {
-           showUsers(result.getOutput());
+            showUsers(result.getOutput());
         } else {
             Log.d(TAG, result.getErrorMessage().toString());
         }
@@ -155,9 +147,6 @@ public class UserListActivity extends BaseActivity {
     private void showSnackbar(String message) {
         Snackbar.make(mCoordinatorLayout, message, Snackbar.LENGTH_LONG).show();
     }
-
-
-
 
 
     private void setupDrawer() {
@@ -232,8 +221,6 @@ public class UserListActivity extends BaseActivity {
     }
 
 
-
-
     @Override
     public boolean onPrepareOptionsMenu(Menu menu) {
 
@@ -250,7 +237,7 @@ public class UserListActivity extends BaseActivity {
             @Override
             public boolean onQueryTextChange(String newText) {
 
-                // TODO: 19.07.2016 Вызвать поиск тут
+                // 19.07.2016 Вызвает поиск тут
                 showUsersByQuery(newText);
 
                 return false;
@@ -311,16 +298,15 @@ public class UserListActivity extends BaseActivity {
     }
 
 
-
-    private void loadUsersFromDb() {
-
-
-        if (mDataManager.getUserListFromDb().size() == 0) {
-            showSnackbar("Список пользователей пуст, не может быть загружен");
-        } else {
-
-            showUsers(mDataManager.getUserListFromDb());
-        }
+//    private void loadUsersFromDb() {
+//
+//
+//        if (mDataManager.getUserListFromDb().size() == 0) {
+//            showSnackbar("Список пользователей пуст, не может быть загружен");
+//        } else {
+//
+//            showUsers(mDataManager.getUserListFromDb());
+//        }
 
 //        showProgress();
 //
@@ -392,6 +378,6 @@ public class UserListActivity extends BaseActivity {
 //
 //            }
 //        });
-    }
+//    }
 
 }

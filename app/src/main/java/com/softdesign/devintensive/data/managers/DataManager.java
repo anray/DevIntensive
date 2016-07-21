@@ -95,23 +95,23 @@ public class DataManager {
         return mDaoSession;
     }
 
-    public List<User> getUserListFromDb() {
-        List<User> userList = new ArrayList<>();
-
-        try {
-
-            userList = mDaoSession.queryBuilder(User.class)
-                    .where(UserDao.Properties.CodeLines.gt(0))
-                    .orderDesc(UserDao.Properties.CodeLines)
-                    .build()
-                    .list();
-
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
-        return userList;
-    }
+//    public List<User> getUserListFromDb() {
+//        List<User> userList = new ArrayList<>();
+//
+//        try {
+//
+//            userList = mDaoSession.queryBuilder(User.class)
+//                    .where(UserDao.Properties.CodeLines.gt(0))
+//                    .orderDesc(UserDao.Properties.CodeLines)
+//                    .build()
+//                    .list();
+//
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//        }
+//
+//        return userList;
+//    }
 
     public List<User> getUserListByName(String query){
 

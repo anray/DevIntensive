@@ -8,7 +8,6 @@ import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.Snackbar;
 import android.support.v7.widget.CardView;
 import android.util.Log;
-import android.view.KeyEvent;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -89,8 +88,6 @@ public class AuthActivity extends BaseActivity implements View.OnClickListener {
         signInByToken();
 
 
-
-
     }
 
 
@@ -111,7 +108,6 @@ public class AuthActivity extends BaseActivity implements View.OnClickListener {
         mConnector.onPause();
         super.onPause();
     }
-
 
 
     @Override
@@ -153,27 +149,12 @@ public class AuthActivity extends BaseActivity implements View.OnClickListener {
         mCardView.setVisibility(View.GONE);
         //endregion
 
-        //showSnackbar(userModel.getData().getToken());
-        //mDataManager.getPreferencesManager().saveAuthToken(userModelByToken.ge);
-        //mDataManager.getPreferencesManager().saveUserId(userModel.getData().getUser().getUserId());
 
         saveUserValuesByToken(userModelByToken);
         saveUserProfileDetailsByToken(userModelByToken);
         saveUserProfileImageByToken(userModelByToken);
         saveUserAvatarImageByToken(userModelByToken);
         saveUsersInDb();
-
-
-//        Handler handler = new Handler();
-//        handler.postDelayed(new Runnable() {
-//            @Override
-//            public void run() {
-//                Intent loginIntent = new Intent(AuthActivity.this, UserListActivity.class);
-//                startActivity(loginIntent);
-//            }
-//        }, AppConfig.START_DELAY);
-
-
     }
 
 
@@ -207,6 +188,10 @@ public class AuthActivity extends BaseActivity implements View.OnClickListener {
 
     }
 
+    /**
+     * Chronos запускает этот метод по заверщении сохранения в БД в рабочем потоке
+     * @param result результат операции сохранения
+     */
     public void onOperationFinished(final SaveUsersToDbChronos.Result result) {
         hideProgress();
 
@@ -226,7 +211,6 @@ public class AuthActivity extends BaseActivity implements View.OnClickListener {
     private void signInByToken() {
 
         if (NetworkStatusChecker.isNetworkAvailable(this)) {
-
 
 
             Call<UserModelResponseByToken> call = mDataManager.loginUserByToken(mDataManager.getPreferencesManager().getUserId());
@@ -360,13 +344,13 @@ public class AuthActivity extends BaseActivity implements View.OnClickListener {
 
     }
 
-    private void saveUserProfileDetailsByToken (UserModelResponseByToken userModel) {
+    private void saveUserProfileDetailsByToken(UserModelResponseByToken userModel) {
         List<String> userValues = new ArrayList<>();
         userValues.add(userModel.getData().getContacts().getPhone());
         userValues.add(userModel.getData().getContacts().getEmail());
         userValues.add(userModel.getData().getContacts().getVk());
 
-
+        //сохранение списка репозиториев
         List<UserModelResponse.Repo> repo = (userModel.getData().getRepositories().getRepo());
         for (int i = 0; i < 3; i++) {
             String gitTitle = "";
@@ -380,9 +364,6 @@ public class AuthActivity extends BaseActivity implements View.OnClickListener {
 
         }
 
-//        userValues.add((userModel.getData().getUser().getRepositories().getRepo()).get(0).getGit());
-//        userValues.add((userModel.getData().getUser().getRepositories().getRepo()).get(1).getGit());
-//        userValues.add((userModel.getData().getUser().getRepositories().getRepo()).get(2).getGit());
         userValues.add(userModel.getData().getPublicInfo().getBio());
         userValues.add(userModel.getData().getFirstName() + " " + userModel.getData().getSecondName());
 
@@ -436,7 +417,7 @@ public class AuthActivity extends BaseActivity implements View.OnClickListener {
 
                                  if (response.code() == 200) {
 
-
+                                     //запускает сохранение в БД в отдельном потоке через Chronos
                                      mConnector.runOperation(new SaveUsersToDbChronos(response.body().getData()), false);
 
 
