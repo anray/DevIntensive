@@ -18,6 +18,8 @@ import com.squareup.picasso.Picasso;
 import java.util.ArrayList;
 import java.util.List;
 
+import okhttp3.MultipartBody;
+import okhttp3.ResponseBody;
 import retrofit2.Call;
 
 /**
@@ -72,6 +74,10 @@ public class DataManager {
 
     public Call<UserModelResponseByToken> loginUserByToken(String userId) {
         return mRestService.loginUserByToken(userId);
+    }
+
+    public Call<ResponseBody> uploadPhoto (String userId, MultipartBody.Part file) {
+        return mRestService.uploadPhoto(userId, file);
     }
 
 

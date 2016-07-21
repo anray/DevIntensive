@@ -1,15 +1,14 @@
 package com.softdesign.devintensive.ui.activities;
 
 import android.Manifest;
-import android.app.Activity;
 import android.app.Dialog;
 import android.content.ContentValues;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.graphics.Bitmap;
+import android.database.Cursor;
 import android.graphics.Color;
-import android.graphics.drawable.BitmapDrawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
@@ -46,7 +45,6 @@ import com.softdesign.devintensive.data.managers.TextWatcherValidator;
 import com.softdesign.devintensive.utils.CircleTransform;
 import com.softdesign.devintensive.utils.ConstantManager;
 import com.softdesign.devintensive.utils.DevintensiveApplication;
-import com.softdesign.devintensive.utils.RoundedAvatarDrawable;
 import com.squareup.picasso.MemoryPolicy;
 import com.squareup.picasso.Picasso;
 
@@ -59,6 +57,13 @@ import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import okhttp3.MediaType;
+import okhttp3.MultipartBody;
+import okhttp3.RequestBody;
+import okhttp3.ResponseBody;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 public class MainActivity extends BaseActivity implements View.OnClickListener {
 
@@ -76,7 +81,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
     CollapsingToolbarLayout mCollapsingToolbar;
     @BindView(R.id.appbar_layout)
     AppBarLayout mAppBarLayout;
-    @BindView(R.id.user_info_user_photo_iv)
+    @BindView(R.id.user_info_user_photo_main_iv)
     ImageView mProfileImage;
     @BindView(R.id.send_email_iv)
     ImageView mProfileEmail;
@@ -512,8 +517,12 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
             case ConstantManager.REQUEST_GALLERY_PICTURE:
                 if (resultCode == RESULT_OK && data != null) {
                     mSelectedImage = data.getData();
+                    //File imageFile = new File(getRealPathFromURI(selectedImageURI));
+//                    String path = FileUtils.getPath(this, mSelectedImage);
+//                    FileUtils
 
                     insertProfileImage(mSelectedImage);
+
                 }
                 break;
             case ConstantManager.REQUEST_CAMERA_PICTURE:
@@ -564,6 +573,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
 
             //Удаляем валидаторы с полей
            removeValidators();
+            //uploadPhotoFile(mSelectedImage);
 
 
             mFab.setImageResource(R.drawable.ic_mode_edit_black_24dp);
@@ -821,6 +831,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
 
         Picasso.with(this)
                 .load(selectedImage)
+                .memoryPolicy(MemoryPolicy.NO_CACHE)
                 //.resize(768, 512)
                 .fit()
                 .centerCrop()
@@ -913,6 +924,65 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
         mUserGit1.removeTextChangedListener(mUserGit1Validator);
         mUserGit2.removeTextChangedListener(mUserGit2Validator);
         mUserGit3.removeTextChangedListener(mUserGit3Validator);
+    }
+
+    public void uploadPhotoFile(Uri fileUri) {
+        File file;
+
+        // https://github.com/iPaulPro/aFileChooser/blob/master/aFileChooser/src/com/ipaulpro/afilechooser/utils/FileUtils.java
+        // use the FileUtils to get the actual file by uri
+        //File file = FileUtils.getFile(mContext, fileUri);
+
+
+        //File file = FileUtils.getFile(mContext, fileUri);
+
+        if (fileUri.getScheme() == "file") {
+
+            file = new File(fileUri.getPath());
+        } else {
+            file = new File(getRealPathFromURI(this, fileUri));
+        }
+
+        // create RequestBody instance from file
+        RequestBody requestFile =
+                RequestBody.create(MediaType.parse("multipart/form-data"), file);
+
+        // MultipartBody.Part is used to send also the actual file name
+        MultipartBody.Part body =
+                MultipartBody.Part.createFormData("photo", file.getName(), requestFile);
+
+
+
+        // finally, execute the request
+        Call<ResponseBody> call = mDataManager.uploadPhoto(mDataManager.getPreferencesManager().getUserId(), body);
+        call.enqueue(new Callback<ResponseBody>() {
+            @Override
+            public void onResponse(Call<ResponseBody> call,
+                                   Response<ResponseBody> response) {
+                Log.d(TAG, "Upload success");
+
+            }
+
+            @Override
+            public void onFailure(Call<ResponseBody> call, Throwable t) {
+                Log.d(TAG, "Upload failed" + t.getMessage().toString());
+            }
+        });
+    }
+
+    public String getRealPathFromURI(Context context, Uri contentUri) {
+        Cursor cursor = null;
+        try {
+            String[] proj = { MediaStore.Images.Media.DATA };
+            cursor = context.getContentResolver().query(contentUri,  proj, null, null, null);
+            int column_index = cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATA);
+            cursor.moveToFirst();
+            return cursor.getString(column_index);
+        } finally {
+            if (cursor != null) {
+                cursor.close();
+            }
+        }
     }
 
 }

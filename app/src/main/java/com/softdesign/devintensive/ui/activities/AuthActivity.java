@@ -227,9 +227,9 @@ public class AuthActivity extends BaseActivity implements View.OnClickListener {
 
         if (NetworkStatusChecker.isNetworkAvailable(this)) {
 
-            String tempid = mDataManager.getPreferencesManager().getUserId();
 
-            Call<UserModelResponseByToken> call = mDataManager.loginUserByToken(tempid);
+
+            Call<UserModelResponseByToken> call = mDataManager.loginUserByToken(mDataManager.getPreferencesManager().getUserId());
             call.enqueue(new Callback<UserModelResponseByToken>() {
                 @Override
                 public void onResponse(Call<UserModelResponseByToken> call, Response<UserModelResponseByToken> response) {
