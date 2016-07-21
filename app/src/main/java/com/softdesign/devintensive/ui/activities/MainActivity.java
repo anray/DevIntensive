@@ -529,7 +529,12 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
 
             //Удаляем валидаторы с полей
             removeValidators();
-            uploadPhotoFile(mSelectedImage);
+
+            //если пользователь не менял фото, то не грузить на сервер
+            if (mSelectedImage != null && !mSelectedImage.toString().isEmpty()){
+                uploadPhotoFile(mSelectedImage);
+            }
+
 
 
             mFab.setImageResource(R.drawable.ic_mode_edit_black_24dp);
