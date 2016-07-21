@@ -14,6 +14,7 @@ import android.support.v7.app.ActionBar;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.support.v7.widget.helper.ItemTouchHelper;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -36,6 +37,7 @@ import com.softdesign.devintensive.utils.CircleTransform;
 import com.softdesign.devintensive.utils.ConstantManager;
 import com.softdesign.devintensive.utils.DevintensiveApplication;
 import com.softdesign.devintensive.utils.LoadUsersFromDbChronos;
+import com.softdesign.devintensive.utils.SimpleItemTouchHelperCallback;
 import com.squareup.picasso.MemoryPolicy;
 import com.squareup.picasso.Picasso;
 
@@ -277,6 +279,13 @@ public class UserListActivity extends BaseActivity {
             }
         });
         mRecyclerView.swapAdapter(mUsersAdapter, false);
+
+        //region ====== присоединил чтобы был свайп
+        ItemTouchHelper.Callback callback =
+                new SimpleItemTouchHelperCallback(mUsersAdapter);
+        ItemTouchHelper touchHelper = new ItemTouchHelper(callback);
+        touchHelper.attachToRecyclerView(mRecyclerView);
+        //endregion
     }
 
 

@@ -15,15 +15,17 @@ import com.softdesign.devintensive.data.managers.DataManager;
 import com.softdesign.devintensive.data.storage.models.User;
 import com.softdesign.devintensive.ui.views.AspectRatioImageView;
 import com.softdesign.devintensive.utils.ConstantManager;
+import com.softdesign.devintensive.utils.ItemTouchHelperAdapter;
 import com.squareup.picasso.Callback;
 import com.squareup.picasso.NetworkPolicy;
 
+import java.util.Collections;
 import java.util.List;
 
 /**
  * Created by anray on 14.07.2016.
  */
-public class UsersAdapter extends RecyclerView.Adapter<UsersAdapter.UserViewHolder> {
+public class UsersAdapter extends RecyclerView.Adapter<UsersAdapter.UserViewHolder> implements ItemTouchHelperAdapter {
 
     private static final String TAG = ConstantManager.TAG_PREFIX + "UsersAdapter";
     private List<User> mUsers;
@@ -115,6 +117,27 @@ public class UsersAdapter extends RecyclerView.Adapter<UsersAdapter.UserViewHold
     @Override
     public int getItemCount() {
         return mUsers.size();
+    }
+
+    @Override
+    public void onItemMove(int fromPosition, int toPosition) {
+        if (fromPosition < toPosition) {
+            for (int i = fromPosition; i < toPosition; i++) {
+                Collections.swap(mUsers, i, i + 1);
+            }
+        } else {
+            for (int i = fromPosition; i > toPosition; i--) {
+                Collections.swap(mUsers, i, i - 1);
+            }
+        }
+        notifyItemMoved(fromPosition, toPosition);
+        //return true;
+    }
+
+    @Override
+    public void onItemDismiss(int position) {
+        mUsers.remove(position);
+        notifyItemRemoved(position);
     }
 
 
