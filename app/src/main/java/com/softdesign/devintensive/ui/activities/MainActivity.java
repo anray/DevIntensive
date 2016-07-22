@@ -31,6 +31,7 @@ import android.support.v7.app.ActionBar;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
@@ -71,46 +72,70 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
     private int mCurrentEditMode = 0;
 
     private DataManager mDataManager;
+
     @BindView(R.id.navigation_drawer)
     DrawerLayout mNavigationDrawer;
+
+    @BindView(R.id.navigation_view)
+    NavigationView mNavigationView;
+
     @BindView(R.id.fab)
     FloatingActionButton mFab;
+
     @BindView(R.id.profile_placeholder)
     RelativeLayout mProfilePlaceholder;
+
     @BindView(R.id.collapsing_toolbar)
     CollapsingToolbarLayout mCollapsingToolbar;
+
     @BindView(R.id.appbar_layout)
     AppBarLayout mAppBarLayout;
+
     @BindView(R.id.user_info_user_photo_main_iv)
     ImageView mProfileImage;
+
     @BindView(R.id.send_email_iv)
     ImageView mProfileEmail;
+
     @BindView(R.id.open_VK_profile_iv)
     ImageView mProfileVk;
+
     @BindView(R.id.open_repository1_iv)
     ImageView mProfileGithub1;
+
     @BindView(R.id.open_repository2_iv)
     ImageView mProfileGithub2;
+
     @BindView(R.id.open_repository3_iv)
     ImageView mProfileGithub3;
+
     @BindView(R.id.call)
     ImageView mProfileTel;
+
     @BindView(R.id.main_coordinator_container)
     CoordinatorLayout mCoordinatorLayout;
+
     @BindView(R.id.user_info_toolbar)
     Toolbar mToolbar;
+
     @BindView(R.id.phone_et)
     EditText mUserPhone;
+
     @BindView(R.id.email_et)
     EditText mUserMail;
+
     @BindView(R.id.vk_profile_et)
     EditText mUserVk;
+
     @BindView(R.id.git_repository1_et)
     EditText mUserGit1;
+
     @BindView(R.id.git_repository2_et)
     EditText mUserGit2;
+
     @BindView(R.id.git_repository3_et)
     EditText mUserGit3;
+
     @BindView(R.id.user_info_aboutMyself_et)
     EditText mUserBio;
 
@@ -130,7 +155,6 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
     private File mPhotoFile = null;
     private Uri mSelectedImage = null;
 
-    private NavigationView mNavigationView;
 
     private List<EditText> mUserInfoViews;
 
@@ -157,20 +181,14 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
         //инициализация синглтона
         mDataManager = DataManager.getInstance();
 
-
-        //инициализация Navigation view
-        mNavigationView = (NavigationView) findViewById(R.id.navigation_view);
-
         //инициализация аватарки
         mAvatar = (ImageView) mNavigationView.getHeaderView(0).findViewById(R.id.avatar);
 
         //инициализация ФИО в drawere
         mNavTxtNameView = (TextView) mNavigationView.getHeaderView(0).findViewById(R.id.user_name_txt);
 
-
         //инициализация email в drawere
         mNavTxtEmailView = (TextView) mNavigationView.getHeaderView(0).findViewById(R.id.user_email_txt);
-
 
         //привязка листенара для FAB
         mFab.setOnClickListener(this);
@@ -178,10 +196,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
         //привязка листенара для заставки на апп баре
         mProfilePlaceholder.setOnClickListener(this);
 
-        //region
-        /**
-         * Привязка листенара для кнопок справа от полей
-         */
+        //region ========== Привязка листенара для кнопок справа от полей
 
         mProfileTel.setOnClickListener(this);
         mProfileEmail.setOnClickListener(this);
@@ -192,14 +207,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
 
         //endregion
 
-
-        //region
-        /**
-         * Валидация полей редактирования
-         */
-
-
-        //инициализация ArrayList для сохранения в SharedPrefernces
+        //инициализация ArrayList данных профиля Главного пользователя для сохранения в SharedPrefernces
         mUserInfoViews = new ArrayList<>();
         mUserInfoViews.add(mUserPhone);
         mUserInfoViews.add(mUserMail);
@@ -210,19 +218,26 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
         mUserInfoViews.add(mUserBio);
 
 
-        //инициализация ArrayList для загрузки в плашку из SharePrefernces
+        //инициализация ArrayList для загрузки в плашку профиля Главного пользователя из SharePrefernces
         mUserValueViews = new ArrayList<>();
         mUserValueViews.add(mUserValueRating);
         mUserValueViews.add(mUserValueCodeLines);
         mUserValueViews.add(mUserValueProjects);
 
+        //установка гамбургер меню
         setupToolbar();
-        setupDrawer();
 
-        //region загрузка из Shared Preferences содержимого
-        initUserFields();
-        initUserInfoValue();
 
+        //region ============== загрузка из Shared Preferences содержимого
+        initUserInfoValue(); //в плашку
+        initUserFields(); //остальных данных профиля и drawer-а
+
+        //добавляем валидаторы для initUserFields чтобы валидация сработала на загруженные поля
+        //и тут же удаляем чтобы память не кушала
+        addValidators();
+        removeValidators();
+
+        //фото профиля
         Picasso.with(this)
                 .load(mDataManager.getPreferencesManager().loadUserPhoto())
                 .memoryPolicy(MemoryPolicy.NO_CACHE)
@@ -231,6 +246,8 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
                 .centerCrop()
                 .placeholder(R.drawable.user_bg)
                 .into(mProfileImage);
+
+        //загрузка аватара происхоидт в setupDrawer()
 
 
         //endregion
@@ -252,36 +269,10 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
             changeEditMode(mCurrentEditMode);
         }
 
-        //добавляем валидаторы для UserInfoValues чтобы валидация сработала на загруженные поля
-        //и тут же удаляем чтобы память не кушала
-        addValidators();
-        removeValidators();
 
+        Log.d(TAG, "onCreate: ");
     }
 
-
-    @Override
-    public boolean onContextItemSelected(MenuItem item) {
-        if (item.getItemId() == android.R.id.home) {
-            mNavigationDrawer.openDrawer(GravityCompat.START);
-        }
-        return super.onContextItemSelected(item);
-    }
-
-    /**
-     * Открывает боковую менеюшку NavigationDrawer
-     *
-     * @param item габургер меню
-     * @return
-     */
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        if (item.getItemId() == android.R.id.home) {
-            mNavigationDrawer.openDrawer(GravityCompat.START);
-        }
-        return super.onOptionsItemSelected(item);
-    }
 
     @Override
     protected void onStart() {
@@ -293,7 +284,9 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
     protected void onResume() {
         super.onResume();
         Log.d(TAG, "onResume");
-        //initUserFields();
+
+        //необходимо здесь чтобы при нажатии Back выделенная опция меню соответствовала текущей активити
+        setupDrawer();
     }
 
     @Override
@@ -397,73 +390,6 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
 
     }
 
-    /**
-     * Добавляет гамбургер меню на тулбар
-     */
-    private void setupToolbar() {
-        setSupportActionBar(mToolbar);
-        ActionBar actionBar = getSupportActionBar();
-
-        mAppBarParams = (AppBarLayout.LayoutParams) mCollapsingToolbar.getLayoutParams();
-        if (actionBar != null) {
-            actionBar.setHomeAsUpIndicator(R.drawable.ic_menu_black_24dp);
-            actionBar.setDisplayHomeAsUpEnabled(true);
-        }
-    }
-
-    /**
-     * Выбирает пункты меню и закрывает меню после выбора
-     */
-    private void setupDrawer() {
-        NavigationView navigationView = (NavigationView) findViewById(R.id.navigation_view);
-
-        ImageView mAvatar = (ImageView) mNavigationView.getHeaderView(0).findViewById(R.id.avatar);
-
-
-        //устанавливает выбранным пункт меню, где мы находимся
-        mNavigationView.getMenu().findItem(R.id.user_profile_id).setChecked(true);
-
-
-        Picasso.with(mNavigationDrawer.getContext())
-                .load(mDataManager.getPreferencesManager().loadUserAvatar())
-                .memoryPolicy(MemoryPolicy.NO_CACHE)
-                //.resize(120, 120)
-                .fit()
-                .centerCrop()
-                .placeholder(R.drawable.user_bg)
-                .transform(new CircleTransform())
-                .into(mAvatar);
-
-
-        navigationView.setNavigationItemSelectedListener(new NavigationView
-                .OnNavigationItemSelectedListener() {
-            @Override
-            public boolean onNavigationItemSelected(MenuItem item) {
-                //showSnackbar(item.getTitle().toString());
-
-                switch (item.getItemId()) {
-                    case R.id.user_profile_id:
-
-                        break;
-                    case R.id.team_menu:
-                        item.setChecked(true);
-                        Intent openTeamList = new Intent(MainActivity.this, UserListActivity.class);
-                        startActivity(openTeamList);
-                        break;
-                    case R.id.logout:
-                        DevintensiveApplication.getSharedPreferences().edit().clear().apply();
-                        finishAffinity();
-                        break;
-                }
-
-
-                mNavigationDrawer.closeDrawer(GravityCompat.START);
-
-                return false;
-            }
-        });
-    }
-
 
     /**
      * Получение результата от другой Activity: фото из камеры или галерии
@@ -531,10 +457,9 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
             removeValidators();
 
             //если пользователь не менял фото, то не грузить на сервер
-            if (mSelectedImage != null && !mSelectedImage.toString().isEmpty()){
+            if (mSelectedImage != null && !mSelectedImage.toString().isEmpty()) {
                 uploadPhotoFile(mSelectedImage);
             }
-
 
 
             mFab.setImageResource(R.drawable.ic_mode_edit_black_24dp);
@@ -593,6 +518,101 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
             Log.d(ConstantManager.TAG_PREFIX + "MainActivity", userInfoValues.get(i));
         }
 
+    }
+
+    /**
+     * Добавляет гамбургер меню на тулбар
+     */
+    private void setupToolbar() {
+        setSupportActionBar(mToolbar);
+        ActionBar actionBar = getSupportActionBar();
+
+        mAppBarParams = (AppBarLayout.LayoutParams) mCollapsingToolbar.getLayoutParams();
+        if (actionBar != null) {
+            actionBar.setHomeAsUpIndicator(R.drawable.ic_menu_black_24dp);
+            actionBar.setDisplayHomeAsUpEnabled(true);
+        }
+    }
+
+    /**
+     * Выбирает пункты меню и закрывает меню после выбора
+     */
+    private void setupDrawer() {
+
+        //устанавливает выбранным пункт меню, где мы находимся
+        mNavigationView.getMenu().findItem(R.id.user_profile_id).setChecked(true);
+
+
+        Picasso.with(mNavigationDrawer.getContext())
+                .load(mDataManager.getPreferencesManager().loadUserAvatar())
+                .memoryPolicy(MemoryPolicy.NO_CACHE)
+                //.resize(120, 120)
+                .fit()
+                .centerCrop()
+                .placeholder(R.drawable.user_bg)
+                .transform(new CircleTransform())
+                .into(mAvatar);
+
+
+        mNavigationView.setNavigationItemSelectedListener(new NavigationView
+                .OnNavigationItemSelectedListener() {
+            @Override
+            public boolean onNavigationItemSelected(MenuItem item) {
+                //showSnackbar(item.getTitle().toString());
+
+                switch (item.getItemId()) {
+                    case R.id.user_profile_id:
+
+                        break;
+                    case R.id.team_menu:
+                        item.setChecked(true);
+                        Intent openTeamList = new Intent(MainActivity.this, UserListActivity.class);
+                        startActivity(openTeamList);
+                        break;
+                    case R.id.logout:
+                        DevintensiveApplication.getSharedPreferences().edit().clear().apply();
+                        finishAffinity();
+                        break;
+                }
+
+
+                mNavigationDrawer.closeDrawer(GravityCompat.START);
+
+                return false;
+            }
+        });
+    }
+
+    /**
+     * По нажатию на гамбургер меню открывает дравер
+     *
+     * @param item габургер меню
+     * @return
+     */
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if (item.getItemId() == android.R.id.home) {
+            mNavigationDrawer.openDrawer(GravityCompat.START);
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
+    /**
+     * Открывает drawer по нажатию хардовой кнопки меню
+     *
+     * @param featureId
+     * @param menu
+     * @return
+     */
+    @Override
+    public boolean onMenuOpened(int featureId, Menu menu) {
+
+
+        mNavigationDrawer.openDrawer(GravityCompat.START);
+
+        Log.d(TAG, "onMenuOpened: ");
+        //return super.onMenuOpened(featureId, menu);
+        return false;
     }
 
     /**
@@ -950,5 +970,20 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
             }
         }
     }
+
+    //    /**
+//     * По нажатию на гамбургер меню открывает дравер
+//     * @param item
+//     * @return
+//     */
+//    @Override
+//    public boolean onContextItemSelected(MenuItem item) {
+//        if (item.getItemId() == android.R.id.home) {
+//            mNavigationDrawer.openDrawer(GravityCompat.START);
+//        }
+//        Log.d(TAG, "onContextItemSelected: ");
+//        return super.onContextItemSelected(item);
+//    }
+
 
 }

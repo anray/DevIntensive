@@ -51,6 +51,9 @@ public class UserListActivity extends BaseActivity {
     @BindView(R.id.navigation_drawer)
     DrawerLayout mNavigationDrawer;
 
+    @BindView(R.id.user_list_navigation_view)
+    NavigationView mNavigationView;
+
     @BindView(R.id.main_coordinator_container)
     CoordinatorLayout mCoordinatorLayout;
 
@@ -95,12 +98,32 @@ public class UserListActivity extends BaseActivity {
 
 
         setupToolbar();
-        setupDrawer();
 
 
         //start Chronus operation
         mConnector.runOperation(new LoadUsersFromDbChronos(), false);
 
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        mConnector.onResume();
+
+        //необходимо здесь чтобы при нажатии Back выделенная опция меню соответствовала текущей активити
+        setupDrawer();
+    }
+
+    @Override
+    protected void onSaveInstanceState(@NonNull final Bundle outState) {
+        super.onSaveInstanceState(outState);
+        mConnector.onSaveInstanceState(outState);
+    }
+
+    @Override
+    protected void onPause() {
+        mConnector.onPause();
+        super.onPause();
     }
 
     /**
@@ -116,44 +139,23 @@ public class UserListActivity extends BaseActivity {
         }
     }
 
-    @Override
-    protected void onResume() {
-        super.onResume();
-        mConnector.onResume();
-    }
 
-    @Override
-    protected void onSaveInstanceState(@NonNull final Bundle outState) {
-        super.onSaveInstanceState(outState);
-        mConnector.onSaveInstanceState(outState);
-    }
+    private void setupToolbar() {
+        setSupportActionBar(mToolbar);
+        ActionBar actionBar = getSupportActionBar();
 
-    @Override
-    protected void onPause() {
-        mConnector.onPause();
-        super.onPause();
-    }
+        if (actionBar != null) {
+            actionBar.setHomeAsUpIndicator(R.drawable.ic_menu_black_24dp);
 
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
+            actionBar.setDisplayHomeAsUpEnabled(true);
 
-        if (item.getItemId() == android.R.id.home) {
-            mNavigationDrawer.openDrawer(GravityCompat.START);
         }
-
-        return super.onOptionsItemSelected(item);
     }
-
-    private void showSnackbar(String message) {
-        Snackbar.make(mCoordinatorLayout, message, Snackbar.LENGTH_LONG).show();
-    }
-
 
     private void setupDrawer() {
 
 
-        NavigationView mNavigationView = (NavigationView) findViewById(R.id.user_list_navigation_view);
-
+        //инициализация аватарки
         ImageView mAvatar = (ImageView) mNavigationView.getHeaderView(0).findViewById(R.id.avatar);
 
         //устанавливает выбранным пункт меню, где мы находимся
@@ -177,7 +179,6 @@ public class UserListActivity extends BaseActivity {
 
         mNavTxtEmailView.setText(userData.get(1)); //Установка email в drawere из SharedPreferences
         mNavTxtNameView.setText(userData.get(userData.size() - 1)); //Установка ФИО в drawere из SharedPreferences
-
 
         mNavigationView.setNavigationItemSelectedListener(new NavigationView
                 .OnNavigationItemSelectedListener() {
@@ -208,21 +209,49 @@ public class UserListActivity extends BaseActivity {
         });
     }
 
-    private void setupToolbar() {
-        setSupportActionBar(mToolbar);
-        ActionBar actionBar = getSupportActionBar();
+    /**
+     * По нажатию на гамбургер меню открывает дравер
+     *
+     * @param item
+     * @return
+     */
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
 
-        if (actionBar != null) {
-            actionBar.setHomeAsUpIndicator(R.drawable.ic_menu_black_24dp);
-
-            actionBar.setDisplayHomeAsUpEnabled(true);
-
+        if (item.getItemId() == android.R.id.home) {
+            mNavigationDrawer.openDrawer(GravityCompat.START);
         }
+
+        Log.d(TAG, "onOptionsItemSelected: ");
+
+        return super.onOptionsItemSelected(item);
     }
 
-
+    /**
+     * Открывает drawer по нажатию хардовой кнопки меню
+     *
+     * @param featureId
+     * @param menu
+     * @return
+     */
     @Override
-    public boolean onPrepareOptionsMenu(Menu menu) {
+    public boolean onMenuOpened(int featureId, Menu menu) {
+
+        mNavigationDrawer.openDrawer(GravityCompat.START);
+        Log.d(TAG, "onMenuOpened: ");
+
+        //return super.onMenuOpened(featureId, menu);
+        return false;
+    }
+
+    /**
+     * Задает параметры панели поиска, после того как нажата лупа
+     *
+     * @param menu
+     * @return
+     */
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
 
         getMenuInflater().inflate(R.menu.menu_search, menu);
         mSearchItem = menu.findItem(R.id.search);
@@ -245,8 +274,33 @@ public class UserListActivity extends BaseActivity {
         });
 
 
-        return super.onPrepareOptionsMenu(menu);
+        return super.onCreateOptionsMenu(menu);
     }
+
+    /**
+     * Закрывает боковую менюшку по нажатию Back (вместо выхода из приложения)
+     */
+    @Override
+    public void onBackPressed() {
+        SearchView searchView = (SearchView) MenuItemCompat.getActionView(mSearchItem);
+
+        if (mNavigationDrawer.isDrawerOpen(GravityCompat.START)) {
+            mNavigationDrawer.closeDrawer(GravityCompat.START);
+        } else if (!searchView.isIconified()) {
+            //нужно чтобы по второму нажатию Back сворачивалось поле поиска (по первому прячется клавиатура)
+            searchView.setIconified(true);
+        } else {
+            super.onBackPressed();
+        }
+
+
+    }
+
+
+    private void showSnackbar(String message) {
+        Snackbar.make(mCoordinatorLayout, message, Snackbar.LENGTH_LONG).show();
+    }
+
 
     private void showUsers(List<User> users) {
         mUsers = users;
@@ -380,4 +434,19 @@ public class UserListActivity extends BaseActivity {
 //        });
 //    }
 
+    //    /**
+//     * По нажатию на гамбургер меню открывает дравер
+//     * @param item
+//     * @return
+//     */
+//    @Override
+//    public boolean onContextItemSelected(MenuItem item) {
+//        if (item.getItemId() == android.R.id.home) {
+//            mNavigationDrawer.openDrawer(GravityCompat.START);
+//        }
+//
+//        Log.d(TAG, "onContextItemSelected: ");
+//
+//        return super.onContextItemSelected(item);
+//    }
 }
