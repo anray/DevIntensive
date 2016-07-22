@@ -139,7 +139,9 @@ public class UserListActivity extends BaseActivity {
         }
     }
 
-
+    /**
+     * Добавляет гамбургер меню на тулбар
+     */
     private void setupToolbar() {
         setSupportActionBar(mToolbar);
         ActionBar actionBar = getSupportActionBar();
@@ -152,6 +154,9 @@ public class UserListActivity extends BaseActivity {
         }
     }
 
+    /**
+     * Выбирает пункты меню и закрывает меню после выбора
+     */
     private void setupDrawer() {
 
 
@@ -259,7 +264,10 @@ public class UserListActivity extends BaseActivity {
         searchView.setQueryHint(getString(R.string.query_hint));
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
-            public boolean onQueryTextSubmit(String query) {
+            public boolean onQueryTextSubmit(String newText) {
+
+                // 19.07.2016 Вызвает поиск тут
+                showUsersByQuery(newText);
                 return false;
             }
 
@@ -303,6 +311,7 @@ public class UserListActivity extends BaseActivity {
 
     /**
      * Показывает профили людей, а также добавляет листенеры на каждую карточку
+     *
      * @param users
      */
     private void showUsers(List<User> users) {
