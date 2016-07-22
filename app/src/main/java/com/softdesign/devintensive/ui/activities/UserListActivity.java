@@ -202,7 +202,11 @@ public class UserListActivity extends BaseActivity {
                         break;
                     case R.id.logout:
                         DevintensiveApplication.getSharedPreferences().edit().clear().apply();
-                        finishAffinity();
+
+                        //finishAffinity(); //закрывает приложение со всеми activity
+                        Intent openAuth = new Intent(UserListActivity.this, AuthActivity.class);
+                        startActivity(openAuth);
+                        //finish();
                         break;
                 }
 

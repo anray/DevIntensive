@@ -25,10 +25,10 @@
             android:id="@+id/authorization_box"
             android:layout_width="@dimen/login_card_width_240"
             android:layout_height="wrap_content"
+            android:visibility="gone"
             app:cardBackgroundColor="@color/white"
             app:cardCornerRadius="@dimen/corner_radius_2"
             app:cardElevation="@dimen/card_elevation_8"
-            android:visibility="gone"
             >
 
             <LinearLayout
@@ -76,7 +76,7 @@
                         style="@style/infoField_et.loginField_et"
                         android:hint="@string/email"
                         android:inputType="textEmailAddress"
-                        android:text="anray@mail.ru"
+
                         />
 
                 </android.support.design.widget.TextInputLayout>
@@ -90,7 +90,7 @@
                         style="@style/infoField_et.loginField_et"
                         android:hint="@string/password"
                         android:inputType="textPassword"
-                        android:text="01234"
+
                         />
 
                 </android.support.design.widget.TextInputLayout>

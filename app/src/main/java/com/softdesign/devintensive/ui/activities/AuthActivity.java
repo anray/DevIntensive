@@ -61,9 +61,10 @@ public class AuthActivity extends BaseActivity implements View.OnClickListener {
     private UserDao mUserDao;
     private ChronosConnector mConnector;
 
+    private int mLoginAttempts = 1;
+
 
     @Override
-
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         mConnector = new ChronosConnector();
@@ -109,6 +110,14 @@ public class AuthActivity extends BaseActivity implements View.OnClickListener {
         super.onPause();
     }
 
+    /**
+     * Нужно чтоб пользователь не мог перейти на предыдущую активити после logout
+     */
+    @Override
+    public void onBackPressed() {
+        //leaves your back stack as it is, just puts your task (all activities) in background. Same as if user pressed Home button
+        moveTaskToBack(true);
+    }
 
     @Override
     public void onClick(View v) {
@@ -190,6 +199,7 @@ public class AuthActivity extends BaseActivity implements View.OnClickListener {
 
     /**
      * Chronos запускает этот метод по заверщении сохранения в БД в рабочем потоке
+     *
      * @param result результат операции сохранения
      */
     public void onOperationFinished(final SaveUsersToDbChronos.Result result) {
@@ -210,41 +220,86 @@ public class AuthActivity extends BaseActivity implements View.OnClickListener {
 
     private void signInByToken() {
 
-        if (NetworkStatusChecker.isNetworkAvailable(this)) {
+        if (mDataManager.getPreferencesManager() != null
+                && mDataManager.getPreferencesManager().getAuthToken() != null && mDataManager.getPreferencesManager().getUserId() != null
+               && mDataManager.getPreferencesManager().getAuthToken() != "null" && mDataManager.getPreferencesManager().getUserId() != "null"
+                && !mDataManager.getPreferencesManager().getAuthToken().isEmpty() && !mDataManager.getPreferencesManager().getUserId().isEmpty()) {
+
+            if (NetworkStatusChecker.isNetworkAvailable(this)) {
 
 
-            Call<UserModelResponseByToken> call = mDataManager.loginUserByToken(mDataManager.getPreferencesManager().getUserId());
-            call.enqueue(new Callback<UserModelResponseByToken>() {
-                @Override
-                public void onResponse(Call<UserModelResponseByToken> call, Response<UserModelResponseByToken> response) {
-                    if (response.code() == 200) {
+                Call<UserModelResponseByToken> call = mDataManager.loginUserByToken(mDataManager.getPreferencesManager().getUserId());
+                call.enqueue(new Callback<UserModelResponseByToken>() {
+                    @Override
+                    public void onResponse(Call<UserModelResponseByToken> call, Response<UserModelResponseByToken> response) {
+                        if (response.code() == 200) {
 
-                        loginSuccessByToken(response.body());
+                            loginSuccessByToken(response.body());
 
 
-                    } else {
+                        } else {
+                            showSnackbar("Данные авторизации устарели войдите используя логин и пароль");
+                            mCardView.setVisibility(View.VISIBLE);
+                            return;
 
-                        mCardView.setVisibility(View.VISIBLE);
-                        return;
-
+                        }
                     }
-                }
 
-                @Override
-                public void onFailure(Call<UserModelResponseByToken> call, Throwable t) {
+                    @Override
+                    public void onFailure(Call<UserModelResponseByToken> call, Throwable t) {
 
-                    Log.d(TAG, "in onFailure" + t.toString());
-                    //showSnackbar("Произошла ошибка чтения с сервера, попробуйте еще раз");
-                    mCardView.setVisibility(View.VISIBLE);
-                    return;
+                        Log.d(TAG, "in onFailure" + t.toString());
 
-                }
-            });
+                        if (mLoginAttempts < 3) {
+                            Snackbar.make(mCoordinatorLayout, "Произошла ошибка соединения с сервером, повторите попытку", Snackbar.LENGTH_INDEFINITE)
+                                    .setAction("Повторить", new View.OnClickListener() {
+                                        @Override
+                                        public void onClick(View v) {
+                                            mLoginAttempts += 1;
+                                            signInByToken();
+                                        }
+                                    }).show();
 
+                            //mCardView.setVisibility(View.VISIBLE);
+                            return;
+
+                        } else {
+                            Snackbar.make(mCoordinatorLayout, "Произошла ошибка соединения с сервером, повторите попытку", Snackbar.LENGTH_INDEFINITE)
+                                    .setAction("Повторить", new View.OnClickListener() {
+                                        @Override
+                                        public void onClick(View v) {
+                                            mLoginAttempts += 1;
+                                            signInByToken();
+                                        }
+                                    }).setAction("Ввести логин и пароль", new View.OnClickListener() {
+                                @Override
+                                public void onClick(View v) {
+                                    mLoginAttempts += 1;
+                                    mCardView.setVisibility(View.VISIBLE);
+                                }
+                            }).show();
+
+
+                            return;
+                        }
+                    }
+                });
+
+            } else {
+                Snackbar.make(mCoordinatorLayout, "Сеть недоступна, повторите позже", Snackbar.LENGTH_INDEFINITE)
+                        .setAction("Повторить", new View.OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+                                signInByToken();
+                            }
+                        }).show();
+
+                //mCardView.setVisibility(View.VISIBLE);
+                return;
+
+            }
         } else {
             mCardView.setVisibility(View.VISIBLE);
-            return;
-            //showSnackbar("Сеть недоступна, попробуйте позже");
         }
     }
 

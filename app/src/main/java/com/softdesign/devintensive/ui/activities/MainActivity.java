@@ -571,7 +571,10 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
                         break;
                     case R.id.logout:
                         DevintensiveApplication.getSharedPreferences().edit().clear().apply();
-                        finishAffinity();
+                        //finishAffinity(); //закрывает приложение со всеми activity
+                        Intent openAuth = new Intent(MainActivity.this, AuthActivity.class);
+                        startActivity(openAuth);
+                        //finish();
                         break;
                 }
 
