@@ -28,7 +28,7 @@ public class LoadUsersFromDbChronos extends ChronosOperation<List<User>> {
 
             return   DevintensiveApplication.getDaoSession().queryBuilder(User.class)
                     .where(UserDao.Properties.CodeLines.gt(0))
-                    .orderDesc(UserDao.Properties.CodeLines)
+                    .orderDesc(UserDao.Properties.Rating)
                     .build()
                     .list();
 

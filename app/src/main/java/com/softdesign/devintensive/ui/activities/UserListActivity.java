@@ -301,7 +301,10 @@ public class UserListActivity extends BaseActivity {
         Snackbar.make(mCoordinatorLayout, message, Snackbar.LENGTH_LONG).show();
     }
 
-
+    /**
+     * Показывает профили людей, а также добавляет листенеры на каждую карточку
+     * @param users
+     */
     private void showUsers(List<User> users) {
         mUsers = users;
 
@@ -334,7 +337,11 @@ public class UserListActivity extends BaseActivity {
         mQuery = query;
 
         if (mQuery.isEmpty()) {
-            showUsers(mDataManager.getUserListByName(mQuery));
+            //вернет список всех людей, отрабатывает очень быстро, можно даже без отдельного потока. (выходит что like(%%) работает как будто его и нет)
+            //showUsers(mDataManager.getUserListByName(mQuery));
+
+            //start Chronus operation
+            mConnector.runOperation(new LoadUsersFromDbChronos(), false);
         } else {
 
             Runnable searchUsers = new Runnable() {

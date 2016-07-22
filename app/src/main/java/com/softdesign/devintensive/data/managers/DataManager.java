@@ -118,10 +118,10 @@ public class DataManager {
         List<User> userList = new ArrayList<>();
 
         try{
-
+            //выходит что like(%%) работает как будто его и нет
             userList = mDaoSession.queryBuilder(User.class)
-                    .where(UserDao.Properties.SearchName.like("%" + query.toUpperCase() + "%"))
-                    .orderDesc(UserDao.Properties.CodeLines)
+                    .where(UserDao.Properties.SearchName.like("%" + query.toUpperCase() + "%"), UserDao.Properties.CodeLines.gt(0))
+                    .orderDesc(UserDao.Properties.Rating)
                     .build()
                     .list();
 
