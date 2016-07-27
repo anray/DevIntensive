@@ -3,20 +3,28 @@ package com.softdesign.devintensive.ui.activities;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.Snackbar;
+import android.support.v7.widget.CardView;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 
+import com.redmadrobot.chronos.ChronosConnector;
 import com.softdesign.devintensive.R;
 import com.softdesign.devintensive.data.managers.DataManager;
 import com.softdesign.devintensive.data.network.request.UserLoginRequest;
+import com.softdesign.devintensive.data.network.response.UserListRes;
 import com.softdesign.devintensive.data.network.response.UserModelResponse;
+import com.softdesign.devintensive.data.network.response.UserModelResponseByToken;
+import com.softdesign.devintensive.data.storage.models.RepositoryDao;
+import com.softdesign.devintensive.data.storage.models.UserDao;
 import com.softdesign.devintensive.utils.ConstantManager;
 import com.softdesign.devintensive.utils.NetworkStatusChecker;
+import com.softdesign.devintensive.utils.SaveUsersToDbChronos;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -45,20 +53,70 @@ public class AuthActivity extends BaseActivity implements View.OnClickListener {
     @BindView(R.id.auth_main_coordinator)
     CoordinatorLayout mCoordinatorLayout;
 
+    @BindView(R.id.authorization_box)
+    CardView mCardView;
+
     private DataManager mDataManager;
+    private RepositoryDao mRepositoryDao;
+    private UserDao mUserDao;
+    private ChronosConnector mConnector;
+
+    private int mLoginAttempts = 1;
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        mConnector = new ChronosConnector();
+        mConnector.onCreate(this, savedInstanceState);
+
         setContentView(R.layout.activity_auth);
+
+
         ButterKnife.bind(this);
+
+
         mDataManager = DataManager.getInstance();
-        //mSignIn = (Button) findViewById(R.id.login_button_btn);
+
+        mUserDao = mDataManager.getDaoSession().getUserDao();
+        mRepositoryDao = mDataManager.getDaoSession().getRepositoryDao();
+
+
         mSignIn.setOnClickListener(this);
         mForgotPassword.setOnClickListener(this);
 
 
+        signInByToken();
+
+
+    }
+
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        mConnector.onResume();
+    }
+
+    @Override
+    protected void onSaveInstanceState(@NonNull final Bundle outState) {
+        super.onSaveInstanceState(outState);
+        mConnector.onSaveInstanceState(outState);
+    }
+
+    @Override
+    protected void onPause() {
+        mConnector.onPause();
+        super.onPause();
+    }
+
+    /**
+     * Нужно чтоб пользователь не мог перейти на предыдущую активити после logout
+     */
+    @Override
+    public void onBackPressed() {
+        //leaves your back stack as it is, just puts your task (all activities) in background. Same as if user pressed Home button
+        moveTaskToBack(true);
     }
 
     @Override
@@ -93,22 +151,163 @@ public class AuthActivity extends BaseActivity implements View.OnClickListener {
         startActivity(rememberPasswordIntent);
     }
 
+    private void loginSuccessByToken(UserModelResponseByToken userModelByToken) {
+
+        //region=============Splash Screen
+        showProgress();
+        mCardView.setVisibility(View.GONE);
+        //endregion
+
+
+        saveUserValuesByToken(userModelByToken);
+        saveUserProfileDetailsByToken(userModelByToken);
+        saveUserProfileImageByToken(userModelByToken);
+        saveUserAvatarImageByToken(userModelByToken);
+        saveUsersInDb();
+    }
+
+
     private void loginSuccess(UserModelResponse userModel) {
+
+        //region=============Splash Screen
+        showProgress();
+        mCardView.setVisibility(View.GONE);
+        //endregion
 
         //showSnackbar(userModel.getData().getToken());
         mDataManager.getPreferencesManager().saveAuthToken(userModel.getData().getToken());
         mDataManager.getPreferencesManager().saveUserId(userModel.getData().getUser().getUserId());
+
         saveUserValues(userModel);
         saveUserProfileDetails(userModel);
         saveUserProfileImage(userModel);
         saveUserAvatarImage(userModel);
+        saveUsersInDb();
 
-        Intent loginIntent = new Intent(this, UserListActivity.class);
-        startActivity(loginIntent);
+
+//        Handler handler = new Handler();
+//        handler.postDelayed(new Runnable() {
+//            @Override
+//            public void run() {
+//                Intent loginIntent = new Intent(AuthActivity.this, UserListActivity.class);
+//                startActivity(loginIntent);
+//            }
+//        }, AppConfig.START_DELAY);
+
+
     }
 
+    /**
+     * Chronos запускает этот метод по заверщении сохранения в БД в рабочем потоке
+     *
+     * @param result результат операции сохранения
+     */
+    public void onOperationFinished(final SaveUsersToDbChronos.Result result) {
+        hideProgress();
+
+        //  20.07.2016 Переход в UserListActivity
+        if (result.isSuccessful()) {
+
+            Intent loginIntent = new Intent(AuthActivity.this, UserListActivity.class);
+            startActivity(loginIntent);
+        } else {
+            Log.d(TAG, result.getErrorMessage().toString());
+        }
+
+        finish();
+
+    }
+
+    private void signInByToken() {
+
+        if (mDataManager.getPreferencesManager() != null
+                && mDataManager.getPreferencesManager().getAuthToken() != null && mDataManager.getPreferencesManager().getUserId() != null
+               && mDataManager.getPreferencesManager().getAuthToken() != "null" && mDataManager.getPreferencesManager().getUserId() != "null"
+                && !mDataManager.getPreferencesManager().getAuthToken().isEmpty() && !mDataManager.getPreferencesManager().getUserId().isEmpty()) {
+
+            if (NetworkStatusChecker.isNetworkAvailable(this)) {
+
+
+                Call<UserModelResponseByToken> call = mDataManager.loginUserByToken(mDataManager.getPreferencesManager().getUserId());
+                call.enqueue(new Callback<UserModelResponseByToken>() {
+                    @Override
+                    public void onResponse(Call<UserModelResponseByToken> call, Response<UserModelResponseByToken> response) {
+                        if (response.code() == 200) {
+
+                            loginSuccessByToken(response.body());
+
+
+                        } else {
+                            showSnackbar("Данные авторизации устарели войдите используя логин и пароль");
+                            mCardView.setVisibility(View.VISIBLE);
+                            return;
+
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(Call<UserModelResponseByToken> call, Throwable t) {
+
+                        Log.d(TAG, "in onFailure" + t.toString());
+
+                        if (mLoginAttempts < 3) {
+                            Snackbar.make(mCoordinatorLayout, "Произошла ошибка соединения с сервером, повторите попытку", Snackbar.LENGTH_INDEFINITE)
+                                    .setAction("Повторить", new View.OnClickListener() {
+                                        @Override
+                                        public void onClick(View v) {
+                                            mLoginAttempts += 1;
+                                            signInByToken();
+                                        }
+                                    }).show();
+
+                            //mCardView.setVisibility(View.VISIBLE);
+                            return;
+
+                        } else {
+                            Snackbar.make(mCoordinatorLayout, "Произошла ошибка соединения с сервером, повторите попытку", Snackbar.LENGTH_INDEFINITE)
+                                    .setAction("Повторить", new View.OnClickListener() {
+                                        @Override
+                                        public void onClick(View v) {
+                                            mLoginAttempts += 1;
+                                            signInByToken();
+                                        }
+                                    }).setAction("Ввести логин и пароль", new View.OnClickListener() {
+                                @Override
+                                public void onClick(View v) {
+                                    mLoginAttempts += 1;
+                                    mCardView.setVisibility(View.VISIBLE);
+                                }
+                            }).show();
+
+
+                            return;
+                        }
+                    }
+                });
+
+            } else {
+                Snackbar.make(mCoordinatorLayout, "Сеть недоступна, повторите позже", Snackbar.LENGTH_INDEFINITE)
+                        .setAction("Повторить", new View.OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+                                signInByToken();
+                            }
+                        }).show();
+
+                //mCardView.setVisibility(View.VISIBLE);
+                return;
+
+            }
+        } else {
+            mCardView.setVisibility(View.VISIBLE);
+        }
+    }
+
+
     private void signIn() {
+
         if (NetworkStatusChecker.isNetworkAvailable(this)) {
+
             Call<UserModelResponse> call = mDataManager.loginUser(new UserLoginRequest(mLogin.getText().toString(), mPassword.getText().toString()));
             call.enqueue(new Callback<UserModelResponse>() {
                 @Override
@@ -133,7 +332,8 @@ public class AuthActivity extends BaseActivity implements View.OnClickListener {
                 @Override
                 public void onFailure(Call<UserModelResponse> call, Throwable t) {
 
-                    Log.d(TAG, t.toString());
+                    Log.d(TAG, "in onFailure" + t.toString());
+                    showSnackbar("Произошла ошибка чтения с сервера, попробуйте еще раз");
 
                 }
             });
@@ -155,6 +355,18 @@ public class AuthActivity extends BaseActivity implements View.OnClickListener {
 
     }
 
+    private void saveUserValuesByToken(UserModelResponseByToken userModel) {
+        int[] userValues = {
+                userModel.getData().getProfileValues().getRaiting(),
+                userModel.getData().getProfileValues().getLinesCode(),
+                userModel.getData().getProfileValues().getProjects()
+        };
+
+        mDataManager.getPreferencesManager().saveUserProfileValues(userValues);
+
+
+    }
+
     private void saveUserProfileDetails(UserModelResponse userModel) {
         List<String> userValues = new ArrayList<>();
         userValues.add(userModel.getData().getUser().getContacts().getPhone());
@@ -163,12 +375,12 @@ public class AuthActivity extends BaseActivity implements View.OnClickListener {
 
 
         List<UserModelResponse.Repo> repo = (userModel.getData().getUser().getRepositories().getRepo());
-        for (int i = 0; i<3;i++){
+        for (int i = 0; i < 3; i++) {
             String gitTitle = "";
             try {
                 gitTitle = repo.get(i).getGit();
             } catch (Exception ex) {
-                gitTitle = "No_" + (i+1) + "_git_repo";
+                gitTitle = "No_" + (i + 1) + "_git_repo";
             }
 
             userValues.add(gitTitle);
@@ -181,6 +393,34 @@ public class AuthActivity extends BaseActivity implements View.OnClickListener {
         userValues.add(userModel.getData().getUser().getPublicInfo().getBio());
         userValues.add(userModel.getData().getUser().getFirstName() + " " + userModel.getData().getUser().getSecondName());
 
+
+        mDataManager.getPreferencesManager().saveUserProfileData(userValues);
+
+
+    }
+
+    private void saveUserProfileDetailsByToken(UserModelResponseByToken userModel) {
+        List<String> userValues = new ArrayList<>();
+        userValues.add(userModel.getData().getContacts().getPhone());
+        userValues.add(userModel.getData().getContacts().getEmail());
+        userValues.add(userModel.getData().getContacts().getVk());
+
+        //сохранение списка репозиториев
+        List<UserModelResponse.Repo> repo = (userModel.getData().getRepositories().getRepo());
+        for (int i = 0; i < 3; i++) {
+            String gitTitle = "";
+            try {
+                gitTitle = repo.get(i).getGit();
+            } catch (Exception ex) {
+                gitTitle = "No_" + (i + 1) + "_git_repo";
+            }
+
+            userValues.add(gitTitle);
+
+        }
+
+        userValues.add(userModel.getData().getPublicInfo().getBio());
+        userValues.add(userModel.getData().getFirstName() + " " + userModel.getData().getSecondName());
 
 
         mDataManager.getPreferencesManager().saveUserProfileData(userValues);
@@ -196,6 +436,14 @@ public class AuthActivity extends BaseActivity implements View.OnClickListener {
 
     }
 
+    private void saveUserProfileImageByToken(UserModelResponseByToken userModel) {
+
+        Uri photoUrl = Uri.parse(userModel.getData().getPublicInfo().getPhoto());
+        mDataManager.getPreferencesManager().saveUserPhoto(photoUrl);
+
+
+    }
+
     private void saveUserAvatarImage(UserModelResponse userModel) {
 
         Uri photoUrl = Uri.parse(userModel.getData().getUser().getPublicInfo().getAvatar());
@@ -203,5 +451,68 @@ public class AuthActivity extends BaseActivity implements View.OnClickListener {
 
 
     }
+
+    private void saveUserAvatarImageByToken(UserModelResponseByToken userModel) {
+
+        Uri photoUrl = Uri.parse(userModel.getData().getPublicInfo().getAvatar());
+        mDataManager.getPreferencesManager().saveUserAvatar(photoUrl);
+
+
+    }
+
+    private void saveUsersInDb() {
+
+
+        Call<UserListRes> call = mDataManager.getUserListFromNetwork();
+        call.enqueue(new Callback<UserListRes>() {
+                         @Override
+                         public void onResponse(Call<UserListRes> call, Response<UserListRes> response) {
+
+                             try {
+
+                                 if (response.code() == 200) {
+
+                                     //запускает сохранение в БД в отдельном потоке через Chronos
+                                     mConnector.runOperation(new SaveUsersToDbChronos(response.body().getData()), false);
+
+
+                                 } else {
+                                     showSnackbar("Список пользователей не может быть получен");
+                                     Log.e(TAG, "onResponse: " + String.valueOf(response.errorBody().source()));
+                                 }
+
+
+                             } catch (NullPointerException e) {
+                                 e.printStackTrace();
+                                 Log.d(TAG, e.toString());
+                                 showSnackbar("Ответ 200, но данные не пришли почему-то");
+                             }
+
+
+                         }
+
+                         @Override
+                         public void onFailure(Call<UserListRes> call, Throwable t) {
+                             // 14.07.2016 обработка ошибок ретрофита
+
+                             Log.d(TAG, t.toString());
+
+                         }
+                     }
+
+        );
+    }
+
+//    private List<Repository> getRepoListFromUserRes(UserListRes.UserData userData) {
+//        final String userId = userData.getId();
+//
+//        List<Repository> repositories = new ArrayList<>();
+//        for (UserModelResponse.Repo repositoryRes : userData.getRepositories().getRepo()) {
+//            repositories.add(new Repository(repositoryRes, userId));
+//        }
+//
+//        return repositories;
+//    }
+
 
 }

@@ -70,5 +70,9 @@ public class UserListRes {
         public UserModelResponse.ProfileValues getProfileValues() {
             return profileValues;
         }
+
+        public String getId() {
+            return id;
+        }
     }
 }

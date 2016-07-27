@@ -79,6 +79,10 @@ public class PreferencesManager {
 
     }
 
+    public Uri loadUserPhoto() {
+        return Uri.parse(mSharedPreferences.getString(ConstantManager.USER_PHOTO_KEY, "android.resource://com.softdesign.devintensive/drawable/profile"));
+    }
+
     public void saveUserAvatar(Uri uri) {
         SharedPreferences.Editor editor = mSharedPreferences.edit();
         editor.putString(ConstantManager.USER_AVATAR_KEY, uri.toString());
@@ -121,9 +125,7 @@ public class PreferencesManager {
 
 
 
-    public Uri loadUserPhoto() {
-        return Uri.parse(mSharedPreferences.getString(ConstantManager.USER_PHOTO_KEY, "android.resource://com.softdesign.devintensive/drawable/profile"));
-    }
+
 
     public Uri loadUserAvatar() {
         return Uri.parse(mSharedPreferences.getString(ConstantManager.USER_AVATAR_KEY, "android.resource://com.softdesign.devintensive/drawable/avatar"));

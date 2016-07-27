@@ -19,7 +19,7 @@ public interface ConstantManager {
     String USER_GIT2_KEY = "USER_5_KEY";
     String USER_GIT3_KEY = "USER_6_KEY";
     String USER_BIO_KEY = "USER_7_KEY";
-    String USER_PHOTO_KEY = "USER_8_KEY";
+    String USER_PHOTO_KEY = "USER_PHOTO_KEY";
     String USER_AVATAR_KEY = "USER_9_KEY";
     String USER_FIO_KEY = "USER_10_KEY";
     String USER_ID_KEY = "USER_ID_KEY";
@@ -39,4 +39,5 @@ public interface ConstantManager {
 
     int PERMISSION_REQUEST_SETTINGS_CODE = 101;
     int CAMERA_REQUEST_PERMISSION_CODE = 102;
+    int SEARCH_DELAY = 3000;
 }
