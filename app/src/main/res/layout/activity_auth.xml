@@ -76,6 +76,7 @@
                         style="@style/infoField_et.loginField_et"
                         android:hint="@string/email"
                         android:inputType="textEmailAddress"
+                        android:text="anray@mail.ru"
 
                         />
 
@@ -90,6 +91,7 @@
                         style="@style/infoField_et.loginField_et"
                         android:hint="@string/password"
                         android:inputType="textPassword"
+                        android:text="01234"
 
                         />
 

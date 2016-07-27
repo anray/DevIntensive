@@ -347,7 +347,7 @@ public class UserListActivity extends BaseActivity {
 
 
     private void showUsersByQuery(String query) {
-        mQuery = query;
+        mQuery = query.trim();
 
         if (mQuery.isEmpty()) {
             //вернет список всех людей, отрабатывает очень быстро, можно даже без отдельного потока. (выходит что like(%%) работает как будто его и нет)

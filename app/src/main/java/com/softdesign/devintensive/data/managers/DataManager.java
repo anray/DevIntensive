@@ -1,6 +1,7 @@
 package com.softdesign.devintensive.data.managers;
 
 import android.content.Context;
+import android.util.Log;
 
 import com.softdesign.devintensive.data.network.PicassoCache;
 import com.softdesign.devintensive.data.network.request.UserLoginRequest;
@@ -12,8 +13,12 @@ import com.softdesign.devintensive.data.network.restmodels.ServiceGenerator;
 import com.softdesign.devintensive.data.storage.models.DaoSession;
 import com.softdesign.devintensive.data.storage.models.User;
 import com.softdesign.devintensive.data.storage.models.UserDao;
+import com.softdesign.devintensive.utils.ConstantManager;
 import com.softdesign.devintensive.utils.DevintensiveApplication;
 import com.squareup.picasso.Picasso;
+
+import org.greenrobot.greendao.query.QueryBuilder;
+import org.greenrobot.greendao.query.WhereCondition;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -27,6 +32,7 @@ import retrofit2.Call;
  */
 public class DataManager {
 
+    private static final String TAG = ConstantManager.TAG_PREFIX + "DataManager";
     private static DataManager INSTANCE = null;
 
     private Context mContext;
@@ -76,7 +82,7 @@ public class DataManager {
         return mRestService.loginUserByToken(userId);
     }
 
-    public Call<ResponseBody> uploadPhoto (String userId, MultipartBody.Part file) {
+    public Call<ResponseBody> uploadPhoto(String userId, MultipartBody.Part file) {
         return mRestService.uploadPhoto(userId, file);
     }
 
@@ -113,19 +119,29 @@ public class DataManager {
 //        return userList;
 //    }
 
-    public List<User> getUserListByName(String query){
+    public List<User> getUserListByName(String query) {
 
         List<User> userList = new ArrayList<>();
 
-        try{
-            //выходит что like(%%) работает как будто его и нет
-            userList = mDaoSession.queryBuilder(User.class)
-                    .where(UserDao.Properties.SearchName.like("%" + query.toUpperCase() + "%"), UserDao.Properties.CodeLines.gt(0))
+
+        QueryBuilder qb = mDaoSession.queryBuilder(User.class);
+        WhereCondition whereLike = UserDao.Properties.SearchName.like("%");
+
+
+        String[] queryWords = query.split("\\W+");
+        for (String word : queryWords) {
+            Log.d(TAG, " getUserListByName " + word);
+            whereLike = qb.and(whereLike, UserDao.Properties.SearchName.like("%" + word.toUpperCase() + "%"));
+        }
+
+        try {
+            userList = qb
+                    .where(whereLike, UserDao.Properties.CodeLines.gt(0))
                     .orderDesc(UserDao.Properties.Rating)
                     .build()
                     .list();
 
-        }catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
         }
 
