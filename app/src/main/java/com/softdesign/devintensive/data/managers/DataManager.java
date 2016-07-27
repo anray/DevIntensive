@@ -124,19 +124,27 @@ public class DataManager {
         List<User> userList = new ArrayList<>();
 
 
+        //создаем билдер для построения динамических условий
         QueryBuilder qb = mDaoSession.queryBuilder(User.class);
-        WhereCondition whereLike = UserDao.Properties.SearchName.like("%");
 
+        //инициализация where условия одним из статичных условий
+        WhereCondition whereLike =  UserDao.Properties.CodeLines.gt(0);
 
+        //этот запрос нужен для инициализации where условия, % работает как будто like и нету
+        //WhereCondition whereLike = UserDao.Properties.SearchName.like("%");
+
+        // делит строку на слова. \W - не слово
         String[] queryWords = query.split("\\W+");
         for (String word : queryWords) {
-            Log.d(TAG, " getUserListByName " + word);
+            //Log.d(TAG, " getUserListByName " + word);
+            // для каждого слова добавляет like запрос
             whereLike = qb.and(whereLike, UserDao.Properties.SearchName.like("%" + word.toUpperCase() + "%"));
         }
 
         try {
+            //запуск запроса
             userList = qb
-                    .where(whereLike, UserDao.Properties.CodeLines.gt(0))
+                    .where(whereLike)
                     .orderDesc(UserDao.Properties.Rating)
                     .build()
                     .list();
