@@ -8,9 +8,11 @@ import org.greenrobot.greendao.database.Database;
 import org.greenrobot.greendao.identityscope.IdentityScopeType;
 import org.greenrobot.greendao.internal.DaoConfig;
 
+import com.softdesign.devintensive.data.storage.models.Likes;
 import com.softdesign.devintensive.data.storage.models.Repository;
 import com.softdesign.devintensive.data.storage.models.User;
 
+import com.softdesign.devintensive.data.storage.models.LikesDao;
 import com.softdesign.devintensive.data.storage.models.RepositoryDao;
 import com.softdesign.devintensive.data.storage.models.UserDao;
 
@@ -23,9 +25,11 @@ import com.softdesign.devintensive.data.storage.models.UserDao;
  */
 public class DaoSession extends AbstractDaoSession {
 
+    private final DaoConfig likesDaoConfig;
     private final DaoConfig repositoryDaoConfig;
     private final DaoConfig userDaoConfig;
 
+    private final LikesDao likesDao;
     private final RepositoryDao repositoryDao;
     private final UserDao userDao;
 
@@ -33,22 +37,32 @@ public class DaoSession extends AbstractDaoSession {
             daoConfigMap) {
         super(db);
 
+        likesDaoConfig = daoConfigMap.get(LikesDao.class).clone();
+        likesDaoConfig.initIdentityScope(type);
+
         repositoryDaoConfig = daoConfigMap.get(RepositoryDao.class).clone();
         repositoryDaoConfig.initIdentityScope(type);
 
         userDaoConfig = daoConfigMap.get(UserDao.class).clone();
         userDaoConfig.initIdentityScope(type);
 
+        likesDao = new LikesDao(likesDaoConfig, this);
         repositoryDao = new RepositoryDao(repositoryDaoConfig, this);
         userDao = new UserDao(userDaoConfig, this);
 
+        registerDao(Likes.class, likesDao);
         registerDao(Repository.class, repositoryDao);
         registerDao(User.class, userDao);
     }
     
     public void clear() {
+        likesDaoConfig.getIdentityScope().clear();
         repositoryDaoConfig.getIdentityScope().clear();
         userDaoConfig.getIdentityScope().clear();
+    }
+
+    public LikesDao getLikesDao() {
+        return likesDao;
     }
 
     public RepositoryDao getRepositoryDao() {

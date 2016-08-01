@@ -8,6 +8,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.softdesign.devintensive.R;
@@ -102,6 +103,7 @@ public class UsersAdapter extends RecyclerView.Adapter<UsersAdapter.UserViewHold
         holder.mRating.setText(String.valueOf(user.getRaiting()));
         holder.mCodeLines.setText(String.valueOf(user.getCodeLines()));
         holder.mProjects.setText(String.valueOf(user.getProjects()));
+        holder.mLikes.setText(String.valueOf(user.getMLikes().size()));
 
         String bio = user.getBio();
         if (bio == null || bio.isEmpty()) {
@@ -143,9 +145,10 @@ public class UsersAdapter extends RecyclerView.Adapter<UsersAdapter.UserViewHold
 
     public static class UserViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
         protected AspectRatioImageView mUserImage;
-        protected TextView mFullName, mRating, mCodeLines, mProjects, mBio;
+        protected TextView mFullName, mRating, mCodeLines, mProjects, mBio, mLikes;
         protected Button mShowMore;
         protected Drawable mDummy;
+        protected ImageView mLikesHeart;
 
         private CustomClickListener mListener;
 
@@ -161,6 +164,8 @@ public class UsersAdapter extends RecyclerView.Adapter<UsersAdapter.UserViewHold
             mProjects = (TextView) itemView.findViewById(R.id.projects_rv_tv);
             mBio = (TextView) itemView.findViewById(R.id.bio_rv_tv);
             mShowMore = (Button) itemView.findViewById(R.id.more_info_rv_btn);
+            mLikes = (TextView) itemView.findViewById(R.id.likes_count_tv);
+            mLikesHeart = (ImageView) itemView.findViewById(R.id.likes_icon_iv);
 
             mDummy = mUserImage.getContext().getResources().getDrawable(R.drawable.user_bg);
             mShowMore.setOnClickListener(this);

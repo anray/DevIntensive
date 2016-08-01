@@ -135,19 +135,53 @@
             android:background="@color/grey_light"
             />
 
-        <Button
-            android:id="@+id/more_info_rv_btn"
-            style="@style/Widget.AppCompat.Button.Borderless"
-            android:layout_width="wrap_content"
+        <RelativeLayout
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/spacing_button_6"
-            android:layout_marginBottom="@dimen/spacing_button_6"
-            android:paddingLeft="@dimen/spacing_normal_16"
-            android:paddingRight="@dimen/spacing_normal_16"
-            android:text="@string/more_info_btn"
-            android:textColor="@color/color_accent"
-            />
+            android:layout_gravity="center_vertical"
+            android:gravity="center_vertical"
+            >
 
+            <Button
+                android:id="@+id/more_info_rv_btn"
+                style="@style/Widget.AppCompat.Button.Borderless"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentLeft="true"
+                android:layout_marginBottom="@dimen/spacing_button_6"
+                android:layout_marginTop="@dimen/spacing_button_6"
+                android:paddingLeft="@dimen/spacing_normal_16"
+                android:paddingRight="@dimen/spacing_normal_16"
+                android:text="@string/more_info_btn"
+                android:textColor="@color/color_accent"
+                />
+
+            <ImageView
+                android:id="@+id/likes_icon_iv"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignBottom="@+id/likes_count_tv"
+                android:layout_centerVertical="true"
+                android:layout_toLeftOf="@+id/likes_count_tv"
+                android:src="@drawable/heart_outline"
+
+                />
+
+            <TextView
+                android:id="@+id/likes_count_tv"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignBaseline="@+id/more_info_rv_btn"
+                android:layout_alignParentRight="true"
+                android:layout_centerVertical="true"
+                android:fontFamily="@string/ff_medium"
+                android:paddingLeft="@dimen/spacing_normal_16"
+                android:paddingRight="@dimen/spacing_normal_16"
+                android:text="0"
+                android:textColor="@color/color_accent"
+                />
+
+        </RelativeLayout>
 
     </LinearLayout>
 

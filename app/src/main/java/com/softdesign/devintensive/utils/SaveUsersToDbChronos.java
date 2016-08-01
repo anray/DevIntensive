@@ -8,6 +8,8 @@ import com.redmadrobot.chronos.ChronosOperationResult;
 import com.softdesign.devintensive.data.managers.DataManager;
 import com.softdesign.devintensive.data.network.response.UserListRes;
 import com.softdesign.devintensive.data.network.response.UserModelResponse;
+import com.softdesign.devintensive.data.storage.models.Likes;
+import com.softdesign.devintensive.data.storage.models.LikesDao;
 import com.softdesign.devintensive.data.storage.models.Repository;
 import com.softdesign.devintensive.data.storage.models.RepositoryDao;
 import com.softdesign.devintensive.data.storage.models.User;
@@ -37,15 +39,20 @@ public class SaveUsersToDbChronos extends ChronosOperation<String> {
         DataManager mDataManager = DataManager.getInstance();
         RepositoryDao mRepositoryDao;
         UserDao mUserDao;
+        LikesDao mLikesDao;
 
         mUserDao = mDataManager.getDaoSession().getUserDao();
         mRepositoryDao = mDataManager.getDaoSession().getRepositoryDao();
+        mLikesDao = mDataManager.getDaoSession().getLikesDao();
 
+
+        List<Likes> allLikes = new ArrayList<>();
         List<Repository> allRepositories = new ArrayList<Repository>();
         List<User> allUsers = new ArrayList<User>();
 
         for (UserListRes.UserData userRes : mResponse) {
 
+            allLikes.addAll(getLikesListFromUserRes(userRes));
             allRepositories.addAll(getRepoListFromUserRes(userRes));
             allUsers.add(new User(userRes));
 
@@ -54,8 +61,11 @@ public class SaveUsersToDbChronos extends ChronosOperation<String> {
 
         }
 
+
         mRepositoryDao.insertOrReplaceInTx(allRepositories);
         mUserDao.insertOrReplaceInTx(allUsers);
+        mLikesDao.insertOrReplaceInTx(allLikes);
+
         mResponse = null;
 
         return null;
@@ -82,4 +92,17 @@ public class SaveUsersToDbChronos extends ChronosOperation<String> {
 
         return repositories;
     }
+
+    private List<Likes> getLikesListFromUserRes(UserListRes.UserData userData) {
+        final String userId = userData.getId();
+
+        List<Likes> likes = new ArrayList<>();
+
+        for (String likeRes : userData.getProfileValues().getLikesBy()) {
+            likes.add(new Likes(likeRes, userId));
+        }
+
+        return likes;
+    }
+
 }

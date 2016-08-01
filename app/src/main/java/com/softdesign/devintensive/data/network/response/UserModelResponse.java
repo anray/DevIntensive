@@ -163,12 +163,20 @@ public class UserModelResponse {
         @SerializedName("linesCode")
         @Expose
         private int linesCode;
+
+        @SerializedName("likesBy")
+        @Expose
+        public List<String> likesBy = new ArrayList<String>();
         @SerializedName("rait")
         @Expose
-        private int rait;
+        public int rait;
         @SerializedName("updated")
         @Expose
-        private String updated;
+        public String updated;
+        @SerializedName("rating")
+        @Expose
+        public int rating;
+
 
         public int getProjects() {
             return projects;
@@ -180,6 +188,14 @@ public class UserModelResponse {
 
         public int getRaiting() {
             return rait;
+        }
+
+        public List<String> getLikesBy() {
+            return likesBy;
+        }
+
+        public int getFinalRating() {
+            return rating;
         }
     }
 
