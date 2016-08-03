@@ -5,6 +5,7 @@ import android.util.Log;
 
 import com.softdesign.devintensive.data.network.PicassoCache;
 import com.softdesign.devintensive.data.network.request.UserLoginRequest;
+import com.softdesign.devintensive.data.network.response.UserLikeResponse;
 import com.softdesign.devintensive.data.network.response.UserListRes;
 import com.softdesign.devintensive.data.network.response.UserModelResponse;
 import com.softdesign.devintensive.data.network.response.UserModelResponseByToken;
@@ -84,6 +85,13 @@ public class DataManager {
 
     public Call<ResponseBody> uploadPhoto(String userId, MultipartBody.Part file) {
         return mRestService.uploadPhoto(userId, file);
+    }
+
+    public Call<UserLikeResponse> likeUser(String userId) {
+        return mRestService.likeUser(userId);
+    }
+    public Call<UserLikeResponse> unLikeUser(String userId) {
+        return mRestService.unLikeUser(userId);
     }
 
 

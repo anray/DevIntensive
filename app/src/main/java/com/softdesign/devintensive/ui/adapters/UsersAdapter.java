@@ -13,6 +13,7 @@ import android.widget.TextView;
 
 import com.softdesign.devintensive.R;
 import com.softdesign.devintensive.data.managers.DataManager;
+import com.softdesign.devintensive.data.storage.models.Likes;
 import com.softdesign.devintensive.data.storage.models.User;
 import com.softdesign.devintensive.ui.views.AspectRatioImageView;
 import com.softdesign.devintensive.utils.ConstantManager;
@@ -29,9 +30,11 @@ import java.util.List;
 public class UsersAdapter extends RecyclerView.Adapter<UsersAdapter.UserViewHolder> implements ItemTouchHelperAdapter {
 
     private static final String TAG = ConstantManager.TAG_PREFIX + "UsersAdapter";
+    private DataManager mDataManager;
     private List<User> mUsers;
     private Context mContext;
     private UserViewHolder.CustomClickListener mCustomClickListener;
+
 
     public UsersAdapter(List<User> users, UserViewHolder.CustomClickListener customClickListener) {
         mUsers = users;
@@ -50,6 +53,7 @@ public class UsersAdapter extends RecyclerView.Adapter<UsersAdapter.UserViewHold
     @Override
     public void onBindViewHolder(final UsersAdapter.UserViewHolder holder, int position) {
 
+        mDataManager = DataManager.getInstance();
         final User user = mUsers.get(position);
         final String userPhoto;
         if (user.getPhoto().isEmpty()) {
@@ -60,7 +64,7 @@ public class UsersAdapter extends RecyclerView.Adapter<UsersAdapter.UserViewHold
         }
 
 
-        DataManager.getInstance().getPicasso()
+        mDataManager.getPicasso()
                 .load(userPhoto)
                 .error(holder.mDummy)
                 .placeholder(holder.mDummy)
@@ -76,7 +80,7 @@ public class UsersAdapter extends RecyclerView.Adapter<UsersAdapter.UserViewHold
 
                     @Override
                     public void onError() {
-                        DataManager.getInstance().getPicasso()
+                        mDataManager.getPicasso()
                                 .load(userPhoto)
                                 .error(holder.mDummy)
                                 .placeholder(holder.mDummy)
@@ -105,6 +109,17 @@ public class UsersAdapter extends RecyclerView.Adapter<UsersAdapter.UserViewHold
         holder.mProjects.setText(String.valueOf(user.getProjects()));
         holder.mLikes.setText(String.valueOf(user.getMLikes().size()));
 
+
+        //закрашивает сердце у тех юзеров, которых я лайкнул
+        //и снимает закраску у тех, кого анлайкнул
+        for (Likes like : user.getMLikes()) {
+            if (like.getUserIdWhoLiked().equalsIgnoreCase(mDataManager.getPreferencesManager().getUserId())) {
+                holder.mLikesHeart.setImageResource(R.drawable.heart);
+            } else {
+                holder.mLikesHeart.setImageResource(R.drawable.heart_outline);
+            }
+        }
+
         String bio = user.getBio();
         if (bio == null || bio.isEmpty()) {
             holder.mBio.setVisibility(View.GONE);
@@ -120,28 +135,6 @@ public class UsersAdapter extends RecyclerView.Adapter<UsersAdapter.UserViewHold
     public int getItemCount() {
         return mUsers.size();
     }
-
-    @Override
-    public void onItemMove(int fromPosition, int toPosition) {
-        if (fromPosition < toPosition) {
-            for (int i = fromPosition; i < toPosition; i++) {
-                Collections.swap(mUsers, i, i + 1);
-            }
-        } else {
-            for (int i = fromPosition; i > toPosition; i--) {
-                Collections.swap(mUsers, i, i - 1);
-            }
-        }
-        notifyItemMoved(fromPosition, toPosition);
-        //return true;
-    }
-
-    @Override
-    public void onItemDismiss(int position) {
-        mUsers.remove(position);
-        notifyItemRemoved(position);
-    }
-
 
     public static class UserViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
         protected AspectRatioImageView mUserImage;
@@ -169,21 +162,61 @@ public class UsersAdapter extends RecyclerView.Adapter<UsersAdapter.UserViewHold
 
             mDummy = mUserImage.getContext().getResources().getDrawable(R.drawable.user_bg);
             mShowMore.setOnClickListener(this);
+            mLikesHeart.setOnClickListener(this);
 
         }
 
         @Override
         public void onClick(View v) {
             if (mListener != null) {
-                mListener.onUserItemClickListener(getAdapterPosition());
-            }
+                switch (v.getId()) {
+                    case R.id.more_info_rv_btn:
+                        mListener.onUserItemClickListener(getAdapterPosition());
+                        break;
+                    case R.id.likes_icon_iv:
+                        mListener.onUserLikeListener(getAdapterPosition());
 
+                        break;
+                }
+
+            }
         }
 
         public interface CustomClickListener {
 
             void onUserItemClickListener(int position);
+
+            void onUserLikeListener(int position);
+
+            //void onUserUnLikeListener(int position);
+
         }
     }
 
+
+    //region для свайпов и драгов карточек
+
+
+    @Override
+    public void onItemMove(int fromPosition, int toPosition) {
+        if (fromPosition < toPosition) {
+            for (int i = fromPosition; i < toPosition; i++) {
+                Collections.swap(mUsers, i, i + 1);
+            }
+        } else {
+            for (int i = fromPosition; i > toPosition; i--) {
+                Collections.swap(mUsers, i, i - 1);
+            }
+        }
+        notifyItemMoved(fromPosition, toPosition);
+        //return true;
+    }
+
+    @Override
+    public void onItemDismiss(int position) {
+        mUsers.remove(position);
+        notifyItemRemoved(position);
+    }
+
+    //endregion
 }

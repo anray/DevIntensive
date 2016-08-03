@@ -25,7 +25,10 @@ import android.widget.TextView;
 import com.redmadrobot.chronos.ChronosConnector;
 import com.softdesign.devintensive.R;
 import com.softdesign.devintensive.data.managers.DataManager;
+import com.softdesign.devintensive.data.network.response.UserLikeResponse;
 import com.softdesign.devintensive.data.network.response.UserListRes;
+import com.softdesign.devintensive.data.storage.models.Likes;
+import com.softdesign.devintensive.data.storage.models.LikesDao;
 import com.softdesign.devintensive.data.storage.models.RepositoryDao;
 import com.softdesign.devintensive.data.storage.models.User;
 import com.softdesign.devintensive.data.storage.models.UserDTO;
@@ -44,6 +47,9 @@ import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 public class UserListActivity extends BaseActivity {
 
@@ -313,6 +319,21 @@ public class UserListActivity extends BaseActivity {
         Snackbar.make(mCoordinatorLayout, message, Snackbar.LENGTH_LONG).show();
     }
 
+    private boolean iLiked(int position) {
+
+        boolean isLikedFlag = false;
+        //закрашивает сердце только у тех юзеров, которых я лайкнул
+        for (Likes like : mUsers.get(position).getMLikes()) {
+            if (like.getUserIdWhoLiked().equalsIgnoreCase(mDataManager.getPreferencesManager().getUserId())) {
+                isLikedFlag = true;
+                break;
+            }
+        }
+
+        return isLikedFlag;
+    }
+
+
     /**
      * Показывает профили людей, а также добавляет листенеры на каждую карточку
      *
@@ -333,6 +354,75 @@ public class UserListActivity extends BaseActivity {
                 startActivity(profileIntent);
 
 
+            }
+
+            @Override
+            public void onUserLikeListener(final int position) {
+                // TODO: 01.08.2016 метод лайка юзера
+                final String likedUserId = String.valueOf(mUsers.get(position).getRemoteId());
+
+
+                if (!iLiked(position)) {
+
+
+                    Call<UserLikeResponse> call = mDataManager.likeUser(String.valueOf(mUsers.get(position).getRemoteId()));
+                    call.enqueue(new Callback<UserLikeResponse>() {
+                        @Override
+                        public void onResponse(Call<UserLikeResponse> call, Response<UserLikeResponse> response) {
+                            if (response.code() == 200) {
+                                Log.d(TAG, response.toString());
+
+                                Likes temp = new Likes(mDataManager.getPreferencesManager().getUserId(), likedUserId);
+                                mDataManager.getDaoSession().getLikesDao().insert(temp);
+                                mUsers.get(position).resetMLikes();
+
+                                mUsersAdapter.notifyItemChanged(position);
+
+                            }
+                        }
+
+                        @Override
+                        public void onFailure(Call<UserLikeResponse> call, Throwable t) {
+
+                        }
+                    });
+
+
+                    //Snackbar.make(mCoordinatorLayout,"Like is pressed" + position + String.valueOf(mUsers.get(position).getRemoteId()),Snackbar.LENGTH_LONG).show();
+                } else {
+
+
+                    Call<UserLikeResponse> call = mDataManager.unLikeUser(String.valueOf(mUsers.get(position).getRemoteId()));
+                    call.enqueue(new Callback<UserLikeResponse>() {
+                        @Override
+                        public void onResponse(Call<UserLikeResponse> call, Response<UserLikeResponse> response) {
+                            if (response.code() == 200) {
+                                Log.d(TAG, response.toString());
+
+                                mDataManager.getDaoSession().queryBuilder(Likes.class)
+                                        .where(LikesDao.Properties.UserIdWhoLiked.eq(mDataManager.getPreferencesManager().getUserId()),
+                                                LikesDao.Properties.UserRemoteId.eq(mUsers.get(position).getRemoteId()))
+                                        .build()
+                                        .unique()
+                                        .delete();
+
+                                Log.d(TAG, mUsers.get(position).getRemoteId());
+
+                                mUsers.get(position).resetMLikes();
+                                mUsersAdapter.notifyItemChanged(position);
+
+                            }
+                        }
+
+                        @Override
+                        public void onFailure(Call<UserLikeResponse> call, Throwable t) {
+
+                        }
+                    });
+
+
+
+                }
             }
         });
         mRecyclerView.swapAdapter(mUsersAdapter, false);
@@ -469,4 +559,5 @@ public class UserListActivity extends BaseActivity {
 //
 //        return super.onContextItemSelected(item);
 //    }
+
 }

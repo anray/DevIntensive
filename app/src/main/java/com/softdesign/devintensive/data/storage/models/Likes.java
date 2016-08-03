@@ -12,10 +12,8 @@ import org.greenrobot.greendao.DaoException;
  * Created by anray on 28.07.2016.
  */
 @Entity(active = true, nameInDb = "LIKES", indexes = {
-        @Index(value = "userRemoteId, userIdWhoLiked", unique = true)})
+        @Index(value = "userIdWhoLiked, userRemoteId", unique = true)})
 public class Likes {
-
-
 
     @Id
     private Long Id;

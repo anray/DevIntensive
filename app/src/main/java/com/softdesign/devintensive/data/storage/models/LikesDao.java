@@ -51,8 +51,8 @@ public class LikesDao extends AbstractDao<Likes, Long> {
                 "\"USER_ID_WHO_LIKED\" TEXT NOT NULL ," + // 1: userIdWhoLiked
                 "\"USER_REMOTE_ID\" TEXT);"); // 2: userRemoteId
         // Add Indexes
-        db.execSQL("CREATE UNIQUE INDEX " + constraint + "IDX_LIKES_USER_REMOTE_ID_USER_ID_WHO_LIKED ON LIKES" +
-                " (\"USER_REMOTE_ID\" ASC,\"USER_ID_WHO_LIKED\" ASC);");
+        db.execSQL("CREATE UNIQUE INDEX " + constraint + "IDX_LIKES_USER_ID_WHO_LIKED_USER_REMOTE_ID ON LIKES" +
+                " (\"USER_ID_WHO_LIKED\" ASC,\"USER_REMOTE_ID\" ASC);");
     }
 
     /** Drops the underlying database table. */

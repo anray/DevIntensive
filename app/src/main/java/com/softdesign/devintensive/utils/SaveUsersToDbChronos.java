@@ -64,6 +64,7 @@ public class SaveUsersToDbChronos extends ChronosOperation<String> {
 
         mRepositoryDao.insertOrReplaceInTx(allRepositories);
         mUserDao.insertOrReplaceInTx(allUsers);
+        mLikesDao.deleteAll();
         mLikesDao.insertOrReplaceInTx(allLikes);
 
         mResponse = null;

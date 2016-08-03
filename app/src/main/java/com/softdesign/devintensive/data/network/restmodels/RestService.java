@@ -1,6 +1,7 @@
 package com.softdesign.devintensive.data.network.restmodels;
 
 import com.softdesign.devintensive.data.network.request.UserLoginRequest;
+import com.softdesign.devintensive.data.network.response.UserLikeResponse;
 import com.softdesign.devintensive.data.network.response.UserListRes;
 import com.softdesign.devintensive.data.network.response.UserModelResponse;
 import com.softdesign.devintensive.data.network.response.UserModelResponseByToken;
@@ -37,4 +38,10 @@ public interface RestService {
     Call<ResponseBody> uploadPhoto (@Path("userId") String userId,
                                     @Part MultipartBody.Part file);
 
+
+    @POST("user/{userId}/like")
+    Call<UserLikeResponse> likeUser (@Path("userId") String userId);
+
+    @POST("user/{userId}/unLike")
+    Call<UserLikeResponse> unLikeUser (@Path("userId") String userId);
 }
