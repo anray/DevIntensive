@@ -115,6 +115,8 @@ public class UsersAdapter extends RecyclerView.Adapter<UsersAdapter.UserViewHold
         for (Likes like : user.getMLikes()) {
             if (like.getUserIdWhoLiked().equalsIgnoreCase(mDataManager.getPreferencesManager().getUserId())) {
                 holder.mLikesHeart.setImageResource(R.drawable.heart);
+                //break потому что не надо дальше проходить лист лайков, потому что у нас в разметке дефолтное значение - незакрашенный лайк
+                break;
             } else {
                 holder.mLikesHeart.setImageResource(R.drawable.heart_outline);
             }

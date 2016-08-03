@@ -5,6 +5,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.softdesign.devintensive.R;
@@ -53,6 +54,7 @@ public class RepositoriesAdapter extends BaseAdapter {
 
         TextView repoName  = (TextView) itemView.findViewById(R.id.github_et);
         repoName.setText(mRepositoriesList.get(position));
+
 
         return itemView;
     }

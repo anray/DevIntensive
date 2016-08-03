@@ -358,31 +358,44 @@ public class UserListActivity extends BaseActivity {
 
             @Override
             public void onUserLikeListener(final int position) {
-                // TODO: 01.08.2016 метод лайка юзера
+                //метод лайка юзера
                 final String likedUserId = String.valueOf(mUsers.get(position).getRemoteId());
 
 
                 if (!iLiked(position)) {
 
 
-                    Call<UserLikeResponse> call = mDataManager.likeUser(String.valueOf(mUsers.get(position).getRemoteId()));
+                    Call<UserLikeResponse> call = mDataManager.likeUser(String.valueOf(likedUserId));
                     call.enqueue(new Callback<UserLikeResponse>() {
                         @Override
                         public void onResponse(Call<UserLikeResponse> call, Response<UserLikeResponse> response) {
                             if (response.code() == 200) {
                                 Log.d(TAG, response.toString());
 
+                                /*
+                                Добавляет в БД только, поставленный мной лайк
+
                                 Likes temp = new Likes(mDataManager.getPreferencesManager().getUserId(), likedUserId);
                                 mDataManager.getDaoSession().getLikesDao().insert(temp);
+                                */
+
+                                //переписывает лайка из ответа сервера
+                                updateLikes(likedUserId, response.body().getData().getLikesBy());
+
+                                //чистит лист лайков, в след раз когда вызывается getMLikes() к базе идет запрос, и лист заполняется лайками
                                 mUsers.get(position).resetMLikes();
 
+                                //сообщает адаптеру, что карточка изменилась и обновляет ее перезаполняя данными вновь, она слегка моргает в ответ
                                 mUsersAdapter.notifyItemChanged(position);
 
+                            } else {
+                                showSnackbar("Ошибка ответа сервера, попробуйте еще раз");
                             }
                         }
 
                         @Override
                         public void onFailure(Call<UserLikeResponse> call, Throwable t) {
+                            showSnackbar("Не удалось поставить лайк");
 
                         }
                     });
@@ -392,12 +405,16 @@ public class UserListActivity extends BaseActivity {
                 } else {
 
 
-                    Call<UserLikeResponse> call = mDataManager.unLikeUser(String.valueOf(mUsers.get(position).getRemoteId()));
+                    Call<UserLikeResponse> call = mDataManager.unLikeUser(String.valueOf(likedUserId));
                     call.enqueue(new Callback<UserLikeResponse>() {
                         @Override
                         public void onResponse(Call<UserLikeResponse> call, Response<UserLikeResponse> response) {
                             if (response.code() == 200) {
                                 Log.d(TAG, response.toString());
+
+
+                                /*
+                                Удаляет только, поставленный мной лайк
 
                                 mDataManager.getDaoSession().queryBuilder(Likes.class)
                                         .where(LikesDao.Properties.UserIdWhoLiked.eq(mDataManager.getPreferencesManager().getUserId()),
@@ -407,16 +424,25 @@ public class UserListActivity extends BaseActivity {
                                         .delete();
 
                                 Log.d(TAG, mUsers.get(position).getRemoteId());
+                                */
 
+                                //переписывает лайка из ответа сервера
+                                updateLikes(likedUserId, response.body().getData().getLikesBy());
+
+                                //чистит лист лайков, в след раз когда вызывается getMLikes() к базе идет запрос, и лист заполняется лайками
                                 mUsers.get(position).resetMLikes();
+
+                                //сообщает адаптеру, что карточка изменилась и обновляет ее перезаполняя данными вновь, она слегка моргает в ответ
                                 mUsersAdapter.notifyItemChanged(position);
 
+                            } else {
+                                showSnackbar("Ошибка ответа сервера, попробуйте еще раз");
                             }
                         }
 
                         @Override
                         public void onFailure(Call<UserLikeResponse> call, Throwable t) {
-
+                            showSnackbar("Не удалось снять лайк");
                         }
                     });
 
@@ -435,6 +461,21 @@ public class UserListActivity extends BaseActivity {
         //endregion
     }
 
+    private void updateLikes(String likedUserId, List<String> allHisLikes){
+
+        mDataManager.getDaoSession().queryBuilder(Likes.class)
+                .where(LikesDao.Properties.UserRemoteId.eq(likedUserId))
+                .buildDelete()
+                .executeDeleteWithoutDetachingEntities();
+
+        List<Likes> newLikes = new ArrayList<Likes>();
+
+        for (String like : allHisLikes) {
+            newLikes.add(new Likes(like, likedUserId));
+        }
+
+        mDataManager.getDaoSession().getLikesDao().insertInTx(newLikes);
+    }
 
     private void showUsersByQuery(String query) {
         mQuery = query.trim();

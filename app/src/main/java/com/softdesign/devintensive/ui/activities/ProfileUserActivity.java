@@ -2,12 +2,13 @@ package com.softdesign.devintensive.ui.activities;
 
 import android.content.Intent;
 import android.net.Uri;
+import android.os.Bundle;
 import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
@@ -15,6 +16,7 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.ListAdapter;
 import android.widget.ListView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.softdesign.devintensive.R;
@@ -65,30 +67,29 @@ public class ProfileUserActivity extends AppCompatActivity {
         ButterKnife.bind(this);
 
 
-
         setupToolbar();
         initProfileData();
     }
 
-    private void setupToolbar(){
+    private void setupToolbar() {
 
         setSupportActionBar(mToolbar);
 
         ActionBar actionBar = getSupportActionBar();
 
-        if (actionBar != null){
+        if (actionBar != null) {
             actionBar.setDisplayHomeAsUpEnabled(true);
         }
 
     }
 
-    private void initProfileData(){
+    private void initProfileData() {
 
         final UserDTO userDTO = getIntent().getParcelableExtra(ConstantManager.PARCELABLE_KEY);
 
         final List<String> repositories = userDTO.getRepositories();
 
-        final RepositoriesAdapter repositoriesAdapter = new RepositoriesAdapter(this,repositories);
+        final RepositoriesAdapter repositoriesAdapter = new RepositoriesAdapter(this, repositories);
 
         mRepoListView.setAdapter(repositoriesAdapter);
         setListViewHeightBasedOnChildren(mRepoListView);
