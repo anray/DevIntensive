@@ -347,7 +347,8 @@ public class AuthActivity extends BaseActivity implements View.OnClickListener {
         int[] userValues = {
                 userModel.getData().getUser().getProfileValues().getRaiting(),
                 userModel.getData().getUser().getProfileValues().getLinesCode(),
-                userModel.getData().getUser().getProfileValues().getProjects()
+                userModel.getData().getUser().getProfileValues().getProjects(),
+                userModel.getData().getUser().getProfileValues().getFinalRating()
         };
 
         mDataManager.getPreferencesManager().saveUserProfileValues(userValues);
@@ -359,7 +360,8 @@ public class AuthActivity extends BaseActivity implements View.OnClickListener {
         int[] userValues = {
                 userModel.getData().getProfileValues().getRaiting(),
                 userModel.getData().getProfileValues().getLinesCode(),
-                userModel.getData().getProfileValues().getProjects()
+                userModel.getData().getProfileValues().getProjects(),
+                userModel.getData().getProfileValues().getFinalRating()
         };
 
         mDataManager.getPreferencesManager().saveUserProfileValues(userValues);

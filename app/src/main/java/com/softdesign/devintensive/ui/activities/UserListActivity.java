@@ -36,7 +36,7 @@ import com.softdesign.devintensive.data.storage.models.UserDao;
 import com.softdesign.devintensive.ui.adapters.UsersAdapter;
 import com.softdesign.devintensive.utils.CircleTransform;
 import com.softdesign.devintensive.utils.ConstantManager;
-import com.softdesign.devintensive.utils.DevintensiveApplication;
+import com.softdesign.devintensive.DevintensiveApplication;
 import com.softdesign.devintensive.utils.LoadUsersFromDbChronos;
 import com.softdesign.devintensive.utils.SimpleItemTouchHelperCallback;
 import com.squareup.picasso.MemoryPolicy;
@@ -382,6 +382,10 @@ public class UserListActivity extends BaseActivity {
                                 //переписывает лайка из ответа сервера
                                 updateLikes(likedUserId, response.body().getData().getLikesBy());
 
+                                //обновить рейтинг
+                                mUsers.get(position).setRating(response.body().getData().getRating());
+
+
                                 //чистит лист лайков, в след раз когда вызывается getMLikes() к базе идет запрос, и лист заполняется лайками
                                 mUsers.get(position).resetMLikes();
 
@@ -428,6 +432,9 @@ public class UserListActivity extends BaseActivity {
 
                                 //переписывает лайка из ответа сервера
                                 updateLikes(likedUserId, response.body().getData().getLikesBy());
+
+                                //обновить рейтинг
+                                mUsers.get(position).setRating(response.body().getData().getRating());
 
                                 //чистит лист лайков, в след раз когда вызывается getMLikes() к базе идет запрос, и лист заполняется лайками
                                 mUsers.get(position).resetMLikes();

@@ -5,7 +5,7 @@ import android.net.Uri;
 import android.util.Log;
 
 import com.softdesign.devintensive.utils.ConstantManager;
-import com.softdesign.devintensive.utils.DevintensiveApplication;
+import com.softdesign.devintensive.DevintensiveApplication;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -119,6 +119,8 @@ public class PreferencesManager {
         for (int i = 0; i < USER_VALUES.length; i++) {
             editor.putString(USER_VALUES[i], String.valueOf(userValues[i]));
         }
+        //чтобы зааписать рейтинг в виде 120+3 (рейтинг препода + лайки)
+        editor.putString(ConstantManager.USER_RATING_VALUE, String.valueOf(userValues[0])+"+"+ String.valueOf(userValues[3]-userValues[0]));
         editor.apply();
     }
 

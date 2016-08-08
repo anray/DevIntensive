@@ -5,10 +5,10 @@ import android.support.annotation.Nullable;
 
 import com.redmadrobot.chronos.ChronosOperation;
 import com.redmadrobot.chronos.ChronosOperationResult;
+import com.softdesign.devintensive.DevintensiveApplication;
 import com.softdesign.devintensive.data.storage.models.User;
 import com.softdesign.devintensive.data.storage.models.UserDao;
 
-import java.util.ArrayList;
 import java.util.List;
 
 

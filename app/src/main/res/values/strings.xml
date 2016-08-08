@@ -46,5 +46,6 @@
     <string name="more_info_btn">Просмотр</string>
     <string name="logout">Выход</string>
     <string name="query_hint">Введите Имя пользователя</string>
+    <string name="user_list_activity_title">DevIntesive Crew</string>
 
 </resources>

@@ -40,6 +40,8 @@ public class User {
 
     private int rating;
 
+    private int finalRating;
+
     private int codeLines;
 
     private int projects;
@@ -63,6 +65,7 @@ public class User {
         fullName = userRes.getFullName();
         searchName = userRes.getFullName().toUpperCase();
         rating = userRes.getProfileValues().getRaiting();
+        finalRating = userRes.getProfileValues().getFinalRating();
         codeLines = userRes.getProfileValues().getLinesCode();
         projects = userRes.getProfileValues().getProjects();
         bio = userRes.getPublicInfo().getBio();
@@ -252,16 +255,25 @@ public class User {
         return mLikes;
     }
 
-    @Generated(hash = 1023608416)
-    public User(Long id, @NotNull String remoteId, String photo,
-            @NotNull String fullName, @NotNull String searchName, int rating,
-            int codeLines, int projects, String bio) {
+    public int getFinalRating() {
+        return this.finalRating;
+    }
+
+    public void setFinalRating(int finalRating) {
+        this.finalRating = finalRating;
+    }
+
+    @Generated(hash = 1835570242)
+    public User(Long id, @NotNull String remoteId, String photo, @NotNull String fullName,
+            @NotNull String searchName, int rating, int finalRating, int codeLines, int projects,
+            String bio) {
         this.id = id;
         this.remoteId = remoteId;
         this.photo = photo;
         this.fullName = fullName;
         this.searchName = searchName;
         this.rating = rating;
+        this.finalRating = finalRating;
         this.codeLines = codeLines;
         this.projects = projects;
         this.bio = bio;

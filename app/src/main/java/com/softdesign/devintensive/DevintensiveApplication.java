@@ -1,4 +1,4 @@
-package com.softdesign.devintensive.utils;
+package com.softdesign.devintensive;
 
 import android.app.Application;
 import android.content.Context;
@@ -10,6 +10,7 @@ import android.util.Log;
 import com.facebook.stetho.Stetho;
 import com.softdesign.devintensive.data.storage.models.DaoMaster;
 import com.softdesign.devintensive.data.storage.models.DaoSession;
+import com.softdesign.devintensive.utils.ConstantManager;
 
 import org.greenrobot.greendao.database.Database;
 
@@ -38,7 +39,7 @@ public class DevintensiveApplication extends Application {
 
 
         if (ConstantManager.DEBUG == true) {
-            Log.d(ConstantManager.TAG_PREFIX + "DevintensiveApplication class", this.getClass().getName());
+            Log.d(ConstantManager.TAG_PREFIX, "DevintensiveApplication class" + this.getClass().getName());
         }
 
 

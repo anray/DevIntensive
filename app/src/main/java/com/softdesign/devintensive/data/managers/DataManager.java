@@ -1,7 +1,6 @@
 package com.softdesign.devintensive.data.managers;
 
 import android.content.Context;
-import android.util.Log;
 
 import com.softdesign.devintensive.data.network.PicassoCache;
 import com.softdesign.devintensive.data.network.request.UserLoginRequest;
@@ -15,7 +14,7 @@ import com.softdesign.devintensive.data.storage.models.DaoSession;
 import com.softdesign.devintensive.data.storage.models.User;
 import com.softdesign.devintensive.data.storage.models.UserDao;
 import com.softdesign.devintensive.utils.ConstantManager;
-import com.softdesign.devintensive.utils.DevintensiveApplication;
+import com.softdesign.devintensive.DevintensiveApplication;
 import com.squareup.picasso.Picasso;
 
 import org.greenrobot.greendao.query.QueryBuilder;

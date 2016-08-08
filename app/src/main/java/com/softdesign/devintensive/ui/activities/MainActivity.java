@@ -45,7 +45,7 @@ import com.softdesign.devintensive.data.managers.DataManager;
 import com.softdesign.devintensive.data.managers.TextWatcherValidator;
 import com.softdesign.devintensive.utils.CircleTransform;
 import com.softdesign.devintensive.utils.ConstantManager;
-import com.softdesign.devintensive.utils.DevintensiveApplication;
+import com.softdesign.devintensive.DevintensiveApplication;
 import com.squareup.picasso.MemoryPolicy;
 import com.squareup.picasso.Picasso;
 
@@ -515,8 +515,10 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
         List<String> userInfoValues = mDataManager.getPreferencesManager().loadUserProfileValues();
         for (int i = 0; i < userInfoValues.size(); i++) {
             mUserValueViews.get(i).setText(userInfoValues.get(i));
+
             Log.d(ConstantManager.TAG_PREFIX + "MainActivity", userInfoValues.get(i));
         }
+
 
     }
 

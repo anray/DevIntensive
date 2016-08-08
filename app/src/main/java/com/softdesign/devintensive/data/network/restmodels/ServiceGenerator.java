@@ -3,7 +3,7 @@ package com.softdesign.devintensive.data.network.restmodels;
 import com.facebook.stetho.okhttp3.StethoInterceptor;
 import com.softdesign.devintensive.data.network.interceptors.HeaderInterceptor;
 import com.softdesign.devintensive.utils.AppConfig;
-import com.softdesign.devintensive.utils.DevintensiveApplication;
+import com.softdesign.devintensive.DevintensiveApplication;
 
 import java.util.concurrent.TimeUnit;
 
